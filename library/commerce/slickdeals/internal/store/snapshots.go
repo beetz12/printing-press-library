@@ -209,38 +209,25 @@ func (s *Store) QueryDeals(filter DealFilter) ([]DealSnapshot, error) {
 		where = " WHERE " + strings.Join(clauses, " AND ")
 	}
 
-	var query string
-	if filter.Latest {
-		// Pick the latest row per deal_id matching the filter. Using a
-		// correlated subquery keeps modernc.org/sqlite happy without a
-		// window function dependency.
-		query = `SELECT id, deal_id, captured_at, price, list_price, thumbs,
-		                comments, views, is_expired, merchant, category, title, link, raw
-		         FROM deal_snapshots t1` + where + `
-		         AND captured_at = (
-		             SELECT MAX(captured_at) FROM deal_snapshots t2
-		             WHERE t2.deal_id = t1.deal_id
-		         )
-		         ORDER BY captured_at DESC`
-		// If no other WHERE clauses, the " AND " glue is invalid; flip it.
-		if where == "" {
-			query = `SELECT id, deal_id, captured_at, price, list_price, thumbs,
-			                comments, views, is_expired, merchant, category, title, link, raw
-			         FROM deal_snapshots t1
-			         WHERE captured_at = (
-			             SELECT MAX(captured_at) FROM deal_snapshots t2
-			             WHERE t2.deal_id = t1.deal_id
-			         )
-			         ORDER BY captured_at DESC`
-		}
-	} else {
-		query = `SELECT id, deal_id, captured_at, price, list_price, thumbs,
-		                comments, views, is_expired, merchant, category, title, link, raw
-		         FROM deal_snapshots` + where + `
-		         ORDER BY captured_at DESC`
-	}
+	// For the non-Latest path the WHERE clauses can be applied at the SQL
+	// level and we're done. For the Latest path, we previously ran a correlated
+	// subquery that computed MAX(captured_at) GLOBALLY per deal_id, which
+	// silently dropped filtered-merchant rows whose latest snapshot was
+	// captured under a DIFFERENT merchant (Greptile #3 in PR #481). The fix:
+	// fetch all filtered rows ordered by captured_at DESC, then dedupe in Go.
+	// This is the documented alternative in the Greptile feedback and avoids
+	// growing the SQL with mirrored WHERE clauses that would have to stay in
+	// sync with the outer filter forever.
+	query := `SELECT id, deal_id, captured_at, price, list_price, thumbs,
+	                comments, views, is_expired, merchant, category, title, link, raw
+	         FROM deal_snapshots` + where + `
+	         ORDER BY captured_at DESC`
 
-	if filter.Limit > 0 {
+	// Limit only applies to the non-Latest path at the SQL level; for Latest
+	// we need to dedupe BEFORE limiting so we don't truncate to a smaller
+	// subset that excludes deals whose latest match is further down the
+	// captured_at ordering.
+	if filter.Limit > 0 && !filter.Latest {
 		query += " LIMIT ?"
 		args = append(args, filter.Limit)
 	}
@@ -251,7 +238,31 @@ func (s *Store) QueryDeals(filter DealFilter) ([]DealSnapshot, error) {
 	}
 	defer rows.Close()
 
-	return scanSnapshots(rows)
+	all, err := scanSnapshots(rows)
+	if err != nil {
+		return nil, err
+	}
+
+	if !filter.Latest {
+		return all, nil
+	}
+
+	// Dedupe by deal_id keeping the first occurrence (which is the most
+	// recent thanks to ORDER BY captured_at DESC at the SQL level). Apply
+	// limit after dedupe.
+	seen := make(map[string]bool, len(all))
+	deduped := make([]DealSnapshot, 0, len(all))
+	for _, s := range all {
+		if seen[s.DealID] {
+			continue
+		}
+		seen[s.DealID] = true
+		deduped = append(deduped, s)
+		if filter.Limit > 0 && len(deduped) >= filter.Limit {
+			break
+		}
+	}
+	return deduped, nil
 }
 
 // QuerySnapshotsSince returns snapshots with captured_at >= cutoff, deduped to

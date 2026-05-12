@@ -107,9 +107,18 @@ func (c *Client) ProbeGet(path string) (int, error) {
 }
 
 func (c *Client) cacheKey(path string, params map[string]string) string {
+	// Go randomizes map iteration order; sort the keys so identical params
+	// always hash to the same digest. Without this, every multi-param request
+	// is a cache miss because mode=frontpage&rss=1 and rss=1&mode=frontpage
+	// hash differently. Greptile #1 in PR #481.
+	keys := make([]string, 0, len(params))
+	for k := range params {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
 	key := path
-	for k, v := range params {
-		key += k + "=" + v
+	for _, k := range keys {
+		key += k + "=" + params[k]
 	}
 	h := sha256.Sum256([]byte(key))
 	return hex.EncodeToString(h[:8])

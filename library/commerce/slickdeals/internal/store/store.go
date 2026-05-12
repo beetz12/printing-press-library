@@ -728,14 +728,38 @@ func (s *Store) GetSyncCursor(resourceType string) string {
 	return ""
 }
 
+// resourceIdentRE matches SQL identifiers safe to interpolate as a table or
+// column name: starts with a letter or underscore, followed by letters, digits,
+// underscores, or hyphens. Hyphens are allowed because some resource_type
+// values use kebab-case; they're escaped with %q during interpolation.
+var resourceIdentRE = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_-]*$`)
+
+// validResourceIdent reports whether s is safe to use as a SQL identifier
+// (table or column name) without further escaping. Used by ListIDs to gate
+// table-name interpolation against an allow-list of well-formed identifiers.
+func validResourceIdent(s string) bool {
+	return s != "" && len(s) <= 64 && resourceIdentRE.MatchString(s)
+}
+
 // ListIDs returns all IDs from a resource's domain table, or from the generic
 // resources table if no domain table exists. Used by dependent sync to iterate parents.
+//
+// resourceType cannot be parameterized with `?` because SQLite doesn't accept
+// table names as bound parameters. Validate against [a-zA-Z0-9_]+ before
+// interpolating to prevent SQL injection (Greptile #2 in PR #481). Any
+// resource_type that fails the pattern goes straight to the generic table
+// fallback, which IS parameterized.
 func (s *Store) ListIDs(resourceType string) ([]string, error) {
-	// Try domain table first (tables are named after the resource type)
-	query := fmt.Sprintf("SELECT id FROM %s", resourceType)
-	rows, err := s.db.Query(query)
+	var rows *sql.Rows
+	var err error
+	if validResourceIdent(resourceType) {
+		query := fmt.Sprintf("SELECT id FROM %q", resourceType)
+		rows, err = s.db.Query(query)
+	} else {
+		err = fmt.Errorf("invalid resource type for domain-table lookup")
+	}
 	if err != nil {
-		// Fall back to generic resources table
+		// Fall back to generic resources table (always parameterized)
 		rows, err = s.db.Query("SELECT id FROM resources WHERE resource_type = ?", resourceType)
 		if err != nil {
 			return nil, err

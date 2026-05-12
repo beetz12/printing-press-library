@@ -100,6 +100,20 @@ slickdeals-pp-cli deals --store costco --since 24h --min-thumbs 50 --json
 slickdeals-pp-cli analytics top-stores --window 7d --json
 ```
 
+## Unique Features
+
+These capabilities aren't available in any other tool for this API.
+- **`hot`** — Top live frontpage deals filtered by min-thumbs, sorted thumbs DESC.
+- **`frontpage-fresh`** — Live unfiltered frontpage RSS feed (today's drops).
+- **`search --live`** — Keyword filter on the live frontpage RSS as a fallback for Slickdeals' broken server-side search.
+- **`category`** — Curated forum-id -> keyword map (tech, gaming, home, grocery, apparel, sports) for client-side filtering of the live frontpage.
+- **`coupons`** — Live featured coupon list with optional --store merchant filter.
+- **`watch`** — Fetch a single deal from the live frontpage RSS, optionally persisting a snapshot row for time-series analytics.
+- **`digest`** — Summarize the top-N captured snapshots over a window, optionally capped per merchant and grouped by merchant/category.
+- **`deals`** — Flagship SQL compound query over captured snapshots: --store costco --since 24h --min-thumbs 50.
+- **`analytics top-stores`** — Merchant aggregation over a time window: deal_count, avg_thumbs, max_thumbs, first/last seen.
+- **`analytics thumbs-velocity`** — Chronological thumb-count observations for a deal with per-step delta — momentum signal for arbitrage and auto-snipe.
+
 ## Usage
 
 Run `slickdeals-pp-cli --help` for the full command reference and flag list.
