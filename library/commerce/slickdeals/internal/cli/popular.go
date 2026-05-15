@@ -42,7 +42,16 @@ frontpage). Use --min-thumbs to drop low-vote items client-side.`,
 			if dryRunOK(flags) {
 				return nil
 			}
-			items, err := rss.LivePopular(cmd.Context(), nil, 0)
+			// Pass limit through to the fetch so we don't over-fetch when
+			// Slickdeals expands the feed beyond 25. When --min-thumbs is
+			// set we DO need to fetch unlimited because the thumb filter
+			// runs client-side and any items dropped by the filter would
+			// otherwise reduce the final count below the user's --limit.
+			fetchLimit := limit
+			if minThumbs > 0 {
+				fetchLimit = 0
+			}
+			items, err := rss.LivePopular(cmd.Context(), nil, fetchLimit)
 			if err != nil {
 				return apiErr(err)
 			}
@@ -54,9 +63,9 @@ frontpage). Use --min-thumbs to drop low-vote items client-side.`,
 					}
 				}
 				items = kept
-			}
-			if limit > 0 && len(items) > limit {
-				items = items[:limit]
+				if limit > 0 && len(items) > limit {
+					items = items[:limit]
+				}
 			}
 			data, err := json.Marshal(items)
 			if err != nil {

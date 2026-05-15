@@ -31,6 +31,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"regexp"
 	"sort"
 	"strconv"
@@ -205,12 +206,9 @@ func LiveFrontpage(ctx context.Context, hc *http.Client) ([]Item, error) {
 	return FetchURL(ctx, frontpageURL, hc)
 }
 
-// LiveSearchRSS runs a server-side keyword search across Slickdeals' deals
-// using the q= parameter (NOT search=, which is silently ignored). Optional
-// forumID scopes the search to a specific forum via forumchoice[]=N; pass 0
-// to search across all deals. Empty query returns the full feed for the scope.
-//
-// URL form: ?searchin=first&searcharea=deals[&forumchoice[]=N]&q=<query>&rss=1
+// LiveSearchRSS is a backward-compatible wrapper around LiveSearch that always
+// searches across all forums (forumID=0). Callers that need forum-scoped
+// search should use LiveSearch directly.
 //
 // Note: a v0.2 bug filtered the frontpage client-side because we used the
 // wrong parameter name. v0.3 fixes this by using Slickdeals' real search
@@ -261,18 +259,12 @@ func buildSearchURL(query string, forumID int) string {
 	return base
 }
 
-// urlEscape is a minimal query-string encoder for the q= parameter. We avoid
-// pulling in net/url just to escape one string; only space, +, &, and # need
-// special handling for typical deal keywords.
+// urlEscape percent-encodes a query-string value for the q= parameter.
+// Uses url.QueryEscape so reserved characters like [ ] = " < > are encoded
+// correctly — queries such as `Xbox [Series X]` or `price >= 50` would
+// otherwise embed literals that some strict HTTP proxies reject or mis-parse.
 func urlEscape(s string) string {
-	r := strings.NewReplacer(
-		"%", "%25",
-		" ", "+",
-		"&", "%26",
-		"#", "%23",
-		"+", "%2B",
-	)
-	return r.Replace(s)
+	return url.QueryEscape(s)
 }
 
 // FilterByQuery returns items whose title or description (case-insensitive)
