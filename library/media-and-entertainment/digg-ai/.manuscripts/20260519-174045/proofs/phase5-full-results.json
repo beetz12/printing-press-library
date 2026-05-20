@@ -1,0 +1,1113 @@
+{
+  "dir": "/Users/dave/printing-press/.runstate/openbrain-3654f44d/runs/20260519-174045/working/digg-ai-pp-cli",
+  "binary": "/Users/dave/printing-press/.runstate/openbrain-3654f44d/runs/20260519-174045/working/digg-ai-pp-cli/digg-ai-pp-cli",
+  "level": "full",
+  "verdict": "PASS",
+  "matrix_size": 72,
+  "passed": 72,
+  "failed": 0,
+  "skipped": 45,
+  "commands": [
+    "api",
+    "brief",
+    "cooccur",
+    "diff",
+    "doctor",
+    "endorsers feed",
+    "endorsers overlap",
+    "endorsers top",
+    "feedback list",
+    "import",
+    "latest",
+    "open",
+    "profile delete",
+    "profile list",
+    "profile save",
+    "profile show",
+    "profile use",
+    "search",
+    "sql",
+    "stories get",
+    "stories list",
+    "sync",
+    "topic",
+    "topics",
+    "trending",
+    "velocity",
+    "which",
+    "workflow archive",
+    "workflow status"
+  ],
+  "tests": [
+    {
+      "command": "api",
+      "kind": "help",
+      "args": [
+        "api",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Browse and call any API endpoint using the raw interface names.\n\nThe friendly top-level commands cover the most common operations.\nThis command provides access to ALL endpoints for power users and\nagents that need full API coverage.\n\nRun 'api' with no arguments to list all interfaces.\nRun 'api \u003cinterface\u003e' to see that interface's methods.\n\nUsage:\n  digg-ai-pp-cli api [interface] [flags]\n\nExamples:\n  # List all available interfaces\n  digg-ai-pp-cli api\n\n  # Show methods for a specific interface\n  digg-ai-pp-cli api \u003cinterface-name\u003e\n\nFlags:\n  -h, --help   help for api\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "api",
+      "kind": "happy_path",
+      "args": null,
+      "status": "skip",
+      "reason": "command path [api] has fewer segments than placeholders (1)"
+    },
+    {
+      "command": "api",
+      "kind": "json_fidelity",
+      "args": null,
+      "status": "skip",
+      "reason": "command path [api] has fewer segments than placeholders (1)"
+    },
+    {
+      "command": "api",
+      "kind": "error_path",
+      "args": [
+        "api",
+        "__printing_press_invalid__"
+      ],
+      "status": "pass",
+      "exit_code": 1,
+      "output_sample": "Error: interface \"__printing_press_invalid__\" not found. Run 'digg-ai-pp-cli api' to list all interfaces\ninterface \"__printing_press_invalid__\" not found. Run 'digg-ai-pp-cli api' to list all interfaces\n"
+    },
+    {
+      "command": "brief",
+      "kind": "help",
+      "args": [
+        "brief",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Pre-formatted top-N AI digest for piping into a morning briefing\n\nUsage:\n  digg-ai-pp-cli brief [flags]\n\nExamples:\n  digg-ai-pp-cli brief\n  digg-ai-pp-cli brief --limit 5 --json\n\nFlags:\n      --db string   Database path (for --data-source=local)\n  -h, --help        help for brief\n      --limit int   Number of stories to include (default 10)\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "brief",
+      "kind": "happy_path",
+      "args": [
+        "brief"
+      ],
+      "status": "pass",
+      "output_sample": "[\n  {\n    \"rank\": 1,\n    \"headline\": \"Cursor AI releases Composer 2.5, its most powerful model to date, with gains in intelligence, long-task performance, and complex instruction adherence while doubling usage for all users\",\n    \"endorsers\": [\n      \"Omar Khattab (@lateinteraction)\",\n      \"rohan anil (@_arohan_)\",\n      \"Elon Musk (@elonmusk)\",\n      \"clem 🤗 (@clementdelangue)\",\n      \"Sasha Rush (@srush_nlp)\",\n      \"Kyunghyun Cho (@kchonyc)\"\n    ]\n  },\n  {\n    \"rank\": 2,\n    \"headline\": \"Andrej Karpathy joins Anthropic to conduct research and development on frontier large language models after prior roles at OpenAI and Tesla\",\n    \"endorsers\": [\n      \"Shane Gu (@shaneguml)\",\n      \"Jack Clark (@jackclarksf)\",\n      \"Noam Brown (@polynoamial)\",\n      \"Jim Fan (@drjimfan)\",\n      \"Sam Bowman (@sleepinyourhat)\",\n      \"Andrej Karpathy (@karpathy)\"\n    ]\n  },\n  {\n    \"rank\": 3,\n    \"headline\": \"Sam Altman, OpenAI co-founder and CEO, says Tibo will reset Codex rate limits if his tweet receives one like\",\n    \"endorsers\": [\n      \"Nick Dobos (@nickadobos)\",\n      \"🍓🍓🍓 (@iruletheworldmo)\",\n      \"Tibo (@thsottiaux)\",\n      \"Sam Altman (@sama)\"\n    ]\n  },\n  {\n    \"rank\": 4,\n    \"headline\": \"Google DeepMind releases Omni, a video generation model that maintains consistent characters across scenes and supports iterative edits with physics simulation and Gemini knowledge\",\n    \"endorsers\": [\n      \"Justine Moore (@venturetwins)\",\n      \"@levelsio (@levelsio)\",\n      \"Lisha (@lishali88)\",\n      \"Kory Mathewson (@korymath)\",\n      \"Jason Baldridge (@jasonbaldridge)\",\n      \"Dumitru Erhan (@doomie)\"\n    ]\n  },\n  {\n    \"rank\": 5,\n    \"headline\": \"Antigravity unifies its agentic surfaces under a single platform incorporating Antigravity 2.0 desktop app, CLI, SDK, and IDE for consistent access across environments\",\n    \"age\": \"2h\",\n    \"endorsers\": [\n      \"Alex Volkov (@altryne)\",\n      \"Vitaliy Chiley (@vitaliychiley)\",\n      \"Tibo (@thsottiaux)\",\n      \"Clément Farabet (@clmt)\"\n    ]\n  },\n  {\n    \"rank\": 6,\n    \"headline\": \"Google releases Gemini 3.5 Flash for complex agentic workflows, coding, and reasoning at 289 tokens per second and higher scores than Gemini 3.1 Pro on Terminal-Bench 2.1, GDPval-AA, and MCP Atlas\",\n    \"summary\": \"Large token quotas appeared in Google Cloud Console before wider rollout.\",\n    \"age\": \"9h\",\n    \"likes\": 37400\n  },\n  {\n    \"rank\": 7,\n    \"headline\": \"METR publishes its first Frontier Risk Report assessing whether AI labs could lose control of advanced autonomous agents after testing internal models from Anthropic, Google, Meta, and OpenAI\",\n    \"summary\": \"Ajeya Cotra led the project after joining METR on January 12.\",\n    \"age\": \"3h\",\n    \"likes\": 1100\n  },\n  {\n    \"rank\": 8,\n    \"headline\": \"Andrej Karpathy joins Anthropic pretraining team and will lead a new group that uses Claude to conduct research, according to journalist Alex Heath\",\n    \"summary\": \"One post featured a satirical portrait of him as Pope Dario I.\",\n    \"age\": \"5h\",\n    \"likes\": 4800\n  },\n  {\n    \"rank\": 9,\n    \"headline\": \"Claude announces the public beta of self-hosted sandboxes and research preview of MCP tunnels within Claude Managed Agents, enabling runs inside user infrastructure under existing security controls\",\n    \"summary\": \"Features were presented at Code with Claude London with Cloudflare and Modal support.\",\n    \"age\": \"12h\",\n    \"likes\": 8300\n  },\n  {\n    \"rank\": 10,\n    \"headline\": \"Google DeepMind expands Project Genie with Street View integration to generate interactive 3D environments anchored to real-world Google Maps locations\",\n    \"summary\": \"Tool is available for testing by Gemini Ultra users.\",\n    \"age\": \"4h\",\n    \"likes\": 1700\n  }\n]\n"
+    },
+    {
+      "command": "brief",
+      "kind": "json_fidelity",
+      "args": [
+        "brief",
+        "--json"
+      ],
+      "status": "pass",
+      "output_sample": "[\n  {\n    \"rank\": 1,\n    \"headline\": \"Cursor AI releases Composer 2.5, its most powerful model to date, with gains in intelligence, long-task performance, and complex instruction adherence while doubling usage for all users\",\n    \"endorsers\": [\n      \"Omar Khattab (@lateinteraction)\",\n      \"rohan anil (@_arohan_)\",\n      \"Elon Musk (@elonmusk)\",\n      \"clem 🤗 (@clementdelangue)\",\n      \"Sasha Rush (@srush_nlp)\",\n      \"Kyunghyun Cho (@kchonyc)\"\n    ]\n  },\n  {\n    \"rank\": 2,\n    \"headline\": \"Andrej Karpathy joins Anthropic to conduct research and development on frontier large language models after prior roles at OpenAI and Tesla\",\n    \"endorsers\": [\n      \"Shane Gu (@shaneguml)\",\n      \"Jack Clark (@jackclarksf)\",\n      \"Noam Brown (@polynoamial)\",\n      \"Jim Fan (@drjimfan)\",\n      \"Sam Bowman (@sleepinyourhat)\",\n      \"Andrej Karpathy (@karpathy)\"\n    ]\n  },\n  {\n    \"rank\": 3,\n    \"headline\": \"Sam Altman, OpenAI co-founder and CEO, says Tibo will reset Codex rate limits if his tweet receives one like\",\n    \"endorsers\": [\n      \"Nick Dobos (@nickadobos)\",\n      \"🍓🍓🍓 (@iruletheworldmo)\",\n      \"Tibo (@thsottiaux)\",\n      \"Sam Altman (@sama)\"\n    ]\n  },\n  {\n    \"rank\": 4,\n    \"headline\": \"Google DeepMind releases Omni, a video generation model that maintains consistent characters across scenes and supports iterative edits with physics simulation and Gemini knowledge\",\n    \"endorsers\": [\n      \"Justine Moore (@venturetwins)\",\n      \"@levelsio (@levelsio)\",\n      \"Lisha (@lishali88)\",\n      \"Kory Mathewson (@korymath)\",\n      \"Jason Baldridge (@jasonbaldridge)\",\n      \"Dumitru Erhan (@doomie)\"\n    ]\n  },\n  {\n    \"rank\": 5,\n    \"headline\": \"Antigravity unifies its agentic surfaces under a single platform incorporating Antigravity 2.0 desktop app, CLI, SDK, and IDE for consistent access across environments\",\n    \"age\": \"2h\",\n    \"endorsers\": [\n      \"Alex Volkov (@altryne)\",\n      \"Vitaliy Chiley (@vitaliychiley)\",\n      \"Tibo (@thsottiaux)\",\n      \"Clément Farabet (@clmt)\"\n    ]\n  },\n  {\n    \"rank\": 6,\n    \"headline\": \"Google releases Gemini 3.5 Flash for complex agentic workflows, coding, and reasoning at 289 tokens per second and higher scores than Gemini 3.1 Pro on Terminal-Bench 2.1, GDPval-AA, and MCP Atlas\",\n    \"summary\": \"Large token quotas appeared in Google Cloud Console before wider rollout.\",\n    \"age\": \"9h\",\n    \"likes\": 37400\n  },\n  {\n    \"rank\": 7,\n    \"headline\": \"METR publishes its first Frontier Risk Report assessing whether AI labs could lose control of advanced autonomous agents after testing internal models from Anthropic, Google, Meta, and OpenAI\",\n    \"summary\": \"Ajeya Cotra led the project after joining METR on January 12.\",\n    \"age\": \"3h\",\n    \"likes\": 1100\n  },\n  {\n    \"rank\": 8,\n    \"headline\": \"Andrej Karpathy joins Anthropic pretraining team and will lead a new group that uses Claude to conduct research, according to journalist Alex Heath\",\n    \"summary\": \"One post featured a satirical portrait of him as Pope Dario I.\",\n    \"age\": \"5h\",\n    \"likes\": 4800\n  },\n  {\n    \"rank\": 9,\n    \"headline\": \"Claude announces the public beta of self-hosted sandboxes and research preview of MCP tunnels within Claude Managed Agents, enabling runs inside user infrastructure under existing security controls\",\n    \"summary\": \"Features were presented at Code with Claude London with Cloudflare and Modal support.\",\n    \"age\": \"12h\",\n    \"likes\": 8300\n  },\n  {\n    \"rank\": 10,\n    \"headline\": \"Google DeepMind expands Project Genie with Street View integration to generate interactive 3D environments anchored to real-world Google Maps locations\",\n    \"summary\": \"Tool is available for testing by Gemini Ultra users.\",\n    \"age\": \"4h\",\n    \"likes\": 1700\n  }\n]\n"
+    },
+    {
+      "command": "brief",
+      "kind": "error_path",
+      "args": null,
+      "status": "skip",
+      "reason": "no positional argument"
+    },
+    {
+      "command": "cooccur",
+      "kind": "help",
+      "args": [
+        "cooccur",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Stories where both terms appear (FTS5 AND query)\n\nUsage:\n  digg-ai-pp-cli cooccur \u003cterm1\u003e \u003cterm2\u003e [flags]\n\nExamples:\n  digg-ai-pp-cli cooccur \"language model\" \"safety\"\n  digg-ai-pp-cli cooccur \"OpenAI\" \"GPT\"\n\nFlags:\n      --db string   Database path\n  -h, --help        help for cooccur\n      --limit int   Maximum results (default 20)\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "cooccur",
+      "kind": "happy_path",
+      "args": null,
+      "status": "skip",
+      "reason": "command path [cooccur] has fewer segments than placeholders (2)"
+    },
+    {
+      "command": "cooccur",
+      "kind": "json_fidelity",
+      "args": null,
+      "status": "skip",
+      "reason": "command path [cooccur] has fewer segments than placeholders (2)"
+    },
+    {
+      "command": "cooccur",
+      "kind": "error_path",
+      "args": [
+        "cooccur",
+        "__printing_press_invalid__"
+      ],
+      "status": "pass",
+      "exit_code": 1,
+      "output_sample": "Error: cooccur requires two terms (got 1); see --help\ncooccur requires two terms (got 1); see --help\n"
+    },
+    {
+      "command": "diff",
+      "kind": "help",
+      "args": [
+        "diff",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Stories added since the previous sync (new since last run)\n\nUsage:\n  digg-ai-pp-cli diff [flags]\n\nExamples:\n  digg-ai-pp-cli diff\n  digg-ai-pp-cli diff --json\n\nFlags:\n      --db string   Database path\n  -h, --help        help for diff\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "diff",
+      "kind": "happy_path",
+      "args": [
+        "diff"
+      ],
+      "status": "pass",
+      "output_sample": "[\n  {\n    \"cluster_id\": \"94da3f68-a07d-49c7-91f6-05a2ec07dff6\",\n    \"slug\": \"94da3f68-a07d-49c7-91f6-05a2ec07dff6\",\n    \"topic\": \"ai\",\n    \"surface\": \"highlight\",\n    \"headline\": \"Google DeepMind releases Omni, a video generation model that maintains consistent characters across scenes and supports iterative edits with physics simulation and Gemini knowledge\",\n    \"headline_short\": \"Google DeepMind releases Omni, a video generation model…\",\n    \"digg_url\": \"https://digg.com/ai/g9y4hly8\",\n    \"likes\": 0,\n    \"bookmarks\": 0,\n    \"endorser_count\": 8,\n    \"first_seen_at\": \"2026-05-19T22:10:13.59592Z\",\n    \"last_seen_at\": \"2026-05-19T22:10:13.59592Z\"\n  }\n]\n"
+    },
+    {
+      "command": "diff",
+      "kind": "json_fidelity",
+      "args": [
+        "diff",
+        "--json"
+      ],
+      "status": "pass",
+      "output_sample": "[\n  {\n    \"cluster_id\": \"94da3f68-a07d-49c7-91f6-05a2ec07dff6\",\n    \"slug\": \"94da3f68-a07d-49c7-91f6-05a2ec07dff6\",\n    \"topic\": \"ai\",\n    \"surface\": \"highlight\",\n    \"headline\": \"Google DeepMind releases Omni, a video generation model that maintains consistent characters across scenes and supports iterative edits with physics simulation and Gemini knowledge\",\n    \"headline_short\": \"Google DeepMind releases Omni, a video generation model…\",\n    \"digg_url\": \"https://digg.com/ai/g9y4hly8\",\n    \"likes\": 0,\n    \"bookmarks\": 0,\n    \"endorser_count\": 8,\n    \"first_seen_at\": \"2026-05-19T22:10:13.59592Z\",\n    \"last_seen_at\": \"2026-05-19T22:10:13.59592Z\"\n  }\n]\n"
+    },
+    {
+      "command": "diff",
+      "kind": "error_path",
+      "args": null,
+      "status": "skip",
+      "reason": "no positional argument"
+    },
+    {
+      "command": "doctor",
+      "kind": "help",
+      "args": [
+        "doctor",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Check CLI health\n\nUsage:\n  digg-ai-pp-cli doctor [flags]\n\nExamples:\n  digg-ai-pp-cli doctor\n  digg-ai-pp-cli doctor --json\n  digg-ai-pp-cli doctor --fail-on warn\n\nFlags:\n      --fail-on string   Exit non-zero when a health level is reached: stale, error. Default is never.\n  -h, --help             help for doctor\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "doctor",
+      "kind": "happy_path",
+      "args": [
+        "doctor"
+      ],
+      "status": "pass",
+      "output_sample": "  OK Config: ok\n  OK Auth: not required\n  OK API: reachable\n  config_path: /Users/dave/.config/digg-ai-pp-cli/config.toml\n  base_url: https://digg.com\n  version: 1.0.0\n  INFO Cache: unknown\n    db_path: /Users/dave/.local/share/digg-ai-pp-cli/data.db\n    schema_version: 2\n    db_bytes: 258048\n    stale_after: 6h0m0s\n    hint: sync_state is empty; run 'digg-ai-pp-cli sync' to hydrate.\n"
+    },
+    {
+      "command": "doctor",
+      "kind": "json_fidelity",
+      "args": [
+        "doctor",
+        "--json"
+      ],
+      "status": "pass",
+      "output_sample": "{\n  \"api\": \"reachable\",\n  \"auth\": \"not required\",\n  \"base_url\": \"https://digg.com\",\n  \"cache\": {\n    \"db_bytes\": 258048,\n    \"db_path\": \"/Users/dave/.local/share/digg-ai-pp-cli/data.db\",\n    \"hint\": \"sync_state is empty; run 'digg-ai-pp-cli sync' to hydrate.\",\n    \"resources\": null,\n    \"schema_version\": 2,\n    \"stale_after\": \"6h0m0s\",\n    \"status\": \"unknown\"\n  },\n  \"config\": \"ok\",\n  \"config_path\": \"/Users/dave/.config/digg-ai-pp-cli/config.toml\",\n  \"version\": \"1.0.0\"\n}\n"
+    },
+    {
+      "command": "doctor",
+      "kind": "error_path",
+      "args": null,
+      "status": "skip",
+      "reason": "no positional argument"
+    },
+    {
+      "command": "endorsers feed",
+      "kind": "help",
+      "args": [
+        "endorsers",
+        "feed",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Stories endorsed by a given X handle\n\nUsage:\n  digg-ai-pp-cli endorsers feed \u003chandle\u003e [flags]\n\nExamples:\n  digg-ai-pp-cli endorsers feed researcher1\n  digg-ai-pp-cli endorsers feed lateinteraction --limit 20\n\nFlags:\n      --db string   Database path\n  -h, --help        help for feed\n      --limit int   Maximum results (default 50)\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "endorsers feed",
+      "kind": "happy_path",
+      "args": null,
+      "status": "skip",
+      "reason": "non-id positional \"handle\" at depth 0"
+    },
+    {
+      "command": "endorsers feed",
+      "kind": "json_fidelity",
+      "args": null,
+      "status": "skip",
+      "reason": "non-id positional \"handle\" at depth 0"
+    },
+    {
+      "command": "endorsers feed",
+      "kind": "error_path",
+      "args": [
+        "endorsers",
+        "feed",
+        "__printing_press_invalid__"
+      ],
+      "status": "pass",
+      "exit_code": 1,
+      "output_sample": "Error: no endorser known with handle \"__printing_press_invalid__\" in local corpus; try `digg-ai-pp-cli endorsers top` to see who is indexed, or `digg-ai-pp-cli sync` to widen coverage\nno endorser known with handle \"__printing_press_invalid__\" in local corpus; try `digg-ai-pp-cli endorsers top` to see who is indexed, or `digg-ai-pp-cli sync` to widen coverage\n"
+    },
+    {
+      "command": "endorsers overlap",
+      "kind": "help",
+      "args": [
+        "endorsers",
+        "overlap",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Stories endorsed by both handles\n\nUsage:\n  digg-ai-pp-cli endorsers overlap \u003chandle1\u003e \u003chandle2\u003e [flags]\n\nExamples:\n  digg-ai-pp-cli endorsers overlap researcher1 researcher2\n  digg-ai-pp-cli endorsers overlap karpathy lateinteraction --limit 10\n\nFlags:\n      --db string   Database path\n  -h, --help        help for overlap\n      --limit int   Maximum results (default 50)\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "endorsers overlap",
+      "kind": "happy_path",
+      "args": null,
+      "status": "skip",
+      "reason": "command path [endorsers overlap] has fewer segments than placeholders (2)"
+    },
+    {
+      "command": "endorsers overlap",
+      "kind": "json_fidelity",
+      "args": null,
+      "status": "skip",
+      "reason": "command path [endorsers overlap] has fewer segments than placeholders (2)"
+    },
+    {
+      "command": "endorsers overlap",
+      "kind": "error_path",
+      "args": [
+        "endorsers",
+        "overlap",
+        "__printing_press_invalid__"
+      ],
+      "status": "pass",
+      "exit_code": 1,
+      "output_sample": "Error: overlap requires two handles (got 1); see --help\noverlap requires two handles (got 1); see --help\n"
+    },
+    {
+      "command": "endorsers top",
+      "kind": "help",
+      "args": [
+        "endorsers",
+        "top",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Rank endorsers by how often they appear in the synced corpus\n\nUsage:\n  digg-ai-pp-cli endorsers top [flags]\n\nExamples:\n  digg-ai-pp-cli endorsers top\n  digg-ai-pp-cli endorsers top --days 7 --limit 20\n\nFlags:\n      --days int    Window in days (default 30)\n      --db string   Database path\n  -h, --help        help for top\n      --limit int   Maximum results (default 20)\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "endorsers top",
+      "kind": "happy_path",
+      "args": [
+        "endorsers",
+        "top"
+      ],
+      "status": "pass",
+      "output_sample": "[\n  {\n    \"handle\": \"thsottiaux\",\n    \"name\": \"Tibo\",\n    \"count\": 2\n  },\n  {\n    \"handle\": \"_arohan_\",\n    \"name\": \"rohan anil\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"altryne\",\n    \"name\": \"Alex Volkov\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"clementdelangue\",\n    \"name\": \"clem 🤗\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"clmt\",\n    \"name\": \"Clément Farabet\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"doomie\",\n    \"name\": \"Dumitru Erhan\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"drjimfan\",\n    \"name\": \"Jim Fan\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"elonmusk\",\n    \"name\": \"Elon Musk\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"iruletheworldmo\",\n    \"name\": \"🍓🍓🍓\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"jackclarksf\",\n    \"name\": \"Jack Clark\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"jasonbaldridge\",\n    \"name\": \"Jason Baldridge\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"karpathy\",\n    \"name\": \"Andrej Karpathy\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"kchonyc\",\n    \"name\": \"Kyunghyun Cho\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"korymath\",\n    \"name\": \"Kory Mathewson\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"lateinteraction\",\n    \"name\": \"Omar Khattab\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"levelsio\",\n    \"name\": \"@levelsio\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"lishali88\",\n    \"name\": \"Lisha\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"miles_brundage\",\n    \"name\": \"Miles Brundage\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"nickadobos\",\n    \"name\": \"Nick Dobos\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"polynoamial\",\n    \"name\": \"Noam Brown\",\n    \"count\": 1\n  }\n]\n"
+    },
+    {
+      "command": "endorsers top",
+      "kind": "json_fidelity",
+      "args": [
+        "endorsers",
+        "top",
+        "--json"
+      ],
+      "status": "pass",
+      "output_sample": "[\n  {\n    \"handle\": \"thsottiaux\",\n    \"name\": \"Tibo\",\n    \"count\": 2\n  },\n  {\n    \"handle\": \"_arohan_\",\n    \"name\": \"rohan anil\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"altryne\",\n    \"name\": \"Alex Volkov\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"clementdelangue\",\n    \"name\": \"clem 🤗\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"clmt\",\n    \"name\": \"Clément Farabet\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"doomie\",\n    \"name\": \"Dumitru Erhan\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"drjimfan\",\n    \"name\": \"Jim Fan\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"elonmusk\",\n    \"name\": \"Elon Musk\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"iruletheworldmo\",\n    \"name\": \"🍓🍓🍓\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"jackclarksf\",\n    \"name\": \"Jack Clark\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"jasonbaldridge\",\n    \"name\": \"Jason Baldridge\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"karpathy\",\n    \"name\": \"Andrej Karpathy\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"kchonyc\",\n    \"name\": \"Kyunghyun Cho\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"korymath\",\n    \"name\": \"Kory Mathewson\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"lateinteraction\",\n    \"name\": \"Omar Khattab\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"levelsio\",\n    \"name\": \"@levelsio\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"lishali88\",\n    \"name\": \"Lisha\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"miles_brundage\",\n    \"name\": \"Miles Brundage\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"nickadobos\",\n    \"name\": \"Nick Dobos\",\n    \"count\": 1\n  },\n  {\n    \"handle\": \"polynoamial\",\n    \"name\": \"Noam Brown\",\n    \"count\": 1\n  }\n]\n"
+    },
+    {
+      "command": "endorsers top",
+      "kind": "error_path",
+      "args": null,
+      "status": "skip",
+      "reason": "no positional argument"
+    },
+    {
+      "command": "feedback list",
+      "kind": "help",
+      "args": [
+        "feedback",
+        "list",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "List recent feedback entries\n\nUsage:\n  digg-ai-pp-cli feedback list [flags]\n\nExamples:\n  digg-ai-pp-cli feedback list\n  digg-ai-pp-cli feedback list --limit 5\n  digg-ai-pp-cli feedback list --json\n\nFlags:\n  -h, --help        help for list\n      --limit int   Maximum number of recent entries to return (default 20)\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "feedback list",
+      "kind": "happy_path",
+      "args": [
+        "feedback",
+        "list"
+      ],
+      "status": "pass",
+      "output_sample": "[\n  {\n    \"text\": \"mock-value\",\n    \"cli\": \"digg-ai-pp-cli\",\n    \"version\": \"1.0.0\",\n    \"timestamp\": \"2026-05-19T22:04:59.163133Z\"\n  },\n  {\n    \"text\": \"mock-value\",\n    \"cli\": \"digg-ai-pp-cli\",\n    \"version\": \"1.0.0\",\n    \"timestamp\": \"2026-05-19T22:04:59.173727Z\"\n  },\n  {\n    \"text\": \"mock-value\",\n    \"cli\": \"digg-ai-pp-cli\",\n    \"version\": \"1.0.0\",\n    \"timestamp\": \"2026-05-19T22:07:12.688168Z\"\n  },\n  {\n    \"text\": \"mock-value\",\n    \"cli\": \"digg-ai-pp-cli\",\n    \"version\": \"1.0.0\",\n    \"timestamp\": \"2026-05-19T22:07:12.696624Z\"\n  }\n]\n"
+    },
+    {
+      "command": "feedback list",
+      "kind": "json_fidelity",
+      "args": [
+        "feedback",
+        "list",
+        "--json"
+      ],
+      "status": "pass",
+      "output_sample": "[\n  {\n    \"text\": \"mock-value\",\n    \"cli\": \"digg-ai-pp-cli\",\n    \"version\": \"1.0.0\",\n    \"timestamp\": \"2026-05-19T22:04:59.163133Z\"\n  },\n  {\n    \"text\": \"mock-value\",\n    \"cli\": \"digg-ai-pp-cli\",\n    \"version\": \"1.0.0\",\n    \"timestamp\": \"2026-05-19T22:04:59.173727Z\"\n  },\n  {\n    \"text\": \"mock-value\",\n    \"cli\": \"digg-ai-pp-cli\",\n    \"version\": \"1.0.0\",\n    \"timestamp\": \"2026-05-19T22:07:12.688168Z\"\n  },\n  {\n    \"text\": \"mock-value\",\n    \"cli\": \"digg-ai-pp-cli\",\n    \"version\": \"1.0.0\",\n    \"timestamp\": \"2026-05-19T22:07:12.696624Z\"\n  }\n]\n"
+    },
+    {
+      "command": "feedback list",
+      "kind": "error_path",
+      "args": null,
+      "status": "skip",
+      "reason": "no positional argument"
+    },
+    {
+      "command": "import",
+      "kind": "help",
+      "args": [
+        "import",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Import data from a JSONL file by issuing POST requests for each record.\nEach line must be a valid JSON object. Failed records are logged to stderr\nbut do not stop the import.\n\nUsage:\n  digg-ai-pp-cli import \u003cresource\u003e [flags]\n\nExamples:\n  # Import from a JSONL file\n  digg-ai-pp-cli import \u003cresource\u003e --input data.jsonl\n\n  # Dry-run to preview without sending\n  digg-ai-pp-cli import \u003cresource\u003e --input data.jsonl --dry-run\n\n  # Import from stdin\n  cat data.jsonl | digg-ai-pp-cli import \u003cresource\u003e --input -\n\nFlags:\n      --batch-size int   Records per batch (future: batch API support) (default 1)\n      --dry-run          Preview import without sending requests\n  -h, --help             help for import\n  -i, --input string     Input JSONL file path (use - for stdin)\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "import",
+      "kind": "happy_path",
+      "args": null,
+      "status": "skip",
+      "reason": "command path [import] has fewer segments than placeholders (1)"
+    },
+    {
+      "command": "import",
+      "kind": "json_fidelity",
+      "args": null,
+      "status": "skip",
+      "reason": "command path [import] has fewer segments than placeholders (1)"
+    },
+    {
+      "command": "import",
+      "kind": "error_path",
+      "args": [
+        "import",
+        "__printing_press_invalid__"
+      ],
+      "status": "pass",
+      "exit_code": 1,
+      "output_sample": "Error: required flag(s) \"input\" not set\nrequired flag(s) \"input\" not set\n"
+    },
+    {
+      "command": "latest",
+      "kind": "help",
+      "args": [
+        "latest",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Fetch the latest AI stories from digg.com\n\nUsage:\n  digg-ai-pp-cli latest [flags]\n\nExamples:\n  digg-ai-pp-cli latest\n  digg-ai-pp-cli latest --limit 10 --topics ai,technology\n\nFlags:\n  -h, --help             help for latest\n      --limit int        Maximum number of stories to return (default 20)\n      --topics strings   Comma-separated topic slugs to fetch (default [ai])\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "latest",
+      "kind": "happy_path",
+      "args": [
+        "latest"
+      ],
+      "status": "pass",
+      "output_sample": "[\n  {\n    \"cluster_id\": \"8eee35ea-eb73-4291-b803-e7ed89df3fba\",\n    \"slug\": \"8eee35ea-eb73-4291-b803-e7ed89df3fba\",\n    \"topic\": \"ai\",\n    \"surface\": \"highlight\",\n    \"headline\": \"Cursor AI releases Composer 2.5, its most powerful model to date, with gains in intelligence, long-task performance, and complex instruction adherence while doubling usage for all users\",\n    \"headline_short\": \"Cursor AI releases Composer 2.5, its most powerful model…\",\n    \"digg_url\": \"https://digg.com/ai/8eee35ea-eb73-4291-b803-e7ed89df3fba\",\n    \"endorser_count\": 33,\n    \"endorsers\": [\n      {\n        \"handle\": \"lateinteraction\",\n        \"name\": \"Omar Khattab\",\n        \"digg_url\": \"https://digg.com/u/x/lateinteraction\",\n        \"x_url\": \"https://x.com/lateinteraction\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/1605274291569799168/avatar-658896b176119b4a.jpg\"\n      },\n      {\n        \"handle\": \"_arohan_\",\n        \"name\": \"rohan anil\",\n        \"digg_url\": \"https://digg.com/u/x/_arohan_\",\n        \"x_url\": \"https://x.com/_arohan_\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/938616384572948480/avatar-719f307cdee7ed48.jpg\"\n      },\n      {\n        \"handle\": \"elonmusk\",\n        \"name\": \"Elon Musk\",\n        \"digg_url\": \"https://digg.com/u/x/elonmusk\",\n        \"x_url\": \"https://x.com/elonmusk\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/44196397/avatar-4e233c707e4bb8f1.jpg\"\n      },\n      {\n        \"handle\": \"clementdelangue\",\n        \"name\": \"clem 🤗\",\n        \"digg_url\": \"https://digg.com/u/x/clementdelangue\",\n        \"x_url\": \"https://x.com/clementdelangue\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/186420551/avatar-23083ae97a821fa6.png\"\n      },\n      {\n        \"handle\": \"srush_nlp\",\n        \"name\": \"Sasha Rush\",\n        \"digg_url\": \"https://digg.com/u/x/srush_nlp\",\n        \"x_url\": \"https://x.com/srush_nlp\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/4558314927/avatar-c341d27e974f0f27.jpg\"\n      },\n      {\n        \"handle\": \"kchonyc\",\n        \"name\": \"Kyunghyun Cho\",\n        \"digg_url\": \"https://digg.com/u/x/kchonyc\",\n        \"x_url\": \"https://x.com/kchonyc\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/48642190/avatar-23bf4c1b09183a5e.jpg\"\n      }\n    ]\n  },\n  {\n    \"cluster_id\": \"dd8a1fb2-1470-4167-ac67-1f165f9a0ff2\",\n    \"slug\": \"dd8a1fb2-1470-4167-ac67-1f165f9a0ff2\",\n    \"topic\": \"ai\",\n    \"surface\": \"highlight\",\n    \"headline\": \"Andrej Karpathy joins Anthropic to conduct research and development on frontier large language models after prior roles at OpenAI and Tesla\",\n    \"headline_short\": \"Andrej Karpathy joins Anthropic to conduct research and…\",\n    \"digg_url\": \"https://digg.com/ai/axyiki3j\",\n    \"endorser_count\": 50,\n    \"endorsers\": [\n      {\n        \"handle\": \"shaneguml\",\n        \"name\": \"Shane Gu\",\n        \"digg_url\": \"https://digg.com/u/x/shaneguml\",\n        \"x_url\": \"https://x.com/shaneguml\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/747212842470891520/avatar-3988482ad7d1d0be.jpg\"\n      },\n      {\n        \"handle\": \"jackclarksf\",\n        \"name\": \"Jack Clark\",\n        \"digg_url\": \"https://digg.com/u/x/jackclarksf\",\n        \"x_url\": \"https://x.com/jackclarksf\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/86351835/avatar-33350d4e052ccbcc.jpg\"\n      },\n      {\n        \"handle\": \"polynoamial\",\n        \"name\": \"Noam Brown\",\n        \"digg_url\": \"https://digg.com/u/x/polynoamial\",\n        \"x_url\": \"https://x.com/polynoamial\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/825088493764407298/avatar-c9f88111d09f5467.jpg\"\n      },\n      {\n        \"handle\": \"drjimfan\",\n        \"name\": \"Jim Fan\",\n        \"digg_url\": \"https://digg.com/u/x/drjimfan\",\n        \"x_url\": \"https://x.com/drjimfan\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.verc…[truncated]"
+    },
+    {
+      "command": "latest",
+      "kind": "json_fidelity",
+      "args": [
+        "latest",
+        "--json"
+      ],
+      "status": "pass",
+      "output_sample": "[\n  {\n    \"cluster_id\": \"8eee35ea-eb73-4291-b803-e7ed89df3fba\",\n    \"slug\": \"8eee35ea-eb73-4291-b803-e7ed89df3fba\",\n    \"topic\": \"ai\",\n    \"surface\": \"highlight\",\n    \"headline\": \"Cursor AI releases Composer 2.5, its most powerful model to date, with gains in intelligence, long-task performance, and complex instruction adherence while doubling usage for all users\",\n    \"headline_short\": \"Cursor AI releases Composer 2.5, its most powerful model…\",\n    \"digg_url\": \"https://digg.com/ai/8eee35ea-eb73-4291-b803-e7ed89df3fba\",\n    \"endorser_count\": 33,\n    \"endorsers\": [\n      {\n        \"handle\": \"lateinteraction\",\n        \"name\": \"Omar Khattab\",\n        \"digg_url\": \"https://digg.com/u/x/lateinteraction\",\n        \"x_url\": \"https://x.com/lateinteraction\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/1605274291569799168/avatar-658896b176119b4a.jpg\"\n      },\n      {\n        \"handle\": \"_arohan_\",\n        \"name\": \"rohan anil\",\n        \"digg_url\": \"https://digg.com/u/x/_arohan_\",\n        \"x_url\": \"https://x.com/_arohan_\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/938616384572948480/avatar-719f307cdee7ed48.jpg\"\n      },\n      {\n        \"handle\": \"elonmusk\",\n        \"name\": \"Elon Musk\",\n        \"digg_url\": \"https://digg.com/u/x/elonmusk\",\n        \"x_url\": \"https://x.com/elonmusk\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/44196397/avatar-4e233c707e4bb8f1.jpg\"\n      },\n      {\n        \"handle\": \"clementdelangue\",\n        \"name\": \"clem 🤗\",\n        \"digg_url\": \"https://digg.com/u/x/clementdelangue\",\n        \"x_url\": \"https://x.com/clementdelangue\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/186420551/avatar-23083ae97a821fa6.png\"\n      },\n      {\n        \"handle\": \"srush_nlp\",\n        \"name\": \"Sasha Rush\",\n        \"digg_url\": \"https://digg.com/u/x/srush_nlp\",\n        \"x_url\": \"https://x.com/srush_nlp\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/4558314927/avatar-c341d27e974f0f27.jpg\"\n      },\n      {\n        \"handle\": \"kchonyc\",\n        \"name\": \"Kyunghyun Cho\",\n        \"digg_url\": \"https://digg.com/u/x/kchonyc\",\n        \"x_url\": \"https://x.com/kchonyc\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/48642190/avatar-23bf4c1b09183a5e.jpg\"\n      }\n    ]\n  },\n  {\n    \"cluster_id\": \"dd8a1fb2-1470-4167-ac67-1f165f9a0ff2\",\n    \"slug\": \"dd8a1fb2-1470-4167-ac67-1f165f9a0ff2\",\n    \"topic\": \"ai\",\n    \"surface\": \"highlight\",\n    \"headline\": \"Andrej Karpathy joins Anthropic to conduct research and development on frontier large language models after prior roles at OpenAI and Tesla\",\n    \"headline_short\": \"Andrej Karpathy joins Anthropic to conduct research and…\",\n    \"digg_url\": \"https://digg.com/ai/axyiki3j\",\n    \"endorser_count\": 50,\n    \"endorsers\": [\n      {\n        \"handle\": \"shaneguml\",\n        \"name\": \"Shane Gu\",\n        \"digg_url\": \"https://digg.com/u/x/shaneguml\",\n        \"x_url\": \"https://x.com/shaneguml\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/747212842470891520/avatar-3988482ad7d1d0be.jpg\"\n      },\n      {\n        \"handle\": \"jackclarksf\",\n        \"name\": \"Jack Clark\",\n        \"digg_url\": \"https://digg.com/u/x/jackclarksf\",\n        \"x_url\": \"https://x.com/jackclarksf\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/86351835/avatar-33350d4e052ccbcc.jpg\"\n      },\n      {\n        \"handle\": \"polynoamial\",\n        \"name\": \"Noam Brown\",\n        \"digg_url\": \"https://digg.com/u/x/polynoamial\",\n        \"x_url\": \"https://x.com/polynoamial\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/825088493764407298/avatar-c9f88111d09f5467.jpg\"\n      },\n      {\n        \"handle\": \"drjimfan\",\n        \"name\": \"Jim Fan\",\n        \"digg_url\": \"https://digg.com/u/x/drjimfan\",\n        \"x_url\": \"https://x.com/drjimfan\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.verc…[truncated]"
+    },
+    {
+      "command": "latest",
+      "kind": "error_path",
+      "args": null,
+      "status": "skip",
+      "reason": "no positional argument"
+    },
+    {
+      "command": "open",
+      "kind": "help",
+      "args": [
+        "open",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Open a Digg story in the browser (prints URL by default; use --launch to open)\n\nUsage:\n  digg-ai-pp-cli open \u003ccluster-id\u003e [flags]\n\nExamples:\n  digg-ai-pp-cli open 3vb8kiry\n  digg-ai-pp-cli open 3vb8kiry --launch\n\nFlags:\n  -h, --help     help for open\n      --launch   Actually open the URL in the default browser\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "open",
+      "kind": "happy_path",
+      "args": null,
+      "status": "skip",
+      "reason": "command path [open] has fewer segments than placeholders (1)"
+    },
+    {
+      "command": "open",
+      "kind": "json_fidelity",
+      "args": null,
+      "status": "skip",
+      "reason": "command path [open] has fewer segments than placeholders (1)"
+    },
+    {
+      "command": "open",
+      "kind": "error_path",
+      "args": [
+        "open",
+        "__printing_press_invalid__"
+      ],
+      "status": "pass",
+      "exit_code": 1,
+      "output_sample": "Error: invalid cluster ID \"__printing_press_invalid__\": expected an 8-character slug or UUID (lowercase alphanumeric with optional hyphens)\ninvalid cluster ID \"__printing_press_invalid__\": expected an 8-character slug or UUID (lowercase alphanumeric with optional hyphens)\n"
+    },
+    {
+      "command": "profile delete",
+      "kind": "help",
+      "args": [
+        "profile",
+        "delete",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Remove a profile\n\nUsage:\n  digg-ai-pp-cli profile delete \u003cname\u003e [flags]\n\nExamples:\n  digg-ai-pp-cli profile delete my-defaults --yes\n  digg-ai-pp-cli profile delete old-profile --yes --json\n\nFlags:\n  -h, --help   help for delete\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "profile delete",
+      "kind": "happy_path",
+      "args": null,
+      "status": "skip",
+      "reason": "non-id positional \"name\" at depth 0"
+    },
+    {
+      "command": "profile delete",
+      "kind": "json_fidelity",
+      "args": null,
+      "status": "skip",
+      "reason": "non-id positional \"name\" at depth 0"
+    },
+    {
+      "command": "profile delete",
+      "kind": "error_path",
+      "args": [
+        "profile",
+        "delete",
+        "__printing_press_invalid__"
+      ],
+      "status": "pass",
+      "exit_code": 1,
+      "output_sample": "Error: profile \"__printing_press_invalid__\" not found\nprofile \"__printing_press_invalid__\" not found\n"
+    },
+    {
+      "command": "profile delete",
+      "kind": "error_path_real",
+      "args": null,
+      "status": "skip",
+      "reason": "non-id positional \"name\" at depth 0"
+    },
+    {
+      "command": "profile list",
+      "kind": "help",
+      "args": [
+        "profile",
+        "list",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "List saved profiles\n\nUsage:\n  digg-ai-pp-cli profile list [flags]\n\nExamples:\n  digg-ai-pp-cli profile list\n  digg-ai-pp-cli profile list --json\n\nFlags:\n  -h, --help   help for list\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "profile list",
+      "kind": "happy_path",
+      "args": [
+        "profile",
+        "list"
+      ],
+      "status": "pass",
+      "output_sample": "NAME  FIELDS  DESCRIPTION\n"
+    },
+    {
+      "command": "profile list",
+      "kind": "json_fidelity",
+      "args": [
+        "profile",
+        "list",
+        "--json"
+      ],
+      "status": "pass",
+      "output_sample": "[]\n"
+    },
+    {
+      "command": "profile list",
+      "kind": "error_path",
+      "args": null,
+      "status": "skip",
+      "reason": "no positional argument"
+    },
+    {
+      "command": "profile save",
+      "kind": "help",
+      "args": [
+        "profile",
+        "save",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Captures every flag explicitly set on the invocation and stores\nthem under \u003cname\u003e. To update an existing profile, run save again; the\nentry is replaced.\n\nTo avoid creating empty profiles, at least one non-default flag must be\npresent (other than --profile and --config).\n\nUsage:\n  digg-ai-pp-cli profile save \u003cname\u003e [--\u003cflag\u003e \u003cvalue\u003e ...] [flags]\n\nExamples:\n  digg-ai-pp-cli profile save my-defaults --json --compact\n  digg-ai-pp-cli profile save tonight-defaults --region US\n\nFlags:\n      --description string   Short description shown in 'profile list'\n  -h, --help                 help for save\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "profile save",
+      "kind": "happy_path",
+      "args": null,
+      "status": "skip",
+      "reason": "non-id positional \"name\" at depth 0"
+    },
+    {
+      "command": "profile save",
+      "kind": "json_fidelity",
+      "args": null,
+      "status": "skip",
+      "reason": "non-id positional \"name\" at depth 0"
+    },
+    {
+      "command": "profile save",
+      "kind": "error_path",
+      "args": [
+        "profile",
+        "save",
+        "__printing_press_invalid__"
+      ],
+      "status": "pass",
+      "exit_code": 1,
+      "output_sample": "Error: no non-default flags set - pass at least one flag to save into \"__printing_press_invalid__\"\nno non-default flags set - pass at least one flag to save into \"__printing_press_invalid__\"\n"
+    },
+    {
+      "command": "profile show",
+      "kind": "help",
+      "args": [
+        "profile",
+        "show",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Show a profile's values as JSON\n\nUsage:\n  digg-ai-pp-cli profile show \u003cname\u003e [flags]\n\nExamples:\n  digg-ai-pp-cli profile show my-defaults\n  digg-ai-pp-cli profile show tonight-defaults --json\n\nFlags:\n  -h, --help   help for show\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "profile show",
+      "kind": "happy_path",
+      "args": null,
+      "status": "skip",
+      "reason": "non-id positional \"name\" at depth 0"
+    },
+    {
+      "command": "profile show",
+      "kind": "json_fidelity",
+      "args": null,
+      "status": "skip",
+      "reason": "non-id positional \"name\" at depth 0"
+    },
+    {
+      "command": "profile show",
+      "kind": "error_path",
+      "args": [
+        "profile",
+        "show",
+        "__printing_press_invalid__"
+      ],
+      "status": "pass",
+      "exit_code": 1,
+      "output_sample": "Error: profile \"__printing_press_invalid__\" not found\nprofile \"__printing_press_invalid__\" not found\n"
+    },
+    {
+      "command": "profile use",
+      "kind": "help",
+      "args": [
+        "profile",
+        "use",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Print the flag values a profile will apply (does not execute anything)\n\nUsage:\n  digg-ai-pp-cli profile use \u003cname\u003e [flags]\n\nExamples:\n  digg-ai-pp-cli profile use my-defaults\n  digg-ai-pp-cli profile use tonight-defaults --json\n\nFlags:\n  -h, --help   help for use\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "profile use",
+      "kind": "happy_path",
+      "args": null,
+      "status": "skip",
+      "reason": "non-id positional \"name\" at depth 0"
+    },
+    {
+      "command": "profile use",
+      "kind": "json_fidelity",
+      "args": null,
+      "status": "skip",
+      "reason": "non-id positional \"name\" at depth 0"
+    },
+    {
+      "command": "profile use",
+      "kind": "error_path",
+      "args": [
+        "profile",
+        "use",
+        "__printing_press_invalid__"
+      ],
+      "status": "pass",
+      "exit_code": 1,
+      "output_sample": "Error: profile \"__printing_press_invalid__\" not found\nprofile \"__printing_press_invalid__\" not found\n"
+    },
+    {
+      "command": "search",
+      "kind": "help",
+      "args": [
+        "search",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Full-text search across synced stories (FTS5)\n\nUsage:\n  digg-ai-pp-cli search \u003cquery\u003e [flags]\n\nExamples:\n  digg-ai-pp-cli search \"language model\"\n  digg-ai-pp-cli search \"GPT\" --limit 5 --json\n\nFlags:\n      --db string   Database path\n  -h, --help        help for search\n      --limit int   Maximum number of results (default 20)\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "search",
+      "kind": "happy_path",
+      "args": null,
+      "status": "skip",
+      "reason": "command path [search] has fewer segments than placeholders (1)"
+    },
+    {
+      "command": "search",
+      "kind": "json_fidelity",
+      "args": null,
+      "status": "skip",
+      "reason": "command path [search] has fewer segments than placeholders (1)"
+    },
+    {
+      "command": "search",
+      "kind": "error_path",
+      "args": [
+        "search",
+        "__printing_press_invalid__",
+        "--json"
+      ],
+      "status": "pass",
+      "output_sample": "null\n"
+    },
+    {
+      "command": "sql",
+      "kind": "help",
+      "args": [
+        "sql",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Run a read-only SELECT query against the local store\n\nUsage:\n  digg-ai-pp-cli sql \u003cquery\u003e [flags]\n\nExamples:\n  digg-ai-pp-cli sql \"SELECT cluster_id, headline, likes FROM digg_stories ORDER BY likes DESC LIMIT 5\"\n\nFlags:\n      --db string   Database path\n  -h, --help        help for sql\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "sql",
+      "kind": "happy_path",
+      "args": null,
+      "status": "skip",
+      "reason": "command path [sql] has fewer segments than placeholders (1)"
+    },
+    {
+      "command": "sql",
+      "kind": "json_fidelity",
+      "args": null,
+      "status": "skip",
+      "reason": "command path [sql] has fewer segments than placeholders (1)"
+    },
+    {
+      "command": "sql",
+      "kind": "error_path",
+      "args": [
+        "sql",
+        "__printing_press_invalid__",
+        "--json"
+      ],
+      "status": "pass",
+      "exit_code": 1,
+      "output_sample": "Error: only SELECT queries are allowed\nonly SELECT queries are allowed\n"
+    },
+    {
+      "command": "stories get",
+      "kind": "help",
+      "args": [
+        "stories",
+        "get",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Fetch full detail for a single AI story by its cluster ID.\n\nUsage:\n  digg-ai-pp-cli stories get \u003ccluster_id\u003e [flags]\n\nExamples:\n  digg-ai-pp-cli stories get 550e8400-e29b-41d4-a716-446655440000\n  digg-ai-pp-cli stories get 3vb8kiry\n\nFlags:\n  -h, --help   help for get\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "stories get",
+      "kind": "happy_path",
+      "args": null,
+      "status": "skip",
+      "reason": "no id parseable from companion at depth 0"
+    },
+    {
+      "command": "stories get",
+      "kind": "json_fidelity",
+      "args": null,
+      "status": "skip",
+      "reason": "no id parseable from companion at depth 0"
+    },
+    {
+      "command": "stories get",
+      "kind": "error_path",
+      "args": [
+        "stories",
+        "get",
+        "__printing_press_invalid__"
+      ],
+      "status": "pass",
+      "exit_code": 3,
+      "output_sample": "Error: HTTP 404 fetching https://digg.com/ai/__printing_press_invalid__\nhint: resource not found. Run the 'list' command to see available items\nHTTP 404 fetching https://digg.com/ai/__printing_press_invalid__\nhint: resource not found. Run the 'list' command to see available items\n"
+    },
+    {
+      "command": "stories list",
+      "kind": "help",
+      "args": [
+        "stories",
+        "list",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "List the latest AI stories curated on digg.com/ai. Returns a ranked feed of stories with headline, summary, age, endorsers.\n\nUsage:\n  digg-ai-pp-cli stories list [flags]\n\nExamples:\n  digg-ai-pp-cli stories list\n  digg-ai-pp-cli stories list --limit 10 --topic technology\n\nFlags:\n  -h, --help           help for list\n      --limit int      Maximum number of stories to return (default 30)\n      --topic string   Topic slug (ai, technology, science, world, ...) (default \"ai\")\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "stories list",
+      "kind": "happy_path",
+      "args": [
+        "stories",
+        "list"
+      ],
+      "status": "pass",
+      "output_sample": "[\n  {\n    \"cluster_id\": \"8eee35ea-eb73-4291-b803-e7ed89df3fba\",\n    \"slug\": \"8eee35ea-eb73-4291-b803-e7ed89df3fba\",\n    \"topic\": \"ai\",\n    \"surface\": \"highlight\",\n    \"headline\": \"Cursor AI releases Composer 2.5, its most powerful model to date, with gains in intelligence, long-task performance, and complex instruction adherence while doubling usage for all users\",\n    \"headline_short\": \"Cursor AI releases Composer 2.5, its most powerful model…\",\n    \"digg_url\": \"https://digg.com/ai/8eee35ea-eb73-4291-b803-e7ed89df3fba\",\n    \"endorser_count\": 33,\n    \"endorsers\": [\n      {\n        \"handle\": \"lateinteraction\",\n        \"name\": \"Omar Khattab\",\n        \"digg_url\": \"https://digg.com/u/x/lateinteraction\",\n        \"x_url\": \"https://x.com/lateinteraction\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/1605274291569799168/avatar-658896b176119b4a.jpg\"\n      },\n      {\n        \"handle\": \"_arohan_\",\n        \"name\": \"rohan anil\",\n        \"digg_url\": \"https://digg.com/u/x/_arohan_\",\n        \"x_url\": \"https://x.com/_arohan_\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/938616384572948480/avatar-719f307cdee7ed48.jpg\"\n      },\n      {\n        \"handle\": \"elonmusk\",\n        \"name\": \"Elon Musk\",\n        \"digg_url\": \"https://digg.com/u/x/elonmusk\",\n        \"x_url\": \"https://x.com/elonmusk\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/44196397/avatar-4e233c707e4bb8f1.jpg\"\n      },\n      {\n        \"handle\": \"clementdelangue\",\n        \"name\": \"clem 🤗\",\n        \"digg_url\": \"https://digg.com/u/x/clementdelangue\",\n        \"x_url\": \"https://x.com/clementdelangue\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/186420551/avatar-23083ae97a821fa6.png\"\n      },\n      {\n        \"handle\": \"srush_nlp\",\n        \"name\": \"Sasha Rush\",\n        \"digg_url\": \"https://digg.com/u/x/srush_nlp\",\n        \"x_url\": \"https://x.com/srush_nlp\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/4558314927/avatar-c341d27e974f0f27.jpg\"\n      },\n      {\n        \"handle\": \"kchonyc\",\n        \"name\": \"Kyunghyun Cho\",\n        \"digg_url\": \"https://digg.com/u/x/kchonyc\",\n        \"x_url\": \"https://x.com/kchonyc\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/48642190/avatar-23bf4c1b09183a5e.jpg\"\n      }\n    ]\n  },\n  {\n    \"cluster_id\": \"dd8a1fb2-1470-4167-ac67-1f165f9a0ff2\",\n    \"slug\": \"dd8a1fb2-1470-4167-ac67-1f165f9a0ff2\",\n    \"topic\": \"ai\",\n    \"surface\": \"highlight\",\n    \"headline\": \"Andrej Karpathy joins Anthropic to conduct research and development on frontier large language models after prior roles at OpenAI and Tesla\",\n    \"headline_short\": \"Andrej Karpathy joins Anthropic to conduct research and…\",\n    \"digg_url\": \"https://digg.com/ai/axyiki3j\",\n    \"endorser_count\": 50,\n    \"endorsers\": [\n      {\n        \"handle\": \"shaneguml\",\n        \"name\": \"Shane Gu\",\n        \"digg_url\": \"https://digg.com/u/x/shaneguml\",\n        \"x_url\": \"https://x.com/shaneguml\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/747212842470891520/avatar-3988482ad7d1d0be.jpg\"\n      },\n      {\n        \"handle\": \"jackclarksf\",\n        \"name\": \"Jack Clark\",\n        \"digg_url\": \"https://digg.com/u/x/jackclarksf\",\n        \"x_url\": \"https://x.com/jackclarksf\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/86351835/avatar-33350d4e052ccbcc.jpg\"\n      },\n      {\n        \"handle\": \"polynoamial\",\n        \"name\": \"Noam Brown\",\n        \"digg_url\": \"https://digg.com/u/x/polynoamial\",\n        \"x_url\": \"https://x.com/polynoamial\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/825088493764407298/avatar-c9f88111d09f5467.jpg\"\n      },\n      {\n        \"handle\": \"drjimfan\",\n        \"name\": \"Jim Fan\",\n        \"digg_url\": \"https://digg.com/u/x/drjimfan\",\n        \"x_url\": \"https://x.com/drjimfan\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.verc…[truncated]"
+    },
+    {
+      "command": "stories list",
+      "kind": "json_fidelity",
+      "args": [
+        "stories",
+        "list",
+        "--json"
+      ],
+      "status": "pass",
+      "output_sample": "[\n  {\n    \"cluster_id\": \"8eee35ea-eb73-4291-b803-e7ed89df3fba\",\n    \"slug\": \"8eee35ea-eb73-4291-b803-e7ed89df3fba\",\n    \"topic\": \"ai\",\n    \"surface\": \"highlight\",\n    \"headline\": \"Cursor AI releases Composer 2.5, its most powerful model to date, with gains in intelligence, long-task performance, and complex instruction adherence while doubling usage for all users\",\n    \"headline_short\": \"Cursor AI releases Composer 2.5, its most powerful model…\",\n    \"digg_url\": \"https://digg.com/ai/8eee35ea-eb73-4291-b803-e7ed89df3fba\",\n    \"endorser_count\": 33,\n    \"endorsers\": [\n      {\n        \"handle\": \"lateinteraction\",\n        \"name\": \"Omar Khattab\",\n        \"digg_url\": \"https://digg.com/u/x/lateinteraction\",\n        \"x_url\": \"https://x.com/lateinteraction\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/1605274291569799168/avatar-658896b176119b4a.jpg\"\n      },\n      {\n        \"handle\": \"_arohan_\",\n        \"name\": \"rohan anil\",\n        \"digg_url\": \"https://digg.com/u/x/_arohan_\",\n        \"x_url\": \"https://x.com/_arohan_\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/938616384572948480/avatar-719f307cdee7ed48.jpg\"\n      },\n      {\n        \"handle\": \"elonmusk\",\n        \"name\": \"Elon Musk\",\n        \"digg_url\": \"https://digg.com/u/x/elonmusk\",\n        \"x_url\": \"https://x.com/elonmusk\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/44196397/avatar-4e233c707e4bb8f1.jpg\"\n      },\n      {\n        \"handle\": \"clementdelangue\",\n        \"name\": \"clem 🤗\",\n        \"digg_url\": \"https://digg.com/u/x/clementdelangue\",\n        \"x_url\": \"https://x.com/clementdelangue\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/186420551/avatar-23083ae97a821fa6.png\"\n      },\n      {\n        \"handle\": \"srush_nlp\",\n        \"name\": \"Sasha Rush\",\n        \"digg_url\": \"https://digg.com/u/x/srush_nlp\",\n        \"x_url\": \"https://x.com/srush_nlp\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/4558314927/avatar-c341d27e974f0f27.jpg\"\n      },\n      {\n        \"handle\": \"kchonyc\",\n        \"name\": \"Kyunghyun Cho\",\n        \"digg_url\": \"https://digg.com/u/x/kchonyc\",\n        \"x_url\": \"https://x.com/kchonyc\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/48642190/avatar-23bf4c1b09183a5e.jpg\"\n      }\n    ]\n  },\n  {\n    \"cluster_id\": \"dd8a1fb2-1470-4167-ac67-1f165f9a0ff2\",\n    \"slug\": \"dd8a1fb2-1470-4167-ac67-1f165f9a0ff2\",\n    \"topic\": \"ai\",\n    \"surface\": \"highlight\",\n    \"headline\": \"Andrej Karpathy joins Anthropic to conduct research and development on frontier large language models after prior roles at OpenAI and Tesla\",\n    \"headline_short\": \"Andrej Karpathy joins Anthropic to conduct research and…\",\n    \"digg_url\": \"https://digg.com/ai/axyiki3j\",\n    \"endorser_count\": 50,\n    \"endorsers\": [\n      {\n        \"handle\": \"shaneguml\",\n        \"name\": \"Shane Gu\",\n        \"digg_url\": \"https://digg.com/u/x/shaneguml\",\n        \"x_url\": \"https://x.com/shaneguml\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/747212842470891520/avatar-3988482ad7d1d0be.jpg\"\n      },\n      {\n        \"handle\": \"jackclarksf\",\n        \"name\": \"Jack Clark\",\n        \"digg_url\": \"https://digg.com/u/x/jackclarksf\",\n        \"x_url\": \"https://x.com/jackclarksf\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/86351835/avatar-33350d4e052ccbcc.jpg\"\n      },\n      {\n        \"handle\": \"polynoamial\",\n        \"name\": \"Noam Brown\",\n        \"digg_url\": \"https://digg.com/u/x/polynoamial\",\n        \"x_url\": \"https://x.com/polynoamial\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.vercel-storage.com/authors/825088493764407298/avatar-c9f88111d09f5467.jpg\"\n      },\n      {\n        \"handle\": \"drjimfan\",\n        \"name\": \"Jim Fan\",\n        \"digg_url\": \"https://digg.com/u/x/drjimfan\",\n        \"x_url\": \"https://x.com/drjimfan\",\n        \"avatar_url\": \"https://cnl5taoq5on9lswk.public.blob.verc…[truncated]"
+    },
+    {
+      "command": "stories list",
+      "kind": "error_path",
+      "args": null,
+      "status": "skip",
+      "reason": "no positional argument"
+    },
+    {
+      "command": "sync",
+      "kind": "help",
+      "args": [
+        "sync",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Fetch stories from digg.com and store them in a local SQLite database.\nSupports multiple topics. Run periodically to build up snapshot history for\ntrending and velocity analysis.\n\nUsage:\n  digg-ai-pp-cli sync [flags]\n\nExamples:\n  # Sync the AI feed (default)\n  digg-ai-pp-cli sync\n\n  # Sync multiple topics\n  digg-ai-pp-cli sync --topics ai,technology,science\n\n  # Dry run: show what would be synced without writing\n  digg-ai-pp-cli sync --dry-run\n\nFlags:\n      --db string        Database path (default: ~/.local/share/digg-ai-pp-cli/data.db)\n      --full             Full resync (reserved for future use)\n  -h, --help             help for sync\n      --strict           Exit non-zero on any topic fetch failure\n      --topics strings   Comma-separated topic slugs to sync (default [ai])\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "sync",
+      "kind": "happy_path",
+      "args": [
+        "sync"
+      ],
+      "status": "pass",
+      "output_sample": "{\n  \"endorsers_new\": 20,\n  \"snapshots\": 51,\n  \"stories_new\": 51,\n  \"stories_total\": 51,\n  \"synced_at\": \"2026-05-19T22:12:15Z\",\n  \"topics\": [\n    \"ai\"\n  ]\n}\n"
+    },
+    {
+      "command": "sync",
+      "kind": "json_fidelity",
+      "args": [
+        "sync",
+        "--json"
+      ],
+      "status": "pass",
+      "output_sample": "{\n  \"endorsers_new\": 23,\n  \"snapshots\": 52,\n  \"stories_new\": 52,\n  \"stories_total\": 52,\n  \"synced_at\": \"2026-05-19T22:12:15Z\",\n  \"topics\": [\n    \"ai\"\n  ]\n}\n"
+    },
+    {
+      "command": "sync",
+      "kind": "error_path",
+      "args": null,
+      "status": "skip",
+      "reason": "no positional argument"
+    },
+    {
+      "command": "topic",
+      "kind": "help",
+      "args": [
+        "topic",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "List the latest stories for a given Digg topic. AI is the primary feed; other topics: technology, science, world, politics, business, sports, entertainment, news.\n\nUsage:\n  digg-ai-pp-cli topic \u003ctopic\u003e [flags]\n\nExamples:\n  digg-ai-pp-cli topic ai\n  digg-ai-pp-cli topic technology --limit 20\n\nFlags:\n  -h, --help        help for topic\n      --limit int   Maximum number of stories to return (default 30)\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "topic",
+      "kind": "happy_path",
+      "args": null,
+      "status": "skip",
+      "reason": "command path [topic] has fewer segments than placeholders (1)"
+    },
+    {
+      "command": "topic",
+      "kind": "json_fidelity",
+      "args": null,
+      "status": "skip",
+      "reason": "command path [topic] has fewer segments than placeholders (1)"
+    },
+    {
+      "command": "topic",
+      "kind": "error_path",
+      "args": [
+        "topic",
+        "__printing_press_invalid__"
+      ],
+      "status": "pass",
+      "exit_code": 1,
+      "output_sample": "Error: unknown topic \"__printing_press_invalid__\"; available topics: ai, technology, science, world, politics, business, sports, entertainment, news\nunknown topic \"__printing_press_invalid__\"; available topics: ai, technology, science, world, politics, business, sports, entertainment, news\n"
+    },
+    {
+      "command": "topics",
+      "kind": "help",
+      "args": [
+        "topics",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "List all known Digg topic slugs with descriptions\n\nUsage:\n  digg-ai-pp-cli topics [flags]\n\nExamples:\n  digg-ai-pp-cli topics\n  digg-ai-pp-cli topics --json\n\nFlags:\n  -h, --help   help for topics\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "topics",
+      "kind": "happy_path",
+      "args": [
+        "topics"
+      ],
+      "status": "pass",
+      "output_sample": "[\n  {\n    \"slug\": \"ai\",\n    \"description\": \"Artificial intelligence news and research\"\n  },\n  {\n    \"slug\": \"technology\",\n    \"description\": \"Technology news and industry updates\"\n  },\n  {\n    \"slug\": \"science\",\n    \"description\": \"Science discoveries and research\"\n  },\n  {\n    \"slug\": \"world\",\n    \"description\": \"World news and international affairs\"\n  },\n  {\n    \"slug\": \"politics\",\n    \"description\": \"Political news and analysis\"\n  },\n  {\n    \"slug\": \"business\",\n    \"description\": \"Business, finance, and economy\"\n  },\n  {\n    \"slug\": \"sports\",\n    \"description\": \"Sports news and highlights\"\n  },\n  {\n    \"slug\": \"entertainment\",\n    \"description\": \"Entertainment, culture, and media\"\n  },\n  {\n    \"slug\": \"news\",\n    \"description\": \"Breaking news and top stories\"\n  }\n]\n"
+    },
+    {
+      "command": "topics",
+      "kind": "json_fidelity",
+      "args": [
+        "topics",
+        "--json"
+      ],
+      "status": "pass",
+      "output_sample": "[\n  {\n    \"slug\": \"ai\",\n    \"description\": \"Artificial intelligence news and research\"\n  },\n  {\n    \"slug\": \"technology\",\n    \"description\": \"Technology news and industry updates\"\n  },\n  {\n    \"slug\": \"science\",\n    \"description\": \"Science discoveries and research\"\n  },\n  {\n    \"slug\": \"world\",\n    \"description\": \"World news and international affairs\"\n  },\n  {\n    \"slug\": \"politics\",\n    \"description\": \"Political news and analysis\"\n  },\n  {\n    \"slug\": \"business\",\n    \"description\": \"Business, finance, and economy\"\n  },\n  {\n    \"slug\": \"sports\",\n    \"description\": \"Sports news and highlights\"\n  },\n  {\n    \"slug\": \"entertainment\",\n    \"description\": \"Entertainment, culture, and media\"\n  },\n  {\n    \"slug\": \"news\",\n    \"description\": \"Breaking news and top stories\"\n  }\n]\n"
+    },
+    {
+      "command": "topics",
+      "kind": "error_path",
+      "args": null,
+      "status": "skip",
+      "reason": "no positional argument"
+    },
+    {
+      "command": "trending",
+      "kind": "help",
+      "args": [
+        "trending",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Top stories sorted by likes growth over a window\n\nUsage:\n  digg-ai-pp-cli trending [flags]\n\nExamples:\n  digg-ai-pp-cli trending\n  digg-ai-pp-cli trending --hours 48 --limit 10\n\nFlags:\n      --db string   Database path\n  -h, --help        help for trending\n      --hours int   Time window in hours (default 24)\n      --limit int   Maximum results (default 20)\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "trending",
+      "kind": "happy_path",
+      "args": [
+        "trending"
+      ],
+      "status": "pass",
+      "output_sample": "[\n  {\n    \"cluster_id\": \"9p5cqkyn\",\n    \"headline\": \"Google releases Gemini 3.5 Flash for complex agentic workflows, coding, and reasoning at 289 tokens per second and higher scores than Gemini 3.1 Pro on Terminal-Bench 2.1, GDPval-AA, and MCP Atlas\",\n    \"likes_start\": 37000,\n    \"likes_end\": 37400,\n    \"likes_growth\": 400,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/9p5cqkyn\"\n  },\n  {\n    \"cluster_id\": \"chs6ji0l\",\n    \"headline\": \"Andrej Karpathy joins Anthropic as platform posts respond with surprised Pikachu and awakening gorilla memes\",\n    \"likes_start\": 4400,\n    \"likes_end\": 4500,\n    \"likes_growth\": 100,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/chs6ji0l\"\n  },\n  {\n    \"cluster_id\": \"eofc0xps\",\n    \"headline\": \"Andrej Karpathy joins Anthropic pretraining team and will lead a new group that uses Claude to conduct research, according to journalist Alex Heath\",\n    \"likes_start\": 4700,\n    \"likes_end\": 4800,\n    \"likes_growth\": 100,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/eofc0xps\"\n  },\n  {\n    \"cluster_id\": \"fdf3u23m\",\n    \"headline\": \"Thinking Machines Lab announces grant program awarding multiple $100,000 awards plus $25,000 in Tinker credits to researchers advancing human-AI interactivity with proposals due June 19 2026\",\n    \"likes_start\": 1900,\n    \"likes_end\": 2000,\n    \"likes_growth\": 100,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/fdf3u23m\"\n  },\n  {\n    \"cluster_id\": \"jcm2h06i\",\n    \"headline\": \"Google DeepMind expands Project Genie with Street View integration to generate interactive 3D environments anchored to real-world Google Maps locations\",\n    \"likes_start\": 1600,\n    \"likes_end\": 1700,\n    \"likes_growth\": 100,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/jcm2h06i\"\n  },\n  {\n    \"cluster_id\": \"jzg9xcd1\",\n    \"headline\": \"Claude announces the public beta of self-hosted sandboxes and research preview of MCP tunnels within Claude Managed Agents, enabling runs inside user infrastructure under existing security controls\",\n    \"likes_start\": 8200,\n    \"likes_end\": 8300,\n    \"likes_growth\": 100,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/jzg9xcd1\"\n  },\n  {\n    \"cluster_id\": \"msyd23l3\",\n    \"headline\": \"Google launches its biggest Search redesign in 25 years featuring an AI-powered box with Gemini 3.5 Flash for multimodal queries and agentic capabilities\",\n    \"likes_start\": 2400,\n    \"likes_end\": 2500,\n    \"likes_growth\": 100,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/msyd23l3\"\n  },\n  {\n    \"cluster_id\": \"tpxz6a9o\",\n    \"headline\": \"Google showcases SynthID watermarking system at I/O with logos of OpenAI, Nvidia, Kakao and ElevenLabs signaling partner adoption\",\n    \"likes_start\": 3700,\n    \"likes_end\": 3800,\n    \"likes_growth\": 100,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/tpxz6a9o\"\n  },\n  {\n    \"cluster_id\": \"wzc2cklt\",\n    \"headline\": \"OpenAI introduces Guaranteed Capacity to let eligible customers secure long-term compute access across supported cloud providers via 1-3 year commitments and spend-linked discounts\",\n    \"likes_start\": 5100,\n    \"likes_end\": 5200,\n    \"likes_growth\": 100,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/wzc2cklt\"\n  },\n  {\n    \"cluster_id\": \"kpvv4lds\",\n    \"headline\": \"FutureHouse and Google DeepMind publish multi-agent AI systems for end-to-end scientific discovery in new Nature papers, with Robin identifying ripasudil for macular degeneration and ERA generating 40 novel single-cell methods\",\n    \"likes_start\": 521,\n    \"likes_end\": 548,\n    \"likes_growth\": 27,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/kpvv4lds\"\n  },\n  {\n    \"cluster_id\": \"i49hgdjt\",\n    \"headline\": \"Viktor raises $75 million Series A led by Accel, the largest ever for a Polish-founded company, as its AI coworker operates inside Slack and connects to over 3,000 tools\",\n    \"likes_start\": 712,\n    \"likes_end\": 716,\n    \"likes_growth\": 4,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/i49hgdjt\"\n  },\n  {\n    \"cluster_id\": \"sz0nt2m0\",\n    \"headline\": \"Steven Adler and Page He…[truncated]"
+    },
+    {
+      "command": "trending",
+      "kind": "json_fidelity",
+      "args": [
+        "trending",
+        "--json"
+      ],
+      "status": "pass",
+      "output_sample": "[\n  {\n    \"cluster_id\": \"9p5cqkyn\",\n    \"headline\": \"Google releases Gemini 3.5 Flash for complex agentic workflows, coding, and reasoning at 289 tokens per second and higher scores than Gemini 3.1 Pro on Terminal-Bench 2.1, GDPval-AA, and MCP Atlas\",\n    \"likes_start\": 37000,\n    \"likes_end\": 37400,\n    \"likes_growth\": 400,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/9p5cqkyn\"\n  },\n  {\n    \"cluster_id\": \"chs6ji0l\",\n    \"headline\": \"Andrej Karpathy joins Anthropic as platform posts respond with surprised Pikachu and awakening gorilla memes\",\n    \"likes_start\": 4400,\n    \"likes_end\": 4500,\n    \"likes_growth\": 100,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/chs6ji0l\"\n  },\n  {\n    \"cluster_id\": \"eofc0xps\",\n    \"headline\": \"Andrej Karpathy joins Anthropic pretraining team and will lead a new group that uses Claude to conduct research, according to journalist Alex Heath\",\n    \"likes_start\": 4700,\n    \"likes_end\": 4800,\n    \"likes_growth\": 100,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/eofc0xps\"\n  },\n  {\n    \"cluster_id\": \"fdf3u23m\",\n    \"headline\": \"Thinking Machines Lab announces grant program awarding multiple $100,000 awards plus $25,000 in Tinker credits to researchers advancing human-AI interactivity with proposals due June 19 2026\",\n    \"likes_start\": 1900,\n    \"likes_end\": 2000,\n    \"likes_growth\": 100,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/fdf3u23m\"\n  },\n  {\n    \"cluster_id\": \"jcm2h06i\",\n    \"headline\": \"Google DeepMind expands Project Genie with Street View integration to generate interactive 3D environments anchored to real-world Google Maps locations\",\n    \"likes_start\": 1600,\n    \"likes_end\": 1700,\n    \"likes_growth\": 100,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/jcm2h06i\"\n  },\n  {\n    \"cluster_id\": \"jzg9xcd1\",\n    \"headline\": \"Claude announces the public beta of self-hosted sandboxes and research preview of MCP tunnels within Claude Managed Agents, enabling runs inside user infrastructure under existing security controls\",\n    \"likes_start\": 8200,\n    \"likes_end\": 8300,\n    \"likes_growth\": 100,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/jzg9xcd1\"\n  },\n  {\n    \"cluster_id\": \"msyd23l3\",\n    \"headline\": \"Google launches its biggest Search redesign in 25 years featuring an AI-powered box with Gemini 3.5 Flash for multimodal queries and agentic capabilities\",\n    \"likes_start\": 2400,\n    \"likes_end\": 2500,\n    \"likes_growth\": 100,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/msyd23l3\"\n  },\n  {\n    \"cluster_id\": \"tpxz6a9o\",\n    \"headline\": \"Google showcases SynthID watermarking system at I/O with logos of OpenAI, Nvidia, Kakao and ElevenLabs signaling partner adoption\",\n    \"likes_start\": 3700,\n    \"likes_end\": 3800,\n    \"likes_growth\": 100,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/tpxz6a9o\"\n  },\n  {\n    \"cluster_id\": \"wzc2cklt\",\n    \"headline\": \"OpenAI introduces Guaranteed Capacity to let eligible customers secure long-term compute access across supported cloud providers via 1-3 year commitments and spend-linked discounts\",\n    \"likes_start\": 5100,\n    \"likes_end\": 5200,\n    \"likes_growth\": 100,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/wzc2cklt\"\n  },\n  {\n    \"cluster_id\": \"kpvv4lds\",\n    \"headline\": \"FutureHouse and Google DeepMind publish multi-agent AI systems for end-to-end scientific discovery in new Nature papers, with Robin identifying ripasudil for macular degeneration and ERA generating 40 novel single-cell methods\",\n    \"likes_start\": 521,\n    \"likes_end\": 548,\n    \"likes_growth\": 27,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/kpvv4lds\"\n  },\n  {\n    \"cluster_id\": \"i49hgdjt\",\n    \"headline\": \"Viktor raises $75 million Series A led by Accel, the largest ever for a Polish-founded company, as its AI coworker operates inside Slack and connects to over 3,000 tools\",\n    \"likes_start\": 712,\n    \"likes_end\": 716,\n    \"likes_growth\": 4,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/i49hgdjt\"\n  },\n  {\n    \"cluster_id\": \"sz0nt2m0\",\n    \"headline\": \"Steven Adler and Page He…[truncated]"
+    },
+    {
+      "command": "trending",
+      "kind": "error_path",
+      "args": null,
+      "status": "skip",
+      "reason": "no positional argument"
+    },
+    {
+      "command": "velocity",
+      "kind": "help",
+      "args": [
+        "velocity",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Stories with fastest monotonic likes growth (per-hour rate)\n\nUsage:\n  digg-ai-pp-cli velocity [flags]\n\nExamples:\n  digg-ai-pp-cli velocity\n  digg-ai-pp-cli velocity --hours 6 --limit 10\n\nFlags:\n      --db string   Database path\n  -h, --help        help for velocity\n      --hours int   Time window in hours (default 6)\n      --limit int   Maximum results (default 20)\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "velocity",
+      "kind": "happy_path",
+      "args": [
+        "velocity"
+      ],
+      "status": "pass",
+      "output_sample": "[\n  {\n    \"cluster_id\": \"2vrzwbpb\",\n    \"headline\": \"Anthropic and OpenAI account for 89 percent of revenues from AI models and applications generated by 34 leading AI startups, with their combined share rising steadily from July 2023 through April 2026\",\n    \"likes_start\": 2900,\n    \"likes_end\": 2900,\n    \"likes_growth\": 0,\n    \"likes_per_hour\": 0,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/2vrzwbpb\"\n  },\n  {\n    \"cluster_id\": \"2wei42xh\",\n    \"headline\": \"Anthropic acquires Stainless, integrating the SDK generation platform that has produced every official Claude client library since the first API releases\",\n    \"likes_start\": 725,\n    \"likes_end\": 725,\n    \"likes_growth\": 0,\n    \"likes_per_hour\": 0,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/2wei42xh\"\n  },\n  {\n    \"cluster_id\": \"3tsguqks\",\n    \"headline\": \"Pangram analysis returns a 100% AI-generated score for Jamir Nazir\\u0026#x27;s Commonwealth Short Story Prize-winning entry published in Granta\",\n    \"likes_start\": 6600,\n    \"likes_end\": 6600,\n    \"likes_growth\": 0,\n    \"likes_per_hour\": 0,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/3tsguqks\"\n  },\n  {\n    \"cluster_id\": \"3vb8kiry\",\n    \"headline\": \"A federal jury in Oakland rejects Elon Musk\\u0026#x27;s lawsuit against OpenAI, Sam Altman and Microsoft, finding all claims barred by the statute of limitations\",\n    \"likes_start\": 174400,\n    \"likes_end\": 174400,\n    \"likes_growth\": 0,\n    \"likes_per_hour\": 0,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/3vb8kiry\"\n  },\n  {\n    \"cluster_id\": \"4966cd94-c351-44a7-8138-331e53c0e40d\",\n    \"headline\": \"Sam Altman, OpenAI co-founder and CEO, says Tibo will reset Codex rate limits if his tweet receives one like\",\n    \"likes_start\": 0,\n    \"likes_end\": 0,\n    \"likes_growth\": 0,\n    \"likes_per_hour\": 0,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/g3568836\"\n  },\n  {\n    \"cluster_id\": \"4zo4nreb\",\n    \"headline\": \"Gemini Omni Flash generates a 10-second video from a London Eye prompt that accurately depicts the capsule interior, River Thames, Big Ben, and gentle wheel sway\",\n    \"likes_start\": 1400,\n    \"likes_end\": 1400,\n    \"likes_growth\": 0,\n    \"likes_per_hour\": 0,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/4zo4nreb\"\n  },\n  {\n    \"cluster_id\": \"5a74d745-ab54-4ec2-9461-cb1c9705cdd9\",\n    \"headline\": \"A fabricated X post impersonating Pope Leo XIV claims he joined Anthropic to work on frontier large language models and has circulated among AI researchers\",\n    \"likes_start\": 0,\n    \"likes_end\": 0,\n    \"likes_growth\": 0,\n    \"likes_per_hour\": 0,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/0aeiof5t\"\n  },\n  {\n    \"cluster_id\": \"5k0dntq9\",\n    \"headline\": \"Unsloth AI releases MTP-optimized GGUF files for Qwen3.6-27B and Qwen3.6-35B-A3B on Hugging Face delivering 1.4 to 2.2 times faster generation\",\n    \"likes_start\": 3600,\n    \"likes_end\": 3600,\n    \"likes_growth\": 0,\n    \"likes_per_hour\": 0,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/5k0dntq9\"\n  },\n  {\n    \"cluster_id\": \"68gkeujw\",\n    \"headline\": \"An X post compares AI performance gains to steam engine progress in the Industrial Revolution, noting jumps to 405 horsepower and productivity increases from automation in textiles and iron\",\n    \"likes_start\": 18200,\n    \"likes_end\": 18200,\n    \"likes_growth\": 0,\n    \"likes_per_hour\": 0,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/68gkeujw\"\n  },\n  {\n    \"cluster_id\": \"6w4zljox\",\n    \"headline\": \"OpenAI updated ChatGPT to support expandable and collapsible messages that let users hide or reveal long responses with a tap\",\n    \"likes_start\": 13600,\n    \"likes_end\": 13600,\n    \"likes_growth\": 0,\n    \"likes_per_hour\": 0,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/6w4zljox\"\n  },\n  {\n    \"cluster_id\": \"8eee35ea-eb73-4291-b803-e7ed89df3fba\",\n    \"headline\": \"Cursor AI releases Composer 2.5, its most powerful model to date, with gains in intelligence, long-task performance, and complex instruction adherence while doubling usage for all users\",\n    \"likes_start\": 0,\n    \"lik…[truncated]"
+    },
+    {
+      "command": "velocity",
+      "kind": "json_fidelity",
+      "args": [
+        "velocity",
+        "--json"
+      ],
+      "status": "pass",
+      "output_sample": "[\n  {\n    \"cluster_id\": \"2vrzwbpb\",\n    \"headline\": \"Anthropic and OpenAI account for 89 percent of revenues from AI models and applications generated by 34 leading AI startups, with their combined share rising steadily from July 2023 through April 2026\",\n    \"likes_start\": 2900,\n    \"likes_end\": 2900,\n    \"likes_growth\": 0,\n    \"likes_per_hour\": 0,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/2vrzwbpb\"\n  },\n  {\n    \"cluster_id\": \"2wei42xh\",\n    \"headline\": \"Anthropic acquires Stainless, integrating the SDK generation platform that has produced every official Claude client library since the first API releases\",\n    \"likes_start\": 725,\n    \"likes_end\": 725,\n    \"likes_growth\": 0,\n    \"likes_per_hour\": 0,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/2wei42xh\"\n  },\n  {\n    \"cluster_id\": \"3tsguqks\",\n    \"headline\": \"Pangram analysis returns a 100% AI-generated score for Jamir Nazir\\u0026#x27;s Commonwealth Short Story Prize-winning entry published in Granta\",\n    \"likes_start\": 6600,\n    \"likes_end\": 6600,\n    \"likes_growth\": 0,\n    \"likes_per_hour\": 0,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/3tsguqks\"\n  },\n  {\n    \"cluster_id\": \"3vb8kiry\",\n    \"headline\": \"A federal jury in Oakland rejects Elon Musk\\u0026#x27;s lawsuit against OpenAI, Sam Altman and Microsoft, finding all claims barred by the statute of limitations\",\n    \"likes_start\": 174400,\n    \"likes_end\": 174400,\n    \"likes_growth\": 0,\n    \"likes_per_hour\": 0,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/3vb8kiry\"\n  },\n  {\n    \"cluster_id\": \"4966cd94-c351-44a7-8138-331e53c0e40d\",\n    \"headline\": \"Sam Altman, OpenAI co-founder and CEO, says Tibo will reset Codex rate limits if his tweet receives one like\",\n    \"likes_start\": 0,\n    \"likes_end\": 0,\n    \"likes_growth\": 0,\n    \"likes_per_hour\": 0,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/g3568836\"\n  },\n  {\n    \"cluster_id\": \"4zo4nreb\",\n    \"headline\": \"Gemini Omni Flash generates a 10-second video from a London Eye prompt that accurately depicts the capsule interior, River Thames, Big Ben, and gentle wheel sway\",\n    \"likes_start\": 1400,\n    \"likes_end\": 1400,\n    \"likes_growth\": 0,\n    \"likes_per_hour\": 0,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/4zo4nreb\"\n  },\n  {\n    \"cluster_id\": \"5a74d745-ab54-4ec2-9461-cb1c9705cdd9\",\n    \"headline\": \"A fabricated X post impersonating Pope Leo XIV claims he joined Anthropic to work on frontier large language models and has circulated among AI researchers\",\n    \"likes_start\": 0,\n    \"likes_end\": 0,\n    \"likes_growth\": 0,\n    \"likes_per_hour\": 0,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/0aeiof5t\"\n  },\n  {\n    \"cluster_id\": \"5k0dntq9\",\n    \"headline\": \"Unsloth AI releases MTP-optimized GGUF files for Qwen3.6-27B and Qwen3.6-35B-A3B on Hugging Face delivering 1.4 to 2.2 times faster generation\",\n    \"likes_start\": 3600,\n    \"likes_end\": 3600,\n    \"likes_growth\": 0,\n    \"likes_per_hour\": 0,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/5k0dntq9\"\n  },\n  {\n    \"cluster_id\": \"68gkeujw\",\n    \"headline\": \"An X post compares AI performance gains to steam engine progress in the Industrial Revolution, noting jumps to 405 horsepower and productivity increases from automation in textiles and iron\",\n    \"likes_start\": 18200,\n    \"likes_end\": 18200,\n    \"likes_growth\": 0,\n    \"likes_per_hour\": 0,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/68gkeujw\"\n  },\n  {\n    \"cluster_id\": \"6w4zljox\",\n    \"headline\": \"OpenAI updated ChatGPT to support expandable and collapsible messages that let users hide or reveal long responses with a tap\",\n    \"likes_start\": 13600,\n    \"likes_end\": 13600,\n    \"likes_growth\": 0,\n    \"likes_per_hour\": 0,\n    \"topic\": \"ai\",\n    \"digg_url\": \"https://digg.com/ai/6w4zljox\"\n  },\n  {\n    \"cluster_id\": \"8eee35ea-eb73-4291-b803-e7ed89df3fba\",\n    \"headline\": \"Cursor AI releases Composer 2.5, its most powerful model to date, with gains in intelligence, long-task performance, and complex instruction adherence while doubling usage for all users\",\n    \"likes_start\": 0,\n    \"lik…[truncated]"
+    },
+    {
+      "command": "velocity",
+      "kind": "error_path",
+      "args": null,
+      "status": "skip",
+      "reason": "no positional argument"
+    },
+    {
+      "command": "which",
+      "kind": "help",
+      "args": [
+        "which",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "which resolves a natural-language capability query (for example, \"search messages\" or \"stale tickets\") to the best matching command from this CLI's curated feature index.\n\nExit codes:\n  0  at least one match found\n  2  no confident match - the query did not score against any indexed capability; fall back to '--help' or 'search' if this CLI has one\n\nUsage:\n  digg-ai-pp-cli which [query] [flags]\n\nExamples:\n  digg-ai-pp-cli which \"stale tickets\"\n  digg-ai-pp-cli which \"bottleneck\"\n  digg-ai-pp-cli which --limit 1 \"send message\"\n  digg-ai-pp-cli which                                # list the full capability index\n\nFlags:\n  -h, --help        help for which\n      --limit int   Maximum number of matches to return (default 3)\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "which",
+      "kind": "happy_path",
+      "args": null,
+      "status": "skip",
+      "reason": "command path [which] has fewer segments than placeholders (1)"
+    },
+    {
+      "command": "which",
+      "kind": "json_fidelity",
+      "args": null,
+      "status": "skip",
+      "reason": "command path [which] has fewer segments than placeholders (1)"
+    },
+    {
+      "command": "which",
+      "kind": "error_path",
+      "args": [
+        "which",
+        "__printing_press_invalid__",
+        "--json"
+      ],
+      "status": "pass",
+      "output_sample": "{\n  \"matches\": []\n}\n"
+    },
+    {
+      "command": "workflow archive",
+      "kind": "help",
+      "args": [
+        "workflow",
+        "archive",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Archive fetches all syncable resources from the API and stores them in a\nlocal SQLite database. Supports incremental sync (only new data since last run)\nand full resync. After archiving, use 'search' for instant full-text search.\n\nUsage:\n  digg-ai-pp-cli workflow archive [flags]\n\nExamples:\n  # Archive all resources\n  digg-ai-pp-cli workflow archive\n\n  # Full re-archive (ignore previous sync state)\n  digg-ai-pp-cli workflow archive --full\n\nFlags:\n      --db string   Database path (default: ~/.local/share/digg-ai-pp-cli/data.db)\n      --full        Full re-archive (ignore previous sync state)\n  -h, --help        help for archive\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "workflow archive",
+      "kind": "happy_path",
+      "args": [
+        "workflow",
+        "archive"
+      ],
+      "status": "pass",
+      "output_sample": "Archived 1 items across 1 resources to /Users/dave/.local/share/digg-ai-pp-cli/data.db\nSyncing stories...\n  stories: 1 items\n"
+    },
+    {
+      "command": "workflow archive",
+      "kind": "json_fidelity",
+      "args": [
+        "workflow",
+        "archive",
+        "--json"
+      ],
+      "status": "pass",
+      "output_sample": "{\n  \"resources_synced\": 1,\n  \"store_path\": \"/Users/dave/.local/share/digg-ai-pp-cli/data.db\",\n  \"timestamp\": \"2026-05-19T22:12:16Z\",\n  \"total_items\": 1\n}\nSyncing stories...\n  stories: 1 items\n"
+    },
+    {
+      "command": "workflow archive",
+      "kind": "error_path",
+      "args": null,
+      "status": "skip",
+      "reason": "no positional argument"
+    },
+    {
+      "command": "workflow status",
+      "kind": "help",
+      "args": [
+        "workflow",
+        "status",
+        "--help"
+      ],
+      "status": "pass",
+      "output_sample": "Show local archive status and sync state for all resources\n\nUsage:\n  digg-ai-pp-cli workflow status [flags]\n\nExamples:\n  # Show archive status\n  digg-ai-pp-cli workflow status\n\n  # Show status as JSON\n  digg-ai-pp-cli workflow status --json\n\nFlags:\n      --db string   Database path\n  -h, --help        help for status\n\nGlobal Flags:\n      --agent                Set all agent-friendly defaults (--json --compact --no-input --no-color --yes)\n      --compact              Return only key fields (id, name, status, timestamps) for minimal token usage\n      --config string        Config file path\n      --csv                  Output as CSV (table and array responses)\n      --data-source string   Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default \"auto\")\n      --deliver string       Route output to a sink: stdout (default), file:\u003cpath\u003e, webhook:\u003curl\u003e\n      --dry-run              Show request without sending\n      --human-friendly       Enable colored output and rich formatting\n      --idempotent           Treat already-existing create results as a successful no-op\n      --json                 Output as JSON\n      --no-cache             Bypass response cache\n      --no-color             Disable colored output\n      --no-input             Disable all interactive prompts (for CI/agents)\n      --plain                Output as plain tab-separated text\n      --profile string       Apply values from a saved profile (see 'digg-ai-pp-cli profile list')\n      --quiet                Bare output, one value per line\n      --rate-limit float     Max requests per second (0 to disable, default 2 for sniffed APIs) (default 2)\n      --select string        Comma-separated fields to include in output (e.g. --select id,name,status)\n      --timeout duration     Request timeout (default 30s)\n      --yes                  Skip confirmation prompts (for agents and scripts)\n"
+    },
+    {
+      "command": "workflow status",
+      "kind": "happy_path",
+      "args": [
+        "workflow",
+        "status"
+      ],
+      "status": "pass",
+      "output_sample": "Archive Status:\n  stories                        1 items\n\n  Total: 1 items\n  Store: /Users/dave/.local/share/digg-ai-pp-cli/data.db\n"
+    },
+    {
+      "command": "workflow status",
+      "kind": "json_fidelity",
+      "args": [
+        "workflow",
+        "status",
+        "--json"
+      ],
+      "status": "pass",
+      "output_sample": "{\n  \"stories\": 1\n}\n"
+    },
+    {
+      "command": "workflow status",
+      "kind": "error_path",
+      "args": null,
+      "status": "skip",
+      "reason": "no positional argument"
+    }
+  ],
+  "ran_at": "2026-05-19T22:12:10.818287Z"
+}

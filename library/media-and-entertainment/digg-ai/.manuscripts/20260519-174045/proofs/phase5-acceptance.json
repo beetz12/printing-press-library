@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "api_name": "digg-ai",
+  "run_id": "20260519-174045",
+  "status": "pass",
+  "level": "full",
+  "matrix_size": 72,
+  "tests_passed": 72,
+  "tests_skipped": 45,
+  "auth_context": {
+    "type": "none"
+  }
+}

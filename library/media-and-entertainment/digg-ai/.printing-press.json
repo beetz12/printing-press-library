@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-05-20T00:52:43.410243Z",
+  "printing_press_version": "4.2.1",
+  "api_name": "digg-ai",
+  "display_name": "Digg Ai",
+  "cli_name": "digg-ai-pp-cli",
+  "owner": "david",
+  "printer_name": "david",
+  "spec_format": "internal",
+  "spec_checksum": "sha256:a027f23290c558e25802518b61213eba1b123be8be465c0e0f2e50afd0f1459d",
+  "run_id": "20260519-174045",
+  "description": "Digg AI news curation CLI \u2014 track what researchers boost on X, pivot the feed by endorser, see velocity over time.",
+  "mcp_binary": "digg-ai-pp-mcp",
+  "mcp_tool_count": 3,
+  "mcp_public_tool_count": 3,
+  "mcp_ready": "full",
+  "api_version": "0.1.0",
+  "auth_type": "none",
+  "novel_features": [
+    {
+      "name": "Morning AI brief",
+      "command": "brief",
+      "description": "Pre-formatted top-N AI digest with headline, author, summary, and source URL \u2014 designed to pipe into a wider morning briefing."
+    },
+    {
+      "name": "Since-last-sync diff",
+      "command": "diff",
+      "description": "Show only stories that are new since the last sync, in cluster-id-stable form."
+    },
+    {
+      "name": "Endorser firehose",
+      "command": "endorsers feed",
+      "description": "Pull every story endorsed by a given person across all sync history."
+    },
+    {
+      "name": "Top endorsers leaderboard",
+      "command": "endorsers top",
+      "description": "Rank endorsers by how often they appear in the synced corpus over a window."
+    },
+    {
+      "name": "Velocity climbers",
+      "command": "velocity",
+      "description": "Stories whose likes count grew the fastest over the last N hours, ranked."
+    },
+    {
+      "name": "Trending by likes growth",
+      "command": "trending",
+      "description": "Top stories sorted by likes growth (not absolute likes) over a window."
+    },
+    {
+      "name": "Co-occurrence search",
+      "command": "cooccur",
+      "description": "Stories where two terms both appear in any field, ordered by recency."
+    },
+    {
+      "name": "Endorser overlap",
+      "command": "endorsers overlap",
+      "description": "Stories endorsed by two specific people, showing the 'everyone is sharing this' signal."
+    }
+  ],
+  "printer": "beetz12",
+  "category": "media-and-entertainment"
+}

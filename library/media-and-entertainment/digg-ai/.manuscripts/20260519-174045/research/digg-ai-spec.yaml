@@ -1,0 +1,76 @@
+name: digg-ai
+description: Latest AI news curated from digg.com/ai — researcher-endorsed stories with local snapshot history and endorser pivots no website surface provides.
+cli_description: Digg AI news curation CLI — track what researchers boost on X, pivot the feed by endorser, see velocity over time.
+version: 0.1.0
+base_url: https://digg.com
+spec_source: sniffed
+http_transport: standard
+auth:
+    type: none
+    header: ""
+    format: ""
+    env_vars: []
+config:
+    format: toml
+    path: ~/.config/digg-ai-pp-cli/config.toml
+resources:
+    stories:
+        description: Curated AI news stories from digg.com/ai
+        endpoints:
+            list:
+                method: GET
+                path: /ai
+                description: List the latest AI stories curated on digg.com/ai. Returns a ranked feed of stories with headline, summary, age, likes, bookmarks, endorser count, and source link.
+                params: []
+                body: []
+                response:
+                    type: array
+                    item: story
+                    format: html
+                pagination: null
+                no_auth: true
+            get:
+                method: GET
+                path: /ai/{cluster_id}
+                description: Fetch full detail for a single AI story by its cluster ID. Returns headline, description, source URL, publish/modify times, and the list of endorsers (researchers and journalists who shared it).
+                params:
+                    - name: cluster_id
+                      type: string
+                      required: true
+                      positional: true
+                      default: null
+                      description: The cluster ID (e.g., '8eee35ea-eb73-4291-b803-e7ed89df3fba') or short slug (e.g., '0aeiof5t') from the story URL.
+                      fields: []
+                body: []
+                response:
+                    type: object
+                    item: story
+                    format: html
+                pagination: null
+                no_auth: true
+    topic:
+        description: Curated story feeds for other Digg topics (technology, science, world, politics, business, sports, entertainment, news)
+        endpoints:
+            list:
+                method: GET
+                path: /{topic}
+                description: List the latest stories for a given Digg topic. AI is the primary feed; other topics (technology, science, world, politics, business, sports, entertainment, news) work the same way but are secondary.
+                params:
+                    - name: topic
+                      type: string
+                      required: true
+                      positional: true
+                      default: null
+                      flag_name: topic
+                      description: Topic slug. One of ai, technology, science, world, politics, business, sports, entertainment, news.
+                      fields: []
+                body: []
+                response:
+                    type: array
+                    item: story
+                    format: html
+                pagination: null
+                no_auth: true
+mcp:
+    transport: [stdio]
+    orchestration: endpoint-mirror

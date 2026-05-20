@@ -1,0 +1,8 @@
+{
+  "dir": "/Users/dave/printing-press/.runstate/openbrain-3654f44d/runs/20260519-174045/working/digg-ai-pp-cli",
+  "workflows": null,
+  "verdict": "workflow-pass",
+  "issues": [
+    "no workflow manifest found, skipping"
+  ]
+}

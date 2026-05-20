@@ -1,0 +1,53 @@
+{
+  "api_name": "digg-ai",
+  "base_url": "https://digg.com",
+  "description": "Latest AI news curated from digg.com/ai — researcher-endorsed stories with local snapshot history and endorser pivots no website surface provides.",
+  "mcp_ready": "full",
+  "http_transport": "standard",
+  "auth": {
+    "type": "none"
+  },
+  "required_headers": [],
+  "tools": [
+    {
+      "name": "stories_get",
+      "description": "Fetch full detail for a single AI story by its cluster ID. Returns headline, description, source URL, publish/modify times, and the list of endorsers (researchers and journalists who shared it). Required: cluster_id.",
+      "method": "GET",
+      "path": "/ai/{cluster_id}",
+      "no_auth": true,
+      "params": [
+        {
+          "name": "cluster_id",
+          "type": "string",
+          "location": "path",
+          "description": "The cluster ID (e.g., '8eee35ea-eb73-4291-b803-e7ed89df3fba') or short slug (e.g., '0aeiof5t') from the story URL.",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "stories_list",
+      "description": "List the latest AI stories curated on digg.com/ai. Returns a ranked feed of stories with headline, summary, age, likes, bookmarks, endorser count, and source link.",
+      "method": "GET",
+      "path": "/ai",
+      "no_auth": true,
+      "params": []
+    },
+    {
+      "name": "topic_list",
+      "description": "List the latest stories for a given Digg topic. AI is the primary feed; other topics (technology, science, world, politics, business, sports, entertainment, news) work the same way but are secondary. Required: topic. Returns array of story.",
+      "method": "GET",
+      "path": "/{topic}",
+      "no_auth": true,
+      "params": [
+        {
+          "name": "topic",
+          "type": "string",
+          "location": "path",
+          "description": "Topic slug. One of ai, technology, science, world, politics, business, sports, entertainment, news.",
+          "required": true
+        }
+      ]
+    }
+  ]
+}
