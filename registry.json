@@ -382,6 +382,28 @@
       }
     },
     {
+      "name": "booking-com",
+      "category": "travel",
+      "api": "Booking.com",
+      "description": "Every Booking.com workflow, plus offline price history, wishlist drop alerts, and multi-leg planning no other...",
+      "path": "library/travel/booking-com",
+      "printer": "mvanhorn",
+      "printer_name": "Matt Van Horn",
+      "mcp": {
+        "binary": "booking-com-pp-mcp",
+        "transports": [
+          "stdio",
+          "http"
+        ],
+        "tool_count": 13,
+        "public_tool_count": 9,
+        "auth_type": "cookie",
+        "env_vars": [],
+        "mcp_ready": "partial",
+        "spec_format": "internal"
+      }
+    },
+    {
       "name": "cal-com",
       "category": "productivity",
       "api": "Cal.com",
