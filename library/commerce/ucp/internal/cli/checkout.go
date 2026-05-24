@@ -64,7 +64,7 @@ func newCheckoutPrepCmd(flags *rootFlags) *cobra.Command {
 				missing = append(missing, "buyer.email")
 			}
 
-			ap2Ready := len(missing) == 0 && len(cart.LineItems) > 0
+			ap2Ready := len(missing) == 0 && len(cart.LineItems) > 0 && negotiated != ""
 
 			draft := ucp.CheckoutDraft{
 				CartID:            cart.ID,
