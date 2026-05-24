@@ -50,11 +50,12 @@ func newCheckoutPrepCmd(flags *rootFlags) *cobra.Command {
 				return fmt.Errorf("create checkout session: %w", err)
 			}
 
-			// Pick negotiated payment handler (first declared)
+			// Pick the lexicographically first payment handler for a stable, reproducible result.
 			negotiated := ""
 			for k := range c.Manifest.UCP.PaymentHandlers {
-				negotiated = k
-				break
+				if negotiated == "" || k < negotiated {
+					negotiated = k
+				}
 			}
 
 			// Compute missing fields

@@ -53,6 +53,9 @@ func newCartAddCmd(flags *rootFlags) *cobra.Command {
 				if err != nil {
 					return fmt.Errorf("load cart: %w", err)
 				}
+				if merchant != "" && merchant != cart.Merchant {
+					return usageErr(fmt.Errorf("--merchant %q does not match cart merchant %q; omit --merchant to add to this cart", merchant, cart.Merchant))
+				}
 			} else {
 				cart = store.New(merchant)
 			}

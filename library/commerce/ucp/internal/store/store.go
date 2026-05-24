@@ -5,11 +5,22 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/mvanhorn/printing-press-library/library/commerce/ucp/internal/ucp"
 )
+
+func validateCartID(id string) error {
+	if id == "" {
+		return fmt.Errorf("cart id is empty")
+	}
+	if strings.ContainsAny(id, `/\`) || strings.Contains(id, "..") {
+		return fmt.Errorf("invalid cart id %q: must not contain path separators or '..'", id)
+	}
+	return nil
+}
 
 func cartsDir() (string, error) {
 	base, err := os.UserConfigDir()
@@ -53,6 +64,9 @@ func New(merchant string) *ucp.Cart {
 
 // Save writes a cart to disk.
 func Save(cart *ucp.Cart) error {
+	if err := validateCartID(cart.ID); err != nil {
+		return err
+	}
 	cart.UpdatedAt = time.Now().UTC().Format(time.RFC3339)
 	path, err := cartPath(cart.ID)
 	if err != nil {
@@ -67,6 +81,9 @@ func Save(cart *ucp.Cart) error {
 
 // Load reads a cart from disk by ID.
 func Load(id string) (*ucp.Cart, error) {
+	if err := validateCartID(id); err != nil {
+		return nil, err
+	}
 	path, err := cartPath(id)
 	if err != nil {
 		return nil, err
@@ -112,6 +129,9 @@ func List() ([]*ucp.Cart, error) {
 
 // Delete removes a cart file from disk.
 func Delete(id string) error {
+	if err := validateCartID(id); err != nil {
+		return err
+	}
 	path, err := cartPath(id)
 	if err != nil {
 		return err
