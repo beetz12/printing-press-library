@@ -1,6 +1,5 @@
 // Package ap2 implements AP2 (Agent Payments Protocol) mandate types and builders.
-// Lifted from ucp-pp-cli/internal/ucp/ap2.go — canonical home for FinalizationEnvelope
-// and the Build* functions that produce unsigned AP2Mandates.
+// Canonical home for FinalizationEnvelope and the Build* functions that produce unsigned AP2Mandates.
 package ap2
 
 import (

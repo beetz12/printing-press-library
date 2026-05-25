@@ -134,11 +134,11 @@ Exit codes:
 				mcpURL = deriveMcpURLFromCheckout(envelope.CheckoutURL)
 			}
 
-			// Resolve Google Pay token: prefer secure sources first.
-			//   1. --token-file <path>     reads bytes from file; not in process listing
-			//   2. AP2_GPAY_TOKEN env var  not in process listing
-			//   3. --token <value>         convenience fallback; visible in `ps aux`, /proc/<pid>/cmdline
-			// If multiple are set, --token wins for back-compat but we warn.
+			// Resolve Google Pay token. Resolution order (back-compat):
+			//   1. --token <value>         checked first; visible in `ps aux` — we warn
+			//   2. --token-file <path>     reads bytes from file; not in process listing
+			//   3. AP2_GPAY_TOKEN env var  not in process listing
+			// Prefer --token-file or the env var in production to avoid process-listing exposure.
 			resolvedToken := googlePayToken
 			if resolvedToken != "" {
 				fmt.Fprintln(cmd.ErrOrStderr(), "warning: --token exposes the payment token in process listings; prefer AP2_GPAY_TOKEN env or --token-file")

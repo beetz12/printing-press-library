@@ -33,9 +33,9 @@ func defaultTxnDir() (string, error) {
 		if herr != nil {
 			return "", fmt.Errorf("resolving config dir: %w (home fallback also failed: %v)", err, herr)
 		}
-		return filepath.Join(home, ".github.com/mvanhorn/printing-press-library/library/payments/ap2", "transactions"), nil
+		return filepath.Join(home, ".ap2-pp-cli", "transactions"), nil
 	}
-	return filepath.Join(base, "github.com/mvanhorn/printing-press-library/library/payments/ap2", "transactions"), nil
+	return filepath.Join(base, "ap2-pp-cli", "transactions"), nil
 }
 
 // transactionsDir returns the resolved transactions directory, creating it if absent.
@@ -51,7 +51,7 @@ func transactionsDir() (string, error) {
 }
 
 // validateTxnID rejects anything that isn't a safe transaction ID.
-// Accepted: sandbox-<uuid>, live-<uuid>, agent-<uuid>.
+// Accepted: sandbox-<uuid> or live-<uuid> (lowercase hex UUID only).
 // Rejects path traversal attempts like "../etc/passwd" or "sandbox-../escape".
 func validateTxnID(id string) error {
 	if !txnIDPattern.MatchString(id) {
