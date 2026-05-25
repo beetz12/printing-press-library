@@ -39,7 +39,7 @@ func Load(configPath string) (*Config, error) {
 	}
 	if path == "" {
 		home, _ := os.UserHomeDir()
-		path = filepath.Join(home, ".config", "ap2-pp-cli", "config.toml")
+		path = filepath.Join(home, ".config", "github.com/mvanhorn/printing-press-library/library/payments/ap2", "config.toml")
 	}
 	cfg.Path = path
 
@@ -52,9 +52,11 @@ func Load(configPath string) (*Config, error) {
 	}
 
 	// Env var overrides
-	if v := os.Getenv("API_TOKEN"); v != "" {
+	// Only AP2_* prefixed vars are consulted — a generic API_TOKEN fallback
+	// would silently absorb credentials from any other CLI on the system.
+	if v := os.Getenv("AP2_API_KEY"); v != "" {
 		cfg.ApiToken = v
-		cfg.AuthSource = "env:API_TOKEN"
+		cfg.AuthSource = "env:AP2_API_KEY"
 	}
 
 	// Label config-file-derived credentials so doctor can distinguish
@@ -85,7 +87,7 @@ func (c *Config) AuthHeader() string {
 	}
 	// Env-var token wins over file-stored AccessToken (env > config convention).
 	if c.ApiToken != "" {
-		c.AuthSource = "env:API_TOKEN"
+		c.AuthSource = "env:AP2_API_KEY"
 		return applyAuthFormat("Bearer {token}", map[string]string{
 			"token":     c.ApiToken,
 			"API_TOKEN": c.ApiToken,
