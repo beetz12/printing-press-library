@@ -42,6 +42,9 @@ func newCheckoutPrepCmd(flags *rootFlags) *cobra.Command {
 			if err != nil {
 				return fmt.Errorf("load cart: %w", err)
 			}
+			if len(cart.LineItems) == 0 {
+				return fmt.Errorf("cart %s has no line items — add items with 'cart add' first", cartID)
+			}
 
 			c, err := ucp.NewMerchantClient(ctx, cart.Merchant)
 			if err != nil {
@@ -67,7 +70,10 @@ func newCheckoutPrepCmd(flags *rootFlags) *cobra.Command {
 				missing = append(missing, "buyer.email")
 			}
 
-			ap2Ready := len(missing) == 0 && len(cart.LineItems) > 0
+			if negotiated == "" {
+				missing = append(missing, "merchant_payment_handler")
+			}
+			ap2Ready := len(missing) == 0 && len(cart.LineItems) > 0 && negotiated != ""
 
 			draft := ucp.CheckoutDraft{
 				CartID:            cart.ID,
@@ -170,8 +176,26 @@ func newCheckoutFinalizeCmd(flags *rootFlags) *cobra.Command {
 				ExpiresInHours:   24,
 			})
 			cartMandate := ucp.BuildCartMandate(subject, intent.MandateID, cart, addResult.CartToken, addResult.CheckoutURL)
-			// Payment handler default: com.google.pay (most common for Shopify UCP).
-			payment := ucp.BuildPaymentMandate(subject, cartMandate.MandateID, "com.google.pay", addResult.CartToken, subtotal, cart.Currency)
+			// Fetch merchant manifest to pick a real negotiated payment handler.
+			manifest, mfErr := ucp.FetchManifest(ctx, cart.Merchant)
+			negotiated := "com.google.pay" // default if manifest fetch fails
+			if mfErr == nil {
+				// Pick lexicographically first payment handler for stable, reproducible result.
+				first := true
+				for k := range manifest.UCP.PaymentHandlers {
+					if first || k < negotiated {
+						negotiated = k
+						first = false
+					}
+				}
+				if len(manifest.UCP.PaymentHandlers) == 0 {
+					fmt.Fprintf(cmd.ErrOrStderr(), "warning: merchant %s declares no payment_handlers; defaulting to com.google.pay\n", cart.Merchant)
+					negotiated = "com.google.pay"
+				}
+			} else {
+				fmt.Fprintf(cmd.ErrOrStderr(), "warning: could not fetch manifest for %s (%v); defaulting payment handler to com.google.pay\n", cart.Merchant, mfErr)
+			}
+			payment := ucp.BuildPaymentMandate(subject, cartMandate.MandateID, negotiated, addResult.CartToken, subtotal, cart.Currency)
 
 			// 4. Emit envelope.
 			envelope := ucp.FinalizationEnvelope{

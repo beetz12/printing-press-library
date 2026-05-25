@@ -112,6 +112,21 @@ func normalizeSearchResponse(body []byte, merchant string) ([]SearchHit, error) 
 		hit.URL = strField(obj, "url")
 		hit.Price = intField(obj, "price", "amount")
 		hit.Currency = strField(obj, "currency")
+		// Populate VariantID from variant_id or fall back to id (mirrors shopify_products.go).
+		if vid, ok := obj["variant_id"]; ok {
+			var f float64
+			if json.Unmarshal(vid, &f) == nil {
+				hit.VariantID = int64(f)
+			}
+		}
+		if hit.VariantID == 0 {
+			if id, ok := obj["id"]; ok {
+				var f float64
+				if json.Unmarshal(id, &f) == nil {
+					hit.VariantID = int64(f)
+				}
+			}
+		}
 		hits = append(hits, hit)
 	}
 	return hits, nil
@@ -150,7 +165,13 @@ func (c *MerchantClient) CreateCheckoutSession(ctx context.Context, cart *Cart) 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("UCP-Agent", `profile="ucp-pp-cli/0.1"`)
-	req.Header.Set("Idempotency-Key", uuid.New().String())
+	// Derive idempotency key from cart ID so repeated prep calls against the
+	// same cart send the same key — which is what Idempotency-Key is for per RFC.
+	if cart != nil && cart.ID != "" {
+		req.Header.Set("Idempotency-Key", cart.ID)
+	} else {
+		req.Header.Set("Idempotency-Key", uuid.New().String())
+	}
 
 	resp, err := c.HTTP.Do(req)
 	if err != nil {

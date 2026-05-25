@@ -1,11 +1,13 @@
 package cli
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/mvanhorn/printing-press-library/library/commerce/ucp/internal/cliutil"
 	"github.com/mvanhorn/printing-press-library/library/commerce/ucp/internal/registry"
 	"github.com/mvanhorn/printing-press-library/library/commerce/ucp/internal/transport"
 	"github.com/mvanhorn/printing-press-library/library/commerce/ucp/internal/ucp"
@@ -42,16 +44,21 @@ func newSearchCmd(flags *rootFlags) *cobra.Command {
 						petDomains = append(petDomains, m.Domain)
 					}
 				}
+				// Fan out concurrently across pet merchants using FanoutRun.
+				results, errs := cliutil.FanoutRun(
+					ctx,
+					petDomains,
+					func(d string) string { return d },
+					func(ctx context.Context, domain string) ([]ucp.SearchHit, error) {
+						return transport.ShopifyProductsSearch(ctx, domain, query, limit)
+					},
+				)
+				cliutil.FanoutReportErrors(cmd.ErrOrStderr(), errs)
 				// Initialize as empty slice (not nil) so json.Encode emits [] not null
 				// when no merchants return hits.
 				allHits := []ucp.SearchHit{}
-				for _, domain := range petDomains {
-					hits, err := transport.ShopifyProductsSearch(ctx, domain, query, limit)
-					if err != nil {
-						fmt.Fprintf(cmd.ErrOrStderr(), "warning: %s: %v\n", domain, err)
-						continue
-					}
-					allHits = append(allHits, hits...)
+				for _, r := range results {
+					allHits = append(allHits, r.Value...)
 				}
 				return printSearchHits(cmd, flags, allHits)
 			}
