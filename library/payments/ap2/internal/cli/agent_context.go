@@ -124,7 +124,7 @@ func buildAgentContext(rootCmd *cobra.Command) agentContext {
 		SchemaVersion: agentContextSchemaVersion,
 		CLI: agentContextCLI{
 			Name:        "ap2-pp-cli",
-			Description: "A Go CLI for Google's Universal Commerce Protocol — talk to UCP merchants over REST or MCP",
+			Description: "A Go CLI for the AP2 (Agent Payments Protocol) — sign AP2 FinalizationEnvelopes and authorize payments with merchant MCP endpoints",
 			Version:     rootCmd.Version,
 		},
 		Auth: agentContextAuth{

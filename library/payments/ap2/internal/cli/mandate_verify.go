@@ -19,7 +19,7 @@ import (
 func defaultPubResolver(subject string) (*ecdsa.PublicKey, error) {
 	k, err := keys.LoadPublic(subject)
 	if err != nil {
-		return nil, fmt.Errorf("agent key for subject %q not found (keystore: ~/.config/ap2-pp-cli/keys/) — run 'ap2-pp-cli keys generate' or pass --no-sig-check", subject)
+		return nil, fmt.Errorf("%w — run 'ap2-pp-cli keys generate' or pass --no-sig-check", err)
 	}
 	return k.PublicKey, nil
 }

@@ -267,7 +267,7 @@ func dbPath() string {
 func handleContext(_ context.Context, _ mcplib.CallToolRequest) (*mcplib.CallToolResult, error) {
 	ctx := map[string]any{
 		"api":         "ucp",
-		"description": "A Go CLI for Google's Universal Commerce Protocol — talk to UCP merchants over REST or MCP",
+		"description": "A Go CLI for the AP2 (Agent Payments Protocol) — sign AP2 FinalizationEnvelopes and authorize payments with merchant MCP endpoints",
 		"archetype":   "generic",
 		"tool_count":  1,
 		// tool_surface tells agents which surface a capability lives on.

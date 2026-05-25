@@ -46,15 +46,15 @@ func feedbackFilePath() (string, error) {
 // is available. Surfaced via agent-context so introspecting agents know
 // whether their feedback will ship upstream.
 func FeedbackEndpointConfigured() bool {
-	return os.Getenv("UCP_FEEDBACK_ENDPOINT") != ""
+	return os.Getenv("AP2_FEEDBACK_ENDPOINT") != ""
 }
 
 func feedbackEndpoint() string {
-	return os.Getenv("UCP_FEEDBACK_ENDPOINT")
+	return os.Getenv("AP2_FEEDBACK_ENDPOINT")
 }
 
 func feedbackAutoSend() bool {
-	v := strings.ToLower(strings.TrimSpace(os.Getenv("UCP_FEEDBACK_AUTO_SEND")))
+	v := strings.ToLower(strings.TrimSpace(os.Getenv("AP2_FEEDBACK_AUTO_SEND")))
 	return v == "1" || v == "true" || v == "yes"
 }
 
@@ -101,8 +101,8 @@ func newFeedbackCmd(flags *rootFlags) *cobra.Command {
 		Use:   "feedback [text]",
 		Short: "Record feedback about this CLI (local by default; upstream opt-in)",
 		Long: `Feedback is captured locally first at ~/.ap2-pp-cli/feedback.jsonl.
-When ` + "`UCP_FEEDBACK_ENDPOINT`" + ` is set and either --send is
-passed or ` + "`UCP_FEEDBACK_AUTO_SEND=true`" + `, the entry is
+When ` + "`AP2_FEEDBACK_ENDPOINT`" + ` is set and either --send is
+passed or ` + "`AP2_FEEDBACK_AUTO_SEND=true`" + `, the entry is
 POSTed as JSON after the local write.
 
 Write what surprised you or tripped you up, not a bug report. The

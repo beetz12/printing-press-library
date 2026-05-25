@@ -11,7 +11,7 @@ import (
 )
 
 // SiblingCLIPath resolves the companion CLI via sibling-of-executable,
-// UCP_CLI_PATH env var, then PATH.
+// AP2_CLI_PATH env var, then PATH.
 func SiblingCLIPath() (string, error) {
 	cliName := cliExecutableName(runtime.GOOS)
 	if exe, err := os.Executable(); err == nil {
@@ -20,7 +20,7 @@ func SiblingCLIPath() (string, error) {
 			return candidate, nil
 		}
 	}
-	if v := os.Getenv("UCP_CLI_PATH"); v != "" {
+	if v := os.Getenv("AP2_CLI_PATH"); v != "" {
 		return v, nil
 	}
 	return exec.LookPath(cliName)

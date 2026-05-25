@@ -21,7 +21,7 @@ func shellOutToCLI(cliPath func() (string, error), commandPath []string) server.
 	prefixArgs := append([]string{}, commandPath...)
 	return func(ctx context.Context, req mcplib.CallToolRequest) (*mcplib.CallToolResult, error) {
 		if lookupErr != nil {
-			return mcplib.NewToolResultError(fmt.Sprintf("companion CLI binary not found: %v\nTried sibling lookup, UCP_CLI_PATH env var, and PATH.", lookupErr)), nil
+			return mcplib.NewToolResultError(fmt.Sprintf("companion CLI binary not found: %v\nTried sibling lookup, AP2_CLI_PATH env var, and PATH.", lookupErr)), nil
 		}
 		args := req.GetArguments()
 		finalArgs := append([]string{}, prefixArgs...)
