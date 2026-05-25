@@ -192,6 +192,11 @@ func normalizeMCPHit(merchant string, row map[string]any) ucp.SearchHit {
 					hit.SKU = s
 				}
 			}
+			// Populate VariantID from Shopify's numeric variant id (top-level "id" on the variant).
+			// This enables checkout finalize to pass the right ID to /cart/add.js.
+			if idF, ok := v0["id"].(float64); ok {
+				hit.VariantID = int64(idF)
+			}
 		}
 	}
 	if hit.URL == "" {

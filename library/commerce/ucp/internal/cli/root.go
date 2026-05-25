@@ -17,7 +17,7 @@ import (
 	"github.com/mvanhorn/printing-press-library/library/commerce/ucp/internal/config"
 )
 
-var version = "1.1.0"
+var version = "1.3.0"
 
 type rootFlags struct {
 	asJSON        bool
@@ -139,19 +139,22 @@ func newRootCmd(flags *rootFlags) *cobra.Command {
 		Short: `Go CLI for Google's Universal Commerce Protocol — probe merchant manifests, search, build carts, prep checkout drafts for an AP2 CLI to authorize.`,
 		Long: `ucp-pp-cli — A Go CLI for Google's Universal Commerce Protocol (UCP).
 
-What v1.1 ships:
+What v1.3 ships:
   • check <domain>           Fetch /.well-known/ucp, validate the manifest, return a graded report (A–F).
   • search <q> --merchant    Catalog search against any of 58 UCP merchants (Shopify-hosted, anonymous).
   • search --all-pet         Fan out the query across bark.co, ruffwear.com, sitstay.com.
   • cart add/list/show/...   Local JSON-backed carts keyed per merchant.
   • checkout prep --cart     Build a CheckoutDraft JSON envelope ready for an AP2 CLI to authorize.
   • merchants list           Browse the seeded registry of 58 Grade-A UCP merchants (filterable by --category, --rope-toys).
+  • MCP-over-HTTP transport  Native JSON-RPC catalog.search for merchants whose products.json is theme-overridden.
+  • Shopify cart-add (AP2)   Checkout finalize passes VariantID to /cart/add.js.
+  • Etsy + eBay adapters     Adapter support for non-Shopify UCP merchants.
 
 Agent mode: add --agent to any command for JSON output + non-interactive mode.
 Health check: run 'ucp-pp-cli doctor' to verify connectivity.
 Quickstart: ucp-pp-cli search "rope toy" --merchant bark.co
 
-v1.2 will add native MCP-over-HTTP transport + hosted agent profile JSON for merchants whose products.json is theme-overridden. v0.1's bundled fixture-merchant is still available behind the hidden 'mock serve' subcommand for CI/conformance use.`,
+The bundled fixture-merchant is available behind the hidden 'mock serve' subcommand for CI/conformance use.`,
 		SilenceUsage: true,
 		Version:      version,
 	}
