@@ -3,6 +3,7 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"github.com/spf13/cobra"
 	"github.com/mvanhorn/printing-press-library/library/commerce/ucp/internal/store"
@@ -124,12 +125,19 @@ func newCheckoutFinalizeCmd(flags *rootFlags) *cobra.Command {
 			// For v1.2, we use the first line item's variant ID for the checkout_url construction;
 			// multi-item live cart-add is v1.3.
 			first := cart.LineItems[0]
-			variantID := first.Item.SKU
+			// Prefer the numeric Shopify variant ID stored at search time; fall back to SKU/ID
+			// only for non-Shopify merchants (where VariantID will be zero).
+			var variantID string
+			if first.Item.VariantID != 0 {
+				variantID = strconv.FormatInt(first.Item.VariantID, 10)
+			} else {
+				variantID = first.Item.SKU
+			}
 			if variantID == "" {
 				variantID = first.Item.ID
 			}
 			if variantID == "" {
-				return fmt.Errorf("first line item has no SKU/ID — cannot call shopify cart-add")
+				return fmt.Errorf("first line item has no variant ID/SKU/ID — cannot call shopify cart-add")
 			}
 			addResult, err := transport.ShopifyCartAdd(ctx, cart.Merchant, variantID, first.Quantity)
 			if err != nil {

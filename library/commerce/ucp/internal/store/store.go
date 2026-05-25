@@ -76,7 +76,7 @@ func Save(cart *ucp.Cart) error {
 	if err != nil {
 		return fmt.Errorf("marshal cart: %w", err)
 	}
-	return os.WriteFile(path, data, 0o644)
+	return os.WriteFile(path, data, 0o600)
 }
 
 // Load reads a cart from disk by ID.

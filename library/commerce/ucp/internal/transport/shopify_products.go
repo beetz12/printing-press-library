@@ -45,7 +45,7 @@ func ShopifyProductsSearch(ctx context.Context, domain string, query string, lim
 	if err != nil {
 		return nil, fmt.Errorf("build request: %w", err)
 	}
-	req.Header.Set("User-Agent", "github.com/mvanhorn/printing-press-library/library/commerce/ucp/1.1")
+	req.Header.Set("User-Agent", "ucp-pp-cli/1.1")
 	req.Header.Set("Accept", "application/json")
 
 	resp, err := httpClient.Do(req)
@@ -101,12 +101,13 @@ func ShopifyProductsSearch(ctx context.Context, domain string, query string, lim
 		v := p.Variants[0]
 		priceCents := parsePriceCents(v.Price)
 		hits = append(hits, ucp.SearchHit{
-			Merchant: host,
-			Title:    p.Title,
-			Price:    priceCents,
-			Currency: "USD",
-			SKU:      v.SKU,
-			URL:      fmt.Sprintf("https://%s/products/%s", host, p.Handle),
+			Merchant:  host,
+			Title:     p.Title,
+			Price:     priceCents,
+			Currency:  "USD",
+			SKU:       v.SKU,
+			URL:       fmt.Sprintf("https://%s/products/%s", host, p.Handle),
+			VariantID: v.ID,
 		})
 	}
 	return hits, nil

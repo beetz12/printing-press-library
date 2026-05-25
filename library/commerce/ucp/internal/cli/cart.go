@@ -27,6 +27,7 @@ func newCartCmd(flags *rootFlags) *cobra.Command {
 func newCartAddCmd(flags *rootFlags) *cobra.Command {
 	var merchant, sku, gtin, title, cartID string
 	var qty, price int
+	var variantID int64
 
 	cmd := &cobra.Command{
 		Use:     "add",
@@ -64,11 +65,12 @@ func newCartAddCmd(flags *rootFlags) *cobra.Command {
 				ID:       uuid.New().String(),
 				Quantity: qty,
 				Item: ucp.Item{
-					ID:    uuid.New().String(),
-					Title: title,
-					Price: price,
-					SKU:   sku,
-					GTIN:  gtin,
+					ID:        uuid.New().String(),
+					Title:     title,
+					Price:     price,
+					SKU:       sku,
+					GTIN:      gtin,
+					VariantID: variantID,
 				},
 			}
 			cart.LineItems = append(cart.LineItems, li)
@@ -93,6 +95,7 @@ func newCartAddCmd(flags *rootFlags) *cobra.Command {
 	cmd.Flags().IntVar(&qty, "qty", 1, "Quantity")
 	cmd.Flags().IntVar(&price, "price", 0, "Price in cents (required)")
 	cmd.Flags().StringVar(&cartID, "cart", "", "Cart ID (creates new cart if not set)")
+	cmd.Flags().Int64Var(&variantID, "variant-id", 0, "Shopify numeric variant ID (required for real Shopify cart-add via checkout finalize)")
 	return cmd
 }
 
