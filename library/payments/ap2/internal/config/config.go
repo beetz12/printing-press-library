@@ -39,7 +39,7 @@ func Load(configPath string) (*Config, error) {
 	}
 	if path == "" {
 		home, _ := os.UserHomeDir()
-		path = filepath.Join(home, ".config", "github.com/mvanhorn/printing-press-library/library/payments/ap2", "config.toml")
+		path = filepath.Join(home, ".config", "ap2-pp-cli", "config.toml")
 	}
 	cfg.Path = path
 

@@ -104,25 +104,32 @@ func VerifyMandate(pub *ecdsa.PublicKey, mandate AP2Mandate) error {
 //   - payment_mandate.body.amount_cents    == cart_mandate.body.subtotal_cents
 //   - intent_mandate.expires_at must be in the future (if set)
 //
-// pubResolver maps the envelope.Subject -> public key. If the envelope uses
-// the same agent key for all three mandates, resolver returns that one key
-// for any input. If nil, signature verification is skipped (structural-only).
+// pubResolver maps a mandate.Subject -> public key. It is called once per
+// mandate using that mandate's own Subject, so v0.2 envelopes with a
+// user-signed intent (subject=user-<uuid>) plus agent-signed cart/payment
+// (subject=agent-<uuid>) resolve to different keys per mandate. v0.1
+// envelopes where envelope.Subject == every mandate.Subject still work:
+// each mandate resolves to the same key. If pubResolver is nil, signature
+// verification is skipped (structural-only).
 func VerifyEnvelope(envelope FinalizationEnvelope, pubResolver func(subject string) (*ecdsa.PublicKey, error)) error {
-	// Resolve public key (nil resolver = structural-only mode).
-	var pub *ecdsa.PublicKey
-	if pubResolver != nil {
-		var err error
-		pub, err = pubResolver(envelope.Subject)
-		if err != nil {
-			return &VerifyError{
-				Code:    ErrSubjectKeyNotFound,
-				Message: fmt.Sprintf("pubResolver error for subject %q: %v", envelope.Subject, err),
+	// Verify each mandate individually using its own subject for key resolution.
+	for _, m := range []AP2Mandate{envelope.IntentMandate, envelope.CartMandate, envelope.PaymentMandate} {
+		var pub *ecdsa.PublicKey
+		if pubResolver != nil {
+			subj := m.Subject
+			if subj == "" {
+				subj = envelope.Subject
+			}
+			var err error
+			pub, err = pubResolver(subj)
+			if err != nil {
+				return &VerifyError{
+					Code:      ErrSubjectKeyNotFound,
+					Message:   fmt.Sprintf("pubResolver error for subject %q: %v", subj, err),
+					MandateID: m.MandateID,
+				}
 			}
 		}
-	}
-
-	// Verify each mandate individually.
-	for _, m := range []AP2Mandate{envelope.IntentMandate, envelope.CartMandate, envelope.PaymentMandate} {
 		if err := VerifyMandate(pub, m); err != nil {
 			return err
 		}

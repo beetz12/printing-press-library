@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/ap2"
@@ -15,7 +16,8 @@ import (
 
 // defaultPubResolver resolves the public key for a given subject (agent ID)
 // by calling keys.LoadPublic(subject). The subject set by mandate sign equals
-// the key's AgentID, so this round-trips cleanly.
+// the key's AgentID, so this round-trips cleanly. Used when --no-user-intent-check
+// is set (v0.1 envelopes where all 3 mandates were signed by the same agent key).
 func defaultPubResolver(subject string) (*ecdsa.PublicKey, error) {
 	k, err := keys.LoadPublic(subject)
 	if err != nil {
@@ -36,6 +38,8 @@ and checks:
   3. cross-mandate chain references (intent→cart→payment)
   4. amount consistency (payment.amount_cents == cart.subtotal_cents)
   5. expiry (intent_mandate.expires_at must be in the future)
+  6. user authority chain (intent_mandate.subject must be a user-<uuid> key)
+     — pass --no-user-intent-check for v0.1 envelopes signed entirely by agent
 
 Exit codes:
   0  all checks passed
@@ -48,7 +52,10 @@ Exit codes:
   ucp-pp-cli checkout finalize | ap2-pp-cli mandate sign | ap2-pp-cli mandate verify
 
   # Structural-only check (no signature verification)
-  ap2-pp-cli mandate verify --no-sig-check envelope.json`,
+  ap2-pp-cli mandate verify --no-sig-check envelope.json
+
+  # v0.1 envelope (all 3 mandates signed by agent)
+  ap2-pp-cli mandate verify --no-user-intent-check envelope.json`,
 		Args: cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Read envelope from file arg or stdin.
@@ -79,14 +86,26 @@ Exit codes:
 				defer keys.ResetConfigDir()
 			}
 
-			// Build resolver: nil = structural-only (skips signature checks).
-			// defaultPubResolver calls keys.LoadPublic(subject) — requires a key in the keystore.
-			var resolver func(string) (*ecdsa.PublicKey, error)
 			noSigCheck, _ := cmd.Flags().GetBool("no-sig-check")
+			noUserIntentCheck, _ := cmd.Flags().GetBool("no-user-intent-check")
+
+			// Build resolver: nil = structural-only (skips signature checks).
+			//   - --no-user-intent-check  → defaultPubResolver (v0.1: agent-only keystore)
+			//   - otherwise               → keys.LoadPublicAny (v0.2: mixed user/agent keys)
+			var resolver func(string) (*ecdsa.PublicKey, error)
 			if !noSigCheck {
-				resolver = defaultPubResolver
+				if noUserIntentCheck {
+					resolver = defaultPubResolver
+				} else {
+					resolver = func(subject string) (*ecdsa.PublicKey, error) {
+						pub, err := keys.LoadPublicAny(subject)
+						if err != nil {
+							return nil, fmt.Errorf("%w — run 'ap2-pp-cli keys generate' or 'ap2-pp-cli user-keys generate'", err)
+						}
+						return pub, nil
+					}
+				}
 			}
-			// nil resolver = structural-only (VerifyEnvelope skips signature checks).
 
 			if err := ap2.VerifyEnvelope(envelope, resolver); err != nil {
 				var ve *ap2.VerifyError
@@ -109,6 +128,26 @@ Exit codes:
 				return err
 			}
 
+			// Trust chain check: intent MUST be signed by a user key (user-<uuid>),
+			// not an agent key. v0.1 envelopes (agent-signed intent) emit a warning
+			// rather than failing, to preserve a migration path.
+			if !noUserIntentCheck {
+				intentSubject := envelope.IntentMandate.Subject
+				if !strings.HasPrefix(intentSubject, "user-") {
+					msg := fmt.Sprintf("intent mandate subject %q is not a user key (user-<uuid>); pass --no-user-intent-check for v0.1 back-compat", intentSubject)
+					if flags.asJSON {
+						return flags.printJSON(cmd, map[string]any{
+							"ok":         false,
+							"error_code": "no_user_intent",
+							"message":    msg,
+							"mandate_id": envelope.IntentMandate.MandateID,
+						})
+					}
+					fmt.Fprintf(cmd.ErrOrStderr(), "trust chain warning: %s\n", msg)
+					// Treat as non-fatal warning for now — fall through to success output.
+				}
+			}
+
 			if flags.asJSON {
 				return flags.printJSON(cmd, map[string]any{
 					"ok":      true,
@@ -121,6 +160,7 @@ Exit codes:
 		},
 	}
 	cmd.Flags().BoolP("no-sig-check", "n", false, "Skip ECDSA signature verification (structural checks only)")
+	cmd.Flags().BoolP("no-user-intent-check", "u", false, "Skip user-intent trust chain check (v0.1 back-compat: allows agent-signed intent)")
 	cmd.Flags().StringVar(&keystorePath, "keystore", "", "Path to keystore directory (default: ~/.config/ap2-pp-cli/keys; or AP2_KEYS_DIR env)")
 	return cmd
 }

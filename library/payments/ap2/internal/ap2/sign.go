@@ -60,3 +60,16 @@ func SignEnvelope(priv *ecdsa.PrivateKey, envelope *FinalizationEnvelope) error 
 	}
 	return nil
 }
+
+// SignCartAndPayment signs only the cart and payment mandates in-place,
+// leaving the intent mandate's existing signature untouched.
+// Use this when the IntentMandate was already signed by a user key.
+func SignCartAndPayment(priv *ecdsa.PrivateKey, envelope *FinalizationEnvelope) error {
+	if err := SignMandate(priv, &envelope.CartMandate); err != nil {
+		return fmt.Errorf("signing cart mandate: %w", err)
+	}
+	if err := SignMandate(priv, &envelope.PaymentMandate); err != nil {
+		return fmt.Errorf("signing payment mandate: %w", err)
+	}
+	return nil
+}

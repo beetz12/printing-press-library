@@ -173,6 +173,68 @@ func TestSignEnvelope_VerifyAcrossMandates(t *testing.T) {
 	}
 }
 
+// TestSignCartAndPayment: pre-sign IntentMandate with a "user" key, then
+// SignCartAndPayment with a different "agent" key. Verify the intent signature
+// is untouched and the cart/payment signatures are present and verify against
+// the agent key.
+func TestSignCartAndPayment(t *testing.T) {
+	userKey := mustGenerateKey(t)
+	agentKey := mustGenerateKey(t)
+	envelope := buildTestEnvelope(t, "user-test")
+
+	// Sign intent with the user key first.
+	if err := SignMandate(userKey, &envelope.IntentMandate); err != nil {
+		t.Fatalf("pre-sign intent: %v", err)
+	}
+	intentSigBefore := envelope.IntentMandate.Signature
+	if intentSigBefore == "" {
+		t.Fatal("intent signature is empty after pre-sign")
+	}
+
+	// Cart and payment must be unsigned at this point.
+	if envelope.CartMandate.Signature != "" {
+		t.Fatal("cart should be unsigned before SignCartAndPayment")
+	}
+	if envelope.PaymentMandate.Signature != "" {
+		t.Fatal("payment should be unsigned before SignCartAndPayment")
+	}
+
+	// Agent signs cart + payment.
+	if err := SignCartAndPayment(agentKey, &envelope); err != nil {
+		t.Fatalf("SignCartAndPayment: %v", err)
+	}
+
+	// Intent signature must be untouched (bit-identical).
+	if envelope.IntentMandate.Signature != intentSigBefore {
+		t.Errorf("intent signature changed: before=%q after=%q", intentSigBefore, envelope.IntentMandate.Signature)
+	}
+
+	// Cart and payment must now be signed.
+	if envelope.CartMandate.Signature == "" {
+		t.Error("cart signature still empty after SignCartAndPayment")
+	}
+	if envelope.PaymentMandate.Signature == "" {
+		t.Error("payment signature still empty after SignCartAndPayment")
+	}
+
+	// Intent verifies against the user key (not the agent key).
+	if err := VerifyMandate(&userKey.PublicKey, envelope.IntentMandate); err != nil {
+		t.Errorf("intent should verify against user key: %v", err)
+	}
+	// Intent should NOT verify against the agent key.
+	if err := VerifyMandate(&agentKey.PublicKey, envelope.IntentMandate); err == nil {
+		t.Error("intent should NOT verify against agent key (different signer)")
+	}
+
+	// Cart and payment verify against the agent key.
+	if err := VerifyMandate(&agentKey.PublicKey, envelope.CartMandate); err != nil {
+		t.Errorf("cart should verify against agent key: %v", err)
+	}
+	if err := VerifyMandate(&agentKey.PublicKey, envelope.PaymentMandate); err != nil {
+		t.Errorf("payment should verify against agent key: %v", err)
+	}
+}
+
 func containsSubstring(s, sub string) bool {
 	return len(s) >= len(sub) && (s == sub || len(sub) == 0 ||
 		func() bool {

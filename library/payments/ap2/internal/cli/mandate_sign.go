@@ -20,19 +20,28 @@ import (
 //   - if --key-id given, keys.Load(--key-id)
 //   - else: keys.List(); if exactly 1, use it; if 0, error "no agent keys found — run 'ap2-pp-cli keys generate'" with exit code 2; if >1, error "multiple keys — specify --key-id <id>: <list>" with exit code 2
 //   - If --subject given, set envelope.Subject = --subject; else if envelope.Subject is empty, set it to the key's AgentID
-//   - Call ap2.SignEnvelope(priv, &envelope)
+//   - --user-intent <file>: load user-signed IntentMandate from <file>, splice into envelope, sign only cart+payment
+//   - --no-user-intent: v0.1 behavior — sign all 3 mandates with agent key (back-compat)
+//   - (no flag, intent already signed): sign only cart+payment (preserves user signature)
+//   - (no flag, intent unsigned): v0.1 fallback — sign all 3 with agent key
 //   - Marshal signed envelope to stdout (pretty-printed unless --compact)
 func newMandateSignCmd(flags *rootFlags) *cobra.Command {
 	var envelopeArg string
 	var keyID string
 	var subject string
+	var userIntentFile string
+	var noUserIntent bool
 
 	cmd := &cobra.Command{
 		Use:   "sign",
 		Short: "Sign an unsigned AP2 FinalizationEnvelope with an agent key",
 		Long: `sign reads an unsigned AP2 FinalizationEnvelope (JSON) from a file or stdin,
-signs all three mandates (intent, cart, payment) with the specified ECDSA-P256 agent key,
+signs the cart and payment mandates with the specified ECDSA-P256 agent key,
 and writes the signed envelope to stdout.
+
+In v0.2, the IntentMandate is signed by a user key (see 'ap2-pp-cli intent grant').
+Pass --user-intent <file> to splice that user-signed mandate into the envelope
+before agent signing — the user's signature on intent is preserved untouched.
 
 Key selection:
   - --key-id <agent-id>  use this specific key
@@ -42,12 +51,19 @@ Subject:
   - --subject <s>        set envelope.Subject to this value
   - (no flag)            if envelope.Subject is empty, default to the key's AgentID
 
+User intent (v0.2):
+  - --user-intent <file>      load user-signed IntentMandate JSON, splice into envelope
+  - --no-user-intent          v0.1 back-compat: sign all 3 mandates with agent key
+  - (neither, intent signed)  sign only cart + payment (preserves user signature)
+  - (neither, intent unsigned) v0.1 fallback: sign all 3 with agent key
+
 Exit codes:
   0  signed envelope written to stdout
   1  signing error
   2  usage error (no key, ambiguous key, bad input)`,
 		Example: `  ap2-pp-cli mandate sign --envelope envelope.json
   ucp-pp-cli checkout finalize --cart $C --json | ap2-pp-cli mandate sign --envelope -
+  ap2-pp-cli mandate sign --envelope envelope.json --user-intent signed_intent.json
   ap2-pp-cli mandate sign --envelope envelope.json --key-id agent-<uuid> --subject my-agent-v1`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if dryRunOK(flags) {
@@ -73,6 +89,19 @@ Exit codes:
 			var envelope ap2.FinalizationEnvelope
 			if err := json.Unmarshal(data, &envelope); err != nil {
 				return usageErr(fmt.Errorf("invalid envelope JSON: %w", err))
+			}
+
+			// Splice user-signed intent if requested.
+			if userIntentFile != "" {
+				uiData, uierr := os.ReadFile(userIntentFile)
+				if uierr != nil {
+					return fmt.Errorf("reading user intent file %s: %w", userIntentFile, uierr)
+				}
+				var userIntent ap2.AP2Mandate
+				if uErr := json.Unmarshal(uiData, &userIntent); uErr != nil {
+					return usageErr(fmt.Errorf("invalid user intent JSON: %w", uErr))
+				}
+				envelope.IntentMandate = userIntent
 			}
 
 			// Resolve key.
@@ -112,9 +141,22 @@ Exit codes:
 				envelope.Subject = key.AgentID
 			}
 
-			// Sign all three mandates.
-			if err := ap2.SignEnvelope(key.PrivateKey, &envelope); err != nil {
-				return fmt.Errorf("signing envelope: %w", err)
+			// Decide signing path:
+			//   - --user-intent given  → sign only cart + payment (intent already user-signed)
+			//   - --no-user-intent     → sign all 3 with agent key (v0.1 back-compat)
+			//   - intent already signed → sign only cart + payment (preserve existing sig)
+			//   - otherwise            → sign all 3 (v0.1 fallback)
+			signCartAndPaymentOnly := userIntentFile != "" ||
+				(!noUserIntent && envelope.IntentMandate.Signature != "")
+
+			if signCartAndPaymentOnly {
+				if err := ap2.SignCartAndPayment(key.PrivateKey, &envelope); err != nil {
+					return fmt.Errorf("signing envelope: %w", err)
+				}
+			} else {
+				if err := ap2.SignEnvelope(key.PrivateKey, &envelope); err != nil {
+					return fmt.Errorf("signing envelope: %w", err)
+				}
 			}
 
 			// Output.
@@ -133,5 +175,7 @@ Exit codes:
 	cmd.Flags().StringVar(&envelopeArg, "envelope", "-", `Envelope file path, or "-" to read from stdin`)
 	cmd.Flags().StringVar(&keyID, "key-id", "", "Agent key ID to sign with (e.g. agent-<uuid>); auto-selected if omitted and only one key exists")
 	cmd.Flags().StringVar(&subject, "subject", "", "Override envelope.Subject (defaults to the signing key's AgentID if envelope.Subject is empty)")
+	cmd.Flags().StringVar(&userIntentFile, "user-intent", "", "Path to a user-signed IntentMandate JSON (from 'ap2 intent grant')")
+	cmd.Flags().BoolVar(&noUserIntent, "no-user-intent", false, "Sign all 3 mandates with agent key (v0.1 back-compat; skips user authority chain)")
 	return cmd
 }
