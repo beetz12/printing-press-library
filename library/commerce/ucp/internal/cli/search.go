@@ -15,6 +15,8 @@ func newSearchCmd(flags *rootFlags) *cobra.Command {
 	var merchant string
 	var limit int
 	var allPet bool
+	var transportFlag string
+	var profileURL string
 
 	cmd := &cobra.Command{
 		Use:     "search <query>",
@@ -58,39 +60,61 @@ func newSearchCmd(flags *rootFlags) *cobra.Command {
 				return usageErr(fmt.Errorf("--merchant is required (or use --all-pet to search all pet stores)"))
 			}
 
-			// Determine transport: try manifest first; fall through to products.json for Shopify.
-			useShopify := true
-			manifestCtx := ctx
-			m, err := ucp.FetchManifest(manifestCtx, merchant)
-			if err == nil {
-				// Check if any service endpoint points to myshopify.com (Shopify UCP pattern).
-				useShopify = isShopifyMerchant(m)
-			}
-			// If manifest fetch fails (e.g. localhost mock that doesn't advertise /.well-known/ucp
-			// or a network error), fall through to products.json attempt only for known Shopify domains.
 			// For localhost/127.0.0.1 targets (CI fixture), always use the REST client.
 			if strings.HasPrefix(merchant, "127.0.0.1") || strings.HasPrefix(merchant, "localhost") {
-				useShopify = false
-			}
-
-			var hits []ucp.SearchHit
-			if useShopify {
-				hits, err = transport.ShopifyProductsSearch(ctx, merchant, query, limit)
-				if err != nil {
-					return fmt.Errorf("shopify catalog search: %w", err)
-				}
-			} else {
-				// Legacy REST path (mock merchant or non-Shopify REST merchant).
 				c, cerr := ucp.NewMerchantClient(ctx, merchant)
 				if cerr != nil {
 					return fmt.Errorf("connect to merchant %s: %w", merchant, cerr)
 				}
-				hits, err = c.Search(ctx, query, limit)
+				hits, err := c.Search(ctx, query, limit)
 				if err != nil {
 					return fmt.Errorf("search: %w", err)
 				}
+				return printSearchHits(cmd, flags, hits)
 			}
 
+			// --transport mcp: fetch manifest and call McpSearch directly.
+			if transportFlag == "mcp" {
+				m, err := ucp.FetchManifest(ctx, merchant)
+				if err != nil {
+					return fmt.Errorf("fetch manifest for MCP transport: %w", err)
+				}
+				hits, err := transport.McpSearch(ctx, m, query, limit, profileURL)
+				if err != nil {
+					return fmt.Errorf("MCP catalog search: %w", err)
+				}
+				return printSearchHits(cmd, flags, hits)
+			}
+
+			// --transport products-json: legacy Shopify products.json path.
+			if transportFlag == "products-json" {
+				hits, err := transport.ShopifyProductsSearch(ctx, merchant, query, limit)
+				if err != nil {
+					return fmt.Errorf("shopify catalog search: %w", err)
+				}
+				return printSearchHits(cmd, flags, hits)
+			}
+
+			// --transport auto (default): try products.json first; fall through to MCP
+			// when products.json 500s or returns zero hits and manifest declares mcp transport.
+			hits, err := transport.ShopifyProductsSearch(ctx, merchant, query, limit)
+			if err != nil || len(hits) == 0 {
+				// Attempt MCP fallthrough: fetch manifest to check if MCP is available.
+				m, merr := ucp.FetchManifest(ctx, merchant)
+				if merr == nil && hasMCPTransport(m) {
+					mcpHits, mcpErr := transport.McpSearch(ctx, m, query, limit, profileURL)
+					if mcpErr == nil {
+						return printSearchHits(cmd, flags, mcpHits)
+					}
+					// MCP also failed — return original products.json error if we had one.
+					if err != nil {
+						return fmt.Errorf("shopify catalog search: %w (MCP fallback also failed: %v)", err, mcpErr)
+					}
+				}
+			}
+			if err != nil {
+				return fmt.Errorf("shopify catalog search: %w", err)
+			}
 			return printSearchHits(cmd, flags, hits)
 		},
 	}
@@ -98,22 +122,16 @@ func newSearchCmd(flags *rootFlags) *cobra.Command {
 	cmd.Flags().StringVar(&merchant, "merchant", "", "Merchant domain (e.g. bark.co)")
 	cmd.Flags().IntVar(&limit, "limit", 10, "Max results to return")
 	cmd.Flags().BoolVar(&allPet, "all-pet", false, "Fan out query across all rope-toy pet merchants (bark.co, ruffwear.com, sitstay.com)")
+	cmd.Flags().StringVar(&transportFlag, "transport", "auto", "Transport: auto (default — try products.json then MCP), products-json, or mcp")
+	cmd.Flags().StringVar(&profileURL, "profile-url", "", "UCP agent profile URL (default: https://www.igvita.com/ucp/profile.json)")
 	return cmd
 }
 
-// isShopifyMerchant returns true if the manifest advertises a Shopify-hosted MCP endpoint.
-func isShopifyMerchant(m *ucp.Manifest) bool {
+// hasMCPTransport returns true if the manifest declares any mcp-transport service with an endpoint.
+func hasMCPTransport(m *ucp.Manifest) bool {
 	for _, svcs := range m.UCP.Services {
 		for _, s := range svcs {
-			if strings.Contains(s.Endpoint, ".myshopify.com") {
-				return true
-			}
-		}
-	}
-	// Also treat "embedded" transport as Shopify (Shopify-hosted merchants often omit endpoint URL).
-	for _, svcs := range m.UCP.Services {
-		for _, s := range svcs {
-			if s.Transport == "embedded" || s.Transport == "mcp" {
+			if s.Transport == "mcp" && s.Endpoint != "" {
 				return true
 			}
 		}
