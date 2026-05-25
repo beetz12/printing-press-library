@@ -31,15 +31,18 @@ func newSearchCmd(flags *rootFlags) *cobra.Command {
 			query := args[0]
 			ctx := cmd.Context()
 
-			// --all-pet: fan out across all rope-toy pet merchants.
+			// --all-pet: fan out across Grade-A pet merchants with catalog search.
+			// Grade B merchants (kongcompany.com) are excluded — no catalog endpoint to fan into.
 			if allPet {
 				var petDomains []string
 				for _, m := range registry.Default() {
-					if m.HasRopeToys {
+					if m.HasRopeToys && m.Grade == "A" {
 						petDomains = append(petDomains, m.Domain)
 					}
 				}
-				var allHits []ucp.SearchHit
+				// Initialize as empty slice (not nil) so json.Encode emits [] not null
+				// when no merchants return hits.
+				allHits := []ucp.SearchHit{}
 				for _, domain := range petDomains {
 					hits, err := transport.ShopifyProductsSearch(ctx, domain, query, limit)
 					if err != nil {
@@ -120,6 +123,11 @@ func isShopifyMerchant(m *ucp.Manifest) bool {
 
 func printSearchHits(cmd *cobra.Command, flags *rootFlags, hits []ucp.SearchHit) error {
 	if flags.asJSON {
+		// Always emit [] (not null) for empty/nil results so consumers can
+		// `jq '. | length'` without special-casing the empty response.
+		if hits == nil {
+			hits = []ucp.SearchHit{}
+		}
 		enc := json.NewEncoder(cmd.OutOrStdout())
 		enc.SetIndent("", "  ")
 		return enc.Encode(hits)
