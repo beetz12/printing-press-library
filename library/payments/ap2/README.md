@@ -76,6 +76,42 @@ Default is always sandbox. Sandbox builds the complete request payload and retur
 
 Live mode POSTs the signed `FinalizationEnvelope` to the merchant's `complete_checkout` MCP endpoint. It requires a valid Google Pay token via `--token`. ap2-pp-cli does not obtain GPay tokens — that is the calling agent's responsibility.
 
+## Validating against a live merchant (probe)
+
+`payment probe` sends a `complete_checkout` request to the merchant's live MCP endpoint using a deliberately-invalid stub token — no money moves. The expected GOOD outcome is `classification=request_shape_ok`, which means the merchant accepted your request structure but rejected the stub token. That proves the integration is structurally correct before you obtain a real Google Pay token.
+
+```bash
+ap2-pp-cli payment probe --envelope signed.json
+# Expected output: classification=request_shape_ok → integration is structurally correct
+```
+
+Recommended workflow:
+
+```bash
+# 1. Sign the envelope (sandbox — no network call)
+ucp-pp-cli checkout finalize --cart <cart_id> --json \
+  | ap2-pp-cli mandate sign --envelope - --json > signed.json
+
+# 2. Probe the live merchant with a stub token (validates request shape)
+ap2-pp-cli payment probe --envelope signed.json
+# classification=request_shape_ok → shape is correct, proceed
+
+# 3. Authorize with a real Google Pay token
+ap2-pp-cli payment authorize --envelope signed.json --live --token <gpay-token>
+```
+
+Classification outcomes:
+
+| Classification | Meaning | Action |
+|---|---|---|
+| `request_shape_ok` | Merchant accepted shape, rejected stub token (GOOD) | Proceed with real token |
+| `request_shape_bad` | Merchant rejected request structure | Check payment_mandate fields and signature |
+| `agent_not_authorized` | Profile/delegation gate failed | Check `--profile-url` — default: https://www.igvita.com/ucp/profile.json |
+| `merchant_unreachable` | 5xx or transport error | Retry or verify endpoint URL |
+| `unknown` | No pattern matched | Inspect `response_body` in output |
+
+Exit codes: `0` = request_shape_ok, `2` = shape/auth/unknown issue, `3` = merchant unreachable.
+
 ## Integration with ucp-pp-cli
 
 ap2-pp-cli pairs with ucp-pp-cli to complete the full agentic-commerce flow against real merchants. The script `scripts/integration_bark.sh` runs the five-stage chain non-interactively (US-005 / openbrain-fmpb acceptance gate).
@@ -153,11 +189,12 @@ ap2-pp-cli mandate verify -n signed.json                    # structural only
 
 ### payment
 
-Authorize a signed envelope and track transactions.
+Authorize a signed envelope, probe live shape, and track transactions.
 
 ```bash
 ap2-pp-cli payment authorize --envelope signed.json           # sandbox (default)
 ap2-pp-cli payment authorize --envelope signed.json --live --token <tok>  # live
+ap2-pp-cli payment probe --envelope signed.json               # validate shape against live merchant (stub token)
 ap2-pp-cli payment status --transaction sandbox-<uuid>        # look up a txn
 ```
 

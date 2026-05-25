@@ -71,6 +71,14 @@ Exit codes:
 				return fmt.Errorf("invalid envelope JSON: %w", err)
 			}
 
+			// Wire --keystore flag so the resolver loads from the user-supplied
+			// directory rather than the default. Restore on return so concurrent
+			// callers in the same process aren't affected.
+			if keystorePath != "" {
+				keys.SetConfigDir(keystorePath)
+				defer keys.ResetConfigDir()
+			}
+
 			// Build resolver: nil = structural-only (skips signature checks).
 			// defaultPubResolver calls keys.LoadPublic(subject) — requires a key in the keystore.
 			var resolver func(string) (*ecdsa.PublicKey, error)
@@ -113,6 +121,6 @@ Exit codes:
 		},
 	}
 	cmd.Flags().BoolP("no-sig-check", "n", false, "Skip ECDSA signature verification (structural checks only)")
-	cmd.Flags().StringVar(&keystorePath, "keystore", "", "Path to keystore directory (default: ~/.ap2/keys)")
+	cmd.Flags().StringVar(&keystorePath, "keystore", "", "Path to keystore directory (default: ~/.config/ap2-pp-cli/keys; or AP2_KEYS_DIR env)")
 	return cmd
 }

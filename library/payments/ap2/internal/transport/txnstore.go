@@ -9,8 +9,11 @@ import (
 	"sort"
 )
 
-// txnIDPattern accepts sandbox-<uuid>, live-<uuid>, or agent-<uuid> prefixes.
-var txnIDPattern = regexp.MustCompile(`^(sandbox|live|agent)-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
+// txnIDPattern accepts sandbox-<uuid> or live-<uuid> prefixes. These are the
+// only prefixes CompleteCheckout generates; older drafts included agent- but
+// no code path produces it, so the pattern stays minimal to avoid signaling
+// that agent-<uuid> is a valid txn id.
+var txnIDPattern = regexp.MustCompile(`^(sandbox|live)-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
 
 // txnDir is the function used to resolve the transactions directory.
 // Tests override this via SetTxnDir to use a tmpdir without touching real state.

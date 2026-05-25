@@ -35,7 +35,7 @@ func Load(configPath string) (*Config, error) {
 	// Resolve config path
 	path := configPath
 	if path == "" {
-		path = os.Getenv("UCP_CONFIG")
+		path = os.Getenv("AP2_CONFIG")
 	}
 	if path == "" {
 		home, _ := os.UserHomeDir()
@@ -73,7 +73,7 @@ func Load(configPath string) (*Config, error) {
 	}
 
 	// Base URL override (used by printing-press verify to point at mock/test servers)
-	if v := os.Getenv("UCP_BASE_URL"); v != "" {
+	if v := os.Getenv("AP2_BASE_URL"); v != "" {
 		cfg.BaseURL = v
 	}
 	return cfg, nil

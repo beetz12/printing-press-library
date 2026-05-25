@@ -8,7 +8,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"strings"
 	"time"
 )
 
@@ -60,7 +59,7 @@ func VerifyMandate(pub *ecdsa.PublicKey, mandate AP2Mandate) error {
 	}
 	sum := sha256.Sum256(bodyBytes)
 	computed := hex.EncodeToString(sum[:])
-	if !strings.EqualFold(computed, mandate.BodyHash) {
+	if computed != mandate.BodyHash {
 		return &VerifyError{
 			Code:      ErrBodyHashMismatch,
 			Message:   fmt.Sprintf("computed %s, stored %s", computed, mandate.BodyHash),

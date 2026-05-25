@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/ap2"
@@ -22,20 +23,23 @@ func newPaymentCmd(flags *rootFlags) *cobra.Command {
 		Long: `payment manages the final step of an AP2 agentic checkout:
 
   authorize  POST a signed FinalizationEnvelope to the merchant's complete_checkout endpoint
+  probe      Validate request shape against a live merchant using a stub token (no money spent)
   status     Look up a recorded transaction by ID
 
 Default mode is --sandbox: the request is built and shown without sending to the merchant.
 Pass --live to make a real network call (requires --token).`,
 	}
 	cmd.AddCommand(newPaymentAuthorizeCmd(flags))
+	cmd.AddCommand(newPaymentProbeCmd(flags))
 	cmd.AddCommand(newPaymentStatusCmd(flags))
 	return cmd
 }
 
 func newPaymentAuthorizeCmd(flags *rootFlags) *cobra.Command {
 	var (
-		envelopeFile  string
+		envelopeFile   string
 		googlePayToken string
+		tokenFile      string
 		sandbox        bool
 		live           bool
 		merchantMcpURL string
@@ -130,9 +134,27 @@ Exit codes:
 				mcpURL = deriveMcpURLFromCheckout(envelope.CheckoutURL)
 			}
 
+			// Resolve Google Pay token: prefer secure sources first.
+			//   1. --token-file <path>     reads bytes from file; not in process listing
+			//   2. AP2_GPAY_TOKEN env var  not in process listing
+			//   3. --token <value>         convenience fallback; visible in `ps aux`, /proc/<pid>/cmdline
+			// If multiple are set, --token wins for back-compat but we warn.
+			resolvedToken := googlePayToken
+			if resolvedToken != "" {
+				fmt.Fprintln(cmd.ErrOrStderr(), "warning: --token exposes the payment token in process listings; prefer AP2_GPAY_TOKEN env or --token-file")
+			} else if tokenFile != "" {
+				b, ferr := os.ReadFile(tokenFile)
+				if ferr != nil {
+					return fmt.Errorf("reading --token-file %s: %w", tokenFile, ferr)
+				}
+				resolvedToken = strings.TrimSpace(string(b))
+			} else {
+				resolvedToken = os.Getenv("AP2_GPAY_TOKEN")
+			}
+
 			opts := transport.CompleteOpts{
 				MerchantMcpURL: mcpURL,
-				GooglePayToken: googlePayToken,
+				GooglePayToken: resolvedToken,
 				ProfileURL:     profileURL,
 				Sandbox:        !isLive,
 			}
@@ -156,10 +178,133 @@ Exit codes:
 	}
 
 	cmd.Flags().StringVar(&envelopeFile, "envelope", "-", "Path to signed FinalizationEnvelope JSON file, or - for stdin")
-	cmd.Flags().StringVar(&googlePayToken, "token", "", "Google Pay token for live mode")
+	cmd.Flags().StringVar(&googlePayToken, "token", "", "Google Pay token for live mode (INSECURE: visible in process listings; prefer AP2_GPAY_TOKEN env or --token-file)")
+	cmd.Flags().StringVar(&tokenFile, "token-file", "", "Path to a file whose contents are the Google Pay token (not visible in process listings)")
 	cmd.Flags().BoolVar(&sandbox, "sandbox", true, "Sandbox mode: build the request but do NOT send it (default)")
 	cmd.Flags().BoolVar(&live, "live", false, "Live mode: POST to merchant's complete_checkout endpoint (requires --token)")
 	cmd.Flags().StringVar(&merchantMcpURL, "merchant-mcp-url", "", "Merchant MCP endpoint URL (derived from envelope.checkout_url if omitted)")
+	cmd.Flags().StringVar(&profileURL, "profile-url", "", "UCP agent profile URL (default: https://www.igvita.com/ucp/profile.json)")
+
+	return cmd
+}
+
+func newPaymentProbeCmd(flags *rootFlags) *cobra.Command {
+	var (
+		envelopeFile   string
+		merchantMcpURL string
+		tokenStub      string
+		profileURL     string
+	)
+
+	cmd := &cobra.Command{
+		Use:   "probe",
+		Short: "Validate request shape against a live merchant using a stub token (no money spent)",
+		Long: `probe reads a signed AP2 FinalizationEnvelope and sends a complete_checkout
+request to the merchant's MCP endpoint with a deliberately-invalid stub token.
+
+The expected GOOD outcome is classification=request_shape_ok — the merchant
+rejected our stub token (not our request structure). This proves the integration
+is structurally correct without spending any money.
+
+Other classifications indicate actionable problems:
+  request_shape_bad     Merchant rejected the request structure itself
+  agent_not_authorized  Profile/delegation gate failed
+  merchant_unreachable  5xx or transport error
+  unknown               Doesn't match any known pattern
+
+Exit codes:
+  0  request_shape_ok (integration structurally correct)
+  2  request_shape_bad | agent_not_authorized | unknown
+  3  merchant_unreachable`,
+		Example: `  # Probe a signed envelope against the live merchant
+  ap2-pp-cli payment probe --envelope signed.json
+
+  # Probe with explicit merchant URL
+  ap2-pp-cli payment probe --envelope signed.json --merchant-mcp-url https://bark.co/api/ucp/mcp
+
+  # Read envelope from stdin
+  cat signed.json | ap2-pp-cli payment probe --envelope -`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			// Read envelope from file or stdin.
+			var data []byte
+			var err error
+			if envelopeFile == "" || envelopeFile == "-" {
+				data, err = io.ReadAll(cmd.InOrStdin())
+				if err != nil {
+					return fmt.Errorf("reading stdin: %w", err)
+				}
+			} else {
+				data, err = os.ReadFile(envelopeFile)
+				if err != nil {
+					return fmt.Errorf("reading %s: %w", envelopeFile, err)
+				}
+			}
+
+			var envelope ap2.FinalizationEnvelope
+			if err := json.Unmarshal(data, &envelope); err != nil {
+				return fmt.Errorf("invalid envelope JSON: %w", err)
+			}
+
+			// Verify-first: abort on invalid signature.
+			resolver := func(subject string) (*ecdsa.PublicKey, error) {
+				k, err := keys.LoadPublic(subject)
+				if err != nil {
+					return nil, err
+				}
+				return k.PublicKey, nil
+			}
+			if err := ap2.VerifyEnvelope(envelope, resolver); err != nil {
+				var ve *ap2.VerifyError
+				if errors.As(err, &ve) {
+					if flags.asJSON {
+						return flags.printJSON(cmd, map[string]any{
+							"ok":         false,
+							"error_code": string(ve.Code),
+							"message":    ve.Message,
+							"mandate_id": ve.MandateID,
+						})
+					}
+					fmt.Fprintf(cmd.ErrOrStderr(), "verify failed [%s]", ve.Code)
+					if ve.MandateID != "" {
+						fmt.Fprintf(cmd.ErrOrStderr(), " (mandate: %s)", ve.MandateID)
+					}
+					fmt.Fprintf(cmd.ErrOrStderr(), ": %s\n", ve.Message)
+					return usageErr(fmt.Errorf("verify failed: %s", ve.Code))
+				}
+				return err
+			}
+
+			opts := transport.ProbeOpts{
+				MerchantMcpURL: merchantMcpURL,
+				TokenStub:      tokenStub,
+				ProfileURL:     profileURL,
+			}
+
+			result, err := transport.Probe(cmd.Context(), envelope, opts)
+			if err != nil {
+				// Pre-request failure (e.g. no MCP URL).
+				return fmt.Errorf("probe: %w", err)
+			}
+
+			if err := flags.printJSON(cmd, result); err != nil {
+				return err
+			}
+
+			// Map classification to exit code.
+			switch result.Classification {
+			case transport.ProbeRequestShapeOK:
+				return nil // exit 0
+			case transport.ProbeMerchantUnreachable:
+				return &cliError{code: 3, err: fmt.Errorf("merchant unreachable: %s", result.MerchantError)}
+			default:
+				return &cliError{code: 2, err: fmt.Errorf("probe classification: %s", result.Classification)}
+			}
+		},
+	}
+
+	cmd.Flags().StringVar(&envelopeFile, "envelope", "-", "Path to signed FinalizationEnvelope JSON file, or - for stdin")
+	cmd.Flags().StringVar(&merchantMcpURL, "merchant-mcp-url", "", "Merchant MCP endpoint URL (derived from envelope.checkout_url if omitted)")
+	cmd.Flags().StringVar(&tokenStub, "token-stub", "", "Stub token to send (default: stub-invalid-token-for-probe)")
 	cmd.Flags().StringVar(&profileURL, "profile-url", "", "UCP agent profile URL (default: https://www.igvita.com/ucp/profile.json)")
 
 	return cmd

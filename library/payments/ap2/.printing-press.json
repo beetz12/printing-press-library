@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-05-25T05:18:00Z",
+  "printing_press_version": "4.13.1",
+  "api_name": "ap2",
+  "display_name": "AP2",
+  "cli_name": "ap2-pp-cli",
+  "owner": "beetz12",
+  "printer": "beetz12",
+  "printer_name": "david",
+  "spec_path": "https://ap2-protocol.org/specification/core",
+  "run_id": "20260525-051800-hand-scaffold",
+  "category": "payments",
+  "description": "Go CLI for the AP2 (Agent Payments Protocol) — the signing and authorization counterpart to ucp-pp-cli. Manages ECDSA-P256 agent keys, signs AP2 FinalizationEnvelopes, and POSTs signed payment_mandates to merchant complete_checkout endpoints (sandbox default).",
+  "mcp_binary": "ap2-pp-mcp",
+  "mcp_tool_count": 10,
+  "mcp_ready": "full",
+  "api_version": "0.1.0",
+  "auth_type": "local_keys",
+  "auth_env_vars": [
+    "AP2_GPAY_TOKEN",
+    "AP2_KEYS_DIR",
+    "AP2_TXN_DIR",
+    "AP2_CONFIG",
+    "AP2_BASE_URL"
+  ],
+  "novel_features": [
+    {
+      "name": "ECDSA-P256 AP2 mandate signing",
+      "command": "mandate sign",
+      "description": "Sign all three AP2 mandates (intent, cart, payment) of a FinalizationEnvelope with a local ECDSA-P256 agent key. Signature is base64(ASN.1 DER(ecdsa.SignASN1(priv, sha256(body_hash_string)))). Pre-validates body_hash matches body bytes before signing — rejects tampered bodies."
+    },
+    {
+      "name": "Sandbox-default payment authorization",
+      "command": "payment authorize",
+      "description": "Default --sandbox mode builds the full complete_checkout JSON-RPC request and returns sandbox_authorized status WITHOUT making any network call (enforced by failing transport in tests). --live requires --token / --token-file / AP2_GPAY_TOKEN env to actually POST."
+    },
+    {
+      "name": "Live-shape probe with stub token",
+      "command": "payment probe",
+      "description": "Fires a real --live POST with a deliberately-invalid stub token to classify the merchant's response into 5 actionable categories: request_shape_ok (GOOD — token rejected, shape accepted), request_shape_bad, agent_not_authorized, merchant_unreachable, unknown. Proves the integration is structurally correct without spending money."
+    }
+  ]
+}

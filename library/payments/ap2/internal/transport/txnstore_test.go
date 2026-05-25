@@ -73,7 +73,9 @@ func TestValidateTxnID_PathTraversal(t *testing.T) {
 		// Valid IDs.
 		{"sandbox-12345678-1234-1234-1234-123456789abc", false},
 		{"live-12345678-1234-1234-1234-123456789abc", false},
-		{"agent-12345678-1234-1234-1234-123456789abc", false},
+		// agent- is intentionally NOT a valid prefix: CompleteCheckout only
+		// produces sandbox- and live-; agent-<uuid> would be confusing.
+		{"agent-12345678-1234-1234-1234-123456789abc", true},
 		// Path traversal attempts.
 		{"../etc/passwd", true},
 		{"sandbox-../escape", true},
