@@ -180,7 +180,7 @@ Exit codes:
 	cmd.Flags().StringVar(&envelopeFile, "envelope", "-", "Path to signed FinalizationEnvelope JSON file, or - for stdin")
 	cmd.Flags().StringVar(&googlePayToken, "token", "", "Google Pay token for live mode (INSECURE: visible in process listings; prefer AP2_GPAY_TOKEN env or --token-file)")
 	cmd.Flags().StringVar(&tokenFile, "token-file", "", "Path to a file whose contents are the Google Pay token (not visible in process listings)")
-	cmd.Flags().BoolVar(&sandbox, "sandbox", true, "Sandbox mode: build the request but do NOT send it (default)")
+	cmd.Flags().BoolVar(&sandbox, "sandbox", false, "Sandbox mode: build the request but do NOT send it (this is the implicit default when --live is not passed)")
 	cmd.Flags().BoolVar(&live, "live", false, "Live mode: POST to merchant's complete_checkout endpoint (requires --token)")
 	cmd.Flags().StringVar(&merchantMcpURL, "merchant-mcp-url", "", "Merchant MCP endpoint URL (derived from envelope.checkout_url if omitted)")
 	cmd.Flags().StringVar(&profileURL, "profile-url", "", "UCP agent profile URL (default: https://www.igvita.com/ucp/profile.json)")
