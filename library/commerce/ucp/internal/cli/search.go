@@ -73,6 +73,24 @@ func newSearchCmd(flags *rootFlags) *cobra.Command {
 				return printSearchHits(cmd, flags, hits)
 			}
 
+			// Etsy adapter (non-UCP merchant).
+			if merchant == "etsy.com" || merchant == "www.etsy.com" {
+				hits, err := transport.EtsySearch(ctx, query, limit)
+				if err != nil {
+					return err
+				}
+				return printSearchHits(cmd, flags, hits)
+			}
+
+			// eBay adapter (non-UCP merchant).
+			if merchant == "ebay.com" || merchant == "www.ebay.com" {
+				hits, err := transport.EbaySearch(ctx, query, limit)
+				if err != nil {
+					return err
+				}
+				return printSearchHits(cmd, flags, hits)
+			}
+
 			// --transport mcp: fetch manifest and call McpSearch directly.
 			if transportFlag == "mcp" {
 				m, err := ucp.FetchManifest(ctx, merchant)
