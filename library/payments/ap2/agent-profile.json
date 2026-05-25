@@ -1,0 +1,12 @@
+{
+  "ap2": {
+    "version": "2026-05-25",
+    "subject": "ap2-pp-cli",
+    "capabilities": {
+      "dev.ap2.payments.mandate.sign":   [{"version": "2026-05-25"}],
+      "dev.ap2.payments.mandate.verify": [{"version": "2026-05-25"}],
+      "dev.ap2.payments.authorize":      [{"version": "2026-05-25"}]
+    }
+  },
+  "signing_keys": []
+}

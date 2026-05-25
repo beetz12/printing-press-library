@@ -1,0 +1,33 @@
+{
+  "envelope_version": "1.0",
+  "subject": "ap2-pp-cli-test-agent",
+  "intent_mandate": {
+    "type": "intent",
+    "mandate_id": "intent_test-001",
+    "issued_at": "2026-05-25T12:00:00Z",
+    "expires_at": "2026-05-26T12:00:00Z",
+    "subject": "ap2-pp-cli-test-agent",
+    "body": {"currency":"USD","description":"Buy a durable dog rope toy under $30","expires_in_hours":24,"max_amount_cents":3000},
+    "body_hash": "0318bf0f6b288e66b5f2ace7851aa38f92db6815a0685fa0c7bcf12beb5c8f46"
+  },
+  "cart_mandate": {
+    "type": "cart",
+    "mandate_id": "cart_test-001",
+    "issued_at": "2026-05-25T12:00:00Z",
+    "subject": "ap2-pp-cli-test-agent",
+    "body": {"checkout_url":"https://bark.co/checkout/tok-test-001","currency":"USD","intent_mandate_id":"intent_test-001","line_items":[{"id":"li-test-001","item":{"id":"prod-test-001","price":799,"title":"Durable Dog Rope Toy"},"quantity":1}],"merchant":"bark.co","merchant_cart_token":"tok-test-001","subtotal_cents":799},
+    "body_hash": "464cd2b002afe383be96d412430e8e1abe6a59cc624d4542b3d843169565beb1"
+  },
+  "payment_mandate": {
+    "type": "payment",
+    "mandate_id": "payment_test-001",
+    "issued_at": "2026-05-25T12:00:00Z",
+    "subject": "ap2-pp-cli-test-agent",
+    "body": {"amount_cents":799,"cart_mandate_id":"cart_test-001","currency":"USD","merchant_cart_token":"tok-test-001","payment_handler":"com.google.pay"},
+    "body_hash": "24b228009c82160da469061fa3dfbaae5e3cedf6201a493e4e70bd1a3d5c5075"
+  },
+  "merchant": "bark.co",
+  "merchant_cart_token": "tok-test-001",
+  "checkout_url": "https://bark.co/checkout/tok-test-001",
+  "instructions": "Sign all three mandates and submit to the payment handler."
+}

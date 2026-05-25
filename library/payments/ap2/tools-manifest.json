@@ -1,0 +1,827 @@
+{
+  "tools": [
+    {
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "description": "POST /checkout. Optional: version, spec, schema (plus 4 more).",
+      "inputSchema": {
+        "properties": {
+          "config": {
+            "description": "The config parameter",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The endpoint parameter",
+            "type": "string"
+          },
+          "id": {
+            "description": "The id parameter",
+            "type": "string"
+          },
+          "schema": {
+            "description": "The schema parameter",
+            "type": "string"
+          },
+          "spec": {
+            "description": "The spec parameter",
+            "type": "string"
+          },
+          "transport": {
+            "description": "The transport parameter",
+            "type": "string"
+          },
+          "version": {
+            "description": "The version parameter",
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "checkout_create_checkout"
+    },
+    {
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "description": "Get API domain context: resource taxonomy, auth requirements, query tips, and unique capabilities. Call this first.",
+      "inputSchema": {
+        "properties": {},
+        "required": [],
+        "type": "object"
+      },
+      "name": "context"
+    },
+    {
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "description": "Generate, list, and export ECDSA-P256 agent keys used to sign AP2 mandates.\n\nKeys are stored under the platform config directory:\n  macOS:  ~/Library/Application Support/ap2-pp-cli/keys/\n  Linux:  ~/.config/ap2-pp-cli/keys/\n\nEach key pair consists of:\n  agent-<uuid>.pem   private key (PKCS#8 PEM, mode 0600)\n  agent-<uuid>.pub   public key  (PKIX PEM,   mode 0644)\n\n  keys generate                          generate a new keypair\n  keys list                              list all stored keys\n  keys export --id <agent-id>            export a key (default: PEM)\n  keys export --id <agent-id> --format jwk   export as JWK",
+      "inputSchema": {
+        "properties": {
+          "agent": {
+            "description": "Set all agent-friendly defaults (--json --compact --no-input --no-color --yes) (default: false)",
+            "type": "boolean"
+          },
+          "compact": {
+            "description": "Return only key fields (id, name, status, timestamps) for minimal token usage (default: false)",
+            "type": "boolean"
+          },
+          "config": {
+            "description": "Config file path",
+            "type": "string"
+          },
+          "csv": {
+            "description": "Output as CSV (table and array responses) (default: false)",
+            "type": "boolean"
+          },
+          "data-source": {
+            "description": "Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default: auto)",
+            "type": "string"
+          },
+          "deliver": {
+            "description": "Route output to a sink: stdout (default), file:<path>, webhook:<url>",
+            "type": "string"
+          },
+          "dry-run": {
+            "description": "Show request without sending (default: false)",
+            "type": "boolean"
+          },
+          "human-friendly": {
+            "description": "Enable colored output and rich formatting (default: false)",
+            "type": "boolean"
+          },
+          "json": {
+            "description": "Output as JSON (default: false)",
+            "type": "boolean"
+          },
+          "no-cache": {
+            "description": "Bypass response cache (default: false)",
+            "type": "boolean"
+          },
+          "no-color": {
+            "description": "Disable colored output (default: false)",
+            "type": "boolean"
+          },
+          "no-input": {
+            "description": "Disable all interactive prompts (for CI/agents) (default: false)",
+            "type": "boolean"
+          },
+          "profile": {
+            "description": "Apply values from a saved profile (see 'ap2-pp-cli profile list')",
+            "type": "string"
+          },
+          "quiet": {
+            "description": "Bare output, one value per line (default: false)",
+            "type": "boolean"
+          },
+          "rate-limit": {
+            "description": "Max requests per second (0 to disable) (default: 0)",
+            "type": "number"
+          },
+          "select": {
+            "description": "Comma-separated fields to include in output (e.g. --select id,name,status)",
+            "type": "string"
+          },
+          "timeout": {
+            "description": "Request timeout (default: 30s)",
+            "type": "string"
+          },
+          "yes": {
+            "description": "Skip confirmation prompts (for agents and scripts) (default: false)",
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "keys"
+    },
+    {
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "description": "Export an agent key's public component",
+      "inputSchema": {
+        "properties": {
+          "agent": {
+            "description": "Set all agent-friendly defaults (--json --compact --no-input --no-color --yes) (default: false)",
+            "type": "boolean"
+          },
+          "compact": {
+            "description": "Return only key fields (id, name, status, timestamps) for minimal token usage (default: false)",
+            "type": "boolean"
+          },
+          "config": {
+            "description": "Config file path",
+            "type": "string"
+          },
+          "csv": {
+            "description": "Output as CSV (table and array responses) (default: false)",
+            "type": "boolean"
+          },
+          "data-source": {
+            "description": "Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default: auto)",
+            "type": "string"
+          },
+          "deliver": {
+            "description": "Route output to a sink: stdout (default), file:<path>, webhook:<url>",
+            "type": "string"
+          },
+          "dry-run": {
+            "description": "Show request without sending (default: false)",
+            "type": "boolean"
+          },
+          "format": {
+            "description": "Output format: pem or jwk (default: pem)",
+            "type": "string"
+          },
+          "human-friendly": {
+            "description": "Enable colored output and rich formatting (default: false)",
+            "type": "boolean"
+          },
+          "id": {
+            "description": "Agent ID (agent-<uuid>) of the key to export",
+            "type": "string"
+          },
+          "json": {
+            "description": "Output as JSON (default: false)",
+            "type": "boolean"
+          },
+          "no-cache": {
+            "description": "Bypass response cache (default: false)",
+            "type": "boolean"
+          },
+          "no-color": {
+            "description": "Disable colored output (default: false)",
+            "type": "boolean"
+          },
+          "no-input": {
+            "description": "Disable all interactive prompts (for CI/agents) (default: false)",
+            "type": "boolean"
+          },
+          "profile": {
+            "description": "Apply values from a saved profile (see 'ap2-pp-cli profile list')",
+            "type": "string"
+          },
+          "quiet": {
+            "description": "Bare output, one value per line (default: false)",
+            "type": "boolean"
+          },
+          "rate-limit": {
+            "description": "Max requests per second (0 to disable) (default: 0)",
+            "type": "number"
+          },
+          "select": {
+            "description": "Comma-separated fields to include in output (e.g. --select id,name,status)",
+            "type": "string"
+          },
+          "timeout": {
+            "description": "Request timeout (default: 30s)",
+            "type": "string"
+          },
+          "yes": {
+            "description": "Skip confirmation prompts (for agents and scripts) (default: false)",
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "keys_export"
+    },
+    {
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "description": "Generate a new ECDSA-P256 agent keypair",
+      "inputSchema": {
+        "properties": {
+          "agent": {
+            "description": "Set all agent-friendly defaults (--json --compact --no-input --no-color --yes) (default: false)",
+            "type": "boolean"
+          },
+          "compact": {
+            "description": "Return only key fields (id, name, status, timestamps) for minimal token usage (default: false)",
+            "type": "boolean"
+          },
+          "config": {
+            "description": "Config file path",
+            "type": "string"
+          },
+          "csv": {
+            "description": "Output as CSV (table and array responses) (default: false)",
+            "type": "boolean"
+          },
+          "data-source": {
+            "description": "Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default: auto)",
+            "type": "string"
+          },
+          "deliver": {
+            "description": "Route output to a sink: stdout (default), file:<path>, webhook:<url>",
+            "type": "string"
+          },
+          "dry-run": {
+            "description": "Show request without sending (default: false)",
+            "type": "boolean"
+          },
+          "human-friendly": {
+            "description": "Enable colored output and rich formatting (default: false)",
+            "type": "boolean"
+          },
+          "json": {
+            "description": "Output as JSON (default: false)",
+            "type": "boolean"
+          },
+          "no-cache": {
+            "description": "Bypass response cache (default: false)",
+            "type": "boolean"
+          },
+          "no-color": {
+            "description": "Disable colored output (default: false)",
+            "type": "boolean"
+          },
+          "no-input": {
+            "description": "Disable all interactive prompts (for CI/agents) (default: false)",
+            "type": "boolean"
+          },
+          "profile": {
+            "description": "Apply values from a saved profile (see 'ap2-pp-cli profile list')",
+            "type": "string"
+          },
+          "quiet": {
+            "description": "Bare output, one value per line (default: false)",
+            "type": "boolean"
+          },
+          "rate-limit": {
+            "description": "Max requests per second (0 to disable) (default: 0)",
+            "type": "number"
+          },
+          "select": {
+            "description": "Comma-separated fields to include in output (e.g. --select id,name,status)",
+            "type": "string"
+          },
+          "timeout": {
+            "description": "Request timeout (default: 30s)",
+            "type": "string"
+          },
+          "yes": {
+            "description": "Skip confirmation prompts (for agents and scripts) (default: false)",
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "keys_generate"
+    },
+    {
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "description": "List all stored agent keys",
+      "inputSchema": {
+        "properties": {
+          "agent": {
+            "description": "Set all agent-friendly defaults (--json --compact --no-input --no-color --yes) (default: false)",
+            "type": "boolean"
+          },
+          "compact": {
+            "description": "Return only key fields (id, name, status, timestamps) for minimal token usage (default: false)",
+            "type": "boolean"
+          },
+          "config": {
+            "description": "Config file path",
+            "type": "string"
+          },
+          "csv": {
+            "description": "Output as CSV (table and array responses) (default: false)",
+            "type": "boolean"
+          },
+          "data-source": {
+            "description": "Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default: auto)",
+            "type": "string"
+          },
+          "deliver": {
+            "description": "Route output to a sink: stdout (default), file:<path>, webhook:<url>",
+            "type": "string"
+          },
+          "dry-run": {
+            "description": "Show request without sending (default: false)",
+            "type": "boolean"
+          },
+          "human-friendly": {
+            "description": "Enable colored output and rich formatting (default: false)",
+            "type": "boolean"
+          },
+          "json": {
+            "description": "Output as JSON (default: false)",
+            "type": "boolean"
+          },
+          "no-cache": {
+            "description": "Bypass response cache (default: false)",
+            "type": "boolean"
+          },
+          "no-color": {
+            "description": "Disable colored output (default: false)",
+            "type": "boolean"
+          },
+          "no-input": {
+            "description": "Disable all interactive prompts (for CI/agents) (default: false)",
+            "type": "boolean"
+          },
+          "profile": {
+            "description": "Apply values from a saved profile (see 'ap2-pp-cli profile list')",
+            "type": "string"
+          },
+          "quiet": {
+            "description": "Bare output, one value per line (default: false)",
+            "type": "boolean"
+          },
+          "rate-limit": {
+            "description": "Max requests per second (0 to disable) (default: 0)",
+            "type": "number"
+          },
+          "select": {
+            "description": "Comma-separated fields to include in output (e.g. --select id,name,status)",
+            "type": "string"
+          },
+          "timeout": {
+            "description": "Request timeout (default: 30s)",
+            "type": "string"
+          },
+          "yes": {
+            "description": "Skip confirmation prompts (for agents and scripts) (default: false)",
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "keys_list"
+    },
+    {
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "description": "sign reads an unsigned AP2 FinalizationEnvelope (JSON) from a file or stdin,\nsigns all three mandates (intent, cart, payment) with the specified ECDSA-P256 agent key,\nand writes the signed envelope to stdout.\n\nKey selection:\n  - --key-id <agent-id>  use this specific key\n  - (no flag)            auto-select if exactly one key exists; error if 0 or >1\n\nSubject:\n  - --subject <s>        set envelope.Subject to this value\n  - (no flag)            if envelope.Subject is empty, default to the key's AgentID\n\nExit codes:\n  0  signed envelope written to stdout\n  1  signing error\n  2  usage error (no key, ambiguous key, bad input)",
+      "inputSchema": {
+        "properties": {
+          "agent": {
+            "description": "Set all agent-friendly defaults (--json --compact --no-input --no-color --yes) (default: false)",
+            "type": "boolean"
+          },
+          "compact": {
+            "description": "Return only key fields (id, name, status, timestamps) for minimal token usage (default: false)",
+            "type": "boolean"
+          },
+          "config": {
+            "description": "Config file path",
+            "type": "string"
+          },
+          "csv": {
+            "description": "Output as CSV (table and array responses) (default: false)",
+            "type": "boolean"
+          },
+          "data-source": {
+            "description": "Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default: auto)",
+            "type": "string"
+          },
+          "deliver": {
+            "description": "Route output to a sink: stdout (default), file:<path>, webhook:<url>",
+            "type": "string"
+          },
+          "dry-run": {
+            "description": "Show request without sending (default: false)",
+            "type": "boolean"
+          },
+          "envelope": {
+            "description": "Envelope file path, or \"-\" to read from stdin (default: -)",
+            "type": "string"
+          },
+          "human-friendly": {
+            "description": "Enable colored output and rich formatting (default: false)",
+            "type": "boolean"
+          },
+          "json": {
+            "description": "Output as JSON (default: false)",
+            "type": "boolean"
+          },
+          "key-id": {
+            "description": "Agent key ID to sign with (e.g. agent-<uuid>); auto-selected if omitted and only one key exists",
+            "type": "string"
+          },
+          "no-cache": {
+            "description": "Bypass response cache (default: false)",
+            "type": "boolean"
+          },
+          "no-color": {
+            "description": "Disable colored output (default: false)",
+            "type": "boolean"
+          },
+          "no-input": {
+            "description": "Disable all interactive prompts (for CI/agents) (default: false)",
+            "type": "boolean"
+          },
+          "profile": {
+            "description": "Apply values from a saved profile (see 'ap2-pp-cli profile list')",
+            "type": "string"
+          },
+          "quiet": {
+            "description": "Bare output, one value per line (default: false)",
+            "type": "boolean"
+          },
+          "rate-limit": {
+            "description": "Max requests per second (0 to disable) (default: 0)",
+            "type": "number"
+          },
+          "select": {
+            "description": "Comma-separated fields to include in output (e.g. --select id,name,status)",
+            "type": "string"
+          },
+          "subject": {
+            "description": "Override envelope.Subject (defaults to the signing key's AgentID if envelope.Subject is empty)",
+            "type": "string"
+          },
+          "timeout": {
+            "description": "Request timeout (default: 30s)",
+            "type": "string"
+          },
+          "yes": {
+            "description": "Skip confirmation prompts (for agents and scripts) (default: false)",
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "mandate_sign"
+    },
+    {
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "description": "verify reads a signed AP2 FinalizationEnvelope (JSON) from a file or stdin\nand checks:\n  1. body_hash integrity (SHA-256 of body bytes matches stored hash)\n  2. ECDSA signature validity for each mandate\n  3. cross-mandate chain references (intent\u2192cart\u2192payment)\n  4. amount consistency (payment.amount_cents == cart.subtotal_cents)\n  5. expiry (intent_mandate.expires_at must be in the future)\n\nExit codes:\n  0  all checks passed\n  1  verification failed (typed error code printed to stderr)\n  2  usage error",
+      "inputSchema": {
+        "properties": {
+          "agent": {
+            "description": "Set all agent-friendly defaults (--json --compact --no-input --no-color --yes) (default: false)",
+            "type": "boolean"
+          },
+          "args": {
+            "description": "Additional positional arguments or raw CLI flags to append to the command.",
+            "type": "string"
+          },
+          "compact": {
+            "description": "Return only key fields (id, name, status, timestamps) for minimal token usage (default: false)",
+            "type": "boolean"
+          },
+          "config": {
+            "description": "Config file path",
+            "type": "string"
+          },
+          "csv": {
+            "description": "Output as CSV (table and array responses) (default: false)",
+            "type": "boolean"
+          },
+          "data-source": {
+            "description": "Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default: auto)",
+            "type": "string"
+          },
+          "deliver": {
+            "description": "Route output to a sink: stdout (default), file:<path>, webhook:<url>",
+            "type": "string"
+          },
+          "dry-run": {
+            "description": "Show request without sending (default: false)",
+            "type": "boolean"
+          },
+          "human-friendly": {
+            "description": "Enable colored output and rich formatting (default: false)",
+            "type": "boolean"
+          },
+          "json": {
+            "description": "Output as JSON (default: false)",
+            "type": "boolean"
+          },
+          "keystore": {
+            "description": "Path to keystore directory (default: ~/.ap2/keys)",
+            "type": "string"
+          },
+          "no-cache": {
+            "description": "Bypass response cache (default: false)",
+            "type": "boolean"
+          },
+          "no-color": {
+            "description": "Disable colored output (default: false)",
+            "type": "boolean"
+          },
+          "no-input": {
+            "description": "Disable all interactive prompts (for CI/agents) (default: false)",
+            "type": "boolean"
+          },
+          "no-sig-check": {
+            "description": "Skip ECDSA signature verification (structural checks only) (default: false)",
+            "type": "boolean"
+          },
+          "profile": {
+            "description": "Apply values from a saved profile (see 'ap2-pp-cli profile list')",
+            "type": "string"
+          },
+          "quiet": {
+            "description": "Bare output, one value per line (default: false)",
+            "type": "boolean"
+          },
+          "rate-limit": {
+            "description": "Max requests per second (0 to disable) (default: 0)",
+            "type": "number"
+          },
+          "select": {
+            "description": "Comma-separated fields to include in output (e.g. --select id,name,status)",
+            "type": "string"
+          },
+          "timeout": {
+            "description": "Request timeout (default: 30s)",
+            "type": "string"
+          },
+          "yes": {
+            "description": "Skip confirmation prompts (for agents and scripts) (default: false)",
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "mandate_verify"
+    },
+    {
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "description": "authorize reads a signed AP2 FinalizationEnvelope and calls the merchant's\ncomplete_checkout MCP endpoint. Default mode is --sandbox, which builds and\nprints the would-be request without making any network call.\n\nExit codes:\n  0  authorized (sandbox_authorized in sandbox mode)\n  1  verification or authorization failure\n  2  usage error",
+      "inputSchema": {
+        "properties": {
+          "agent": {
+            "description": "Set all agent-friendly defaults (--json --compact --no-input --no-color --yes) (default: false)",
+            "type": "boolean"
+          },
+          "compact": {
+            "description": "Return only key fields (id, name, status, timestamps) for minimal token usage (default: false)",
+            "type": "boolean"
+          },
+          "config": {
+            "description": "Config file path",
+            "type": "string"
+          },
+          "csv": {
+            "description": "Output as CSV (table and array responses) (default: false)",
+            "type": "boolean"
+          },
+          "data-source": {
+            "description": "Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default: auto)",
+            "type": "string"
+          },
+          "deliver": {
+            "description": "Route output to a sink: stdout (default), file:<path>, webhook:<url>",
+            "type": "string"
+          },
+          "dry-run": {
+            "description": "Show request without sending (default: false)",
+            "type": "boolean"
+          },
+          "envelope": {
+            "description": "Path to signed FinalizationEnvelope JSON file, or - for stdin (default: -)",
+            "type": "string"
+          },
+          "human-friendly": {
+            "description": "Enable colored output and rich formatting (default: false)",
+            "type": "boolean"
+          },
+          "json": {
+            "description": "Output as JSON (default: false)",
+            "type": "boolean"
+          },
+          "live": {
+            "description": "Live mode: POST to merchant's complete_checkout endpoint (requires --token) (default: false)",
+            "type": "boolean"
+          },
+          "merchant-mcp-url": {
+            "description": "Merchant MCP endpoint URL (derived from envelope.checkout_url if omitted)",
+            "type": "string"
+          },
+          "no-cache": {
+            "description": "Bypass response cache (default: false)",
+            "type": "boolean"
+          },
+          "no-color": {
+            "description": "Disable colored output (default: false)",
+            "type": "boolean"
+          },
+          "no-input": {
+            "description": "Disable all interactive prompts (for CI/agents) (default: false)",
+            "type": "boolean"
+          },
+          "profile": {
+            "description": "Apply values from a saved profile (see 'ap2-pp-cli profile list')",
+            "type": "string"
+          },
+          "profile-url": {
+            "description": "UCP agent profile URL (default: https://www.igvita.com/ucp/profile.json)",
+            "type": "string"
+          },
+          "quiet": {
+            "description": "Bare output, one value per line (default: false)",
+            "type": "boolean"
+          },
+          "rate-limit": {
+            "description": "Max requests per second (0 to disable) (default: 0)",
+            "type": "number"
+          },
+          "sandbox": {
+            "description": "Sandbox mode: build the request but do NOT send it (default) (default: true)",
+            "type": "boolean"
+          },
+          "select": {
+            "description": "Comma-separated fields to include in output (e.g. --select id,name,status)",
+            "type": "string"
+          },
+          "timeout": {
+            "description": "Request timeout (default: 30s)",
+            "type": "string"
+          },
+          "token": {
+            "description": "Google Pay token for live mode",
+            "type": "string"
+          },
+          "yes": {
+            "description": "Skip confirmation prompts (for agents and scripts) (default: false)",
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "payment_authorize"
+    },
+    {
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": true,
+        "idempotentHint": false,
+        "openWorldHint": true
+      },
+      "description": "Look up a recorded transaction by ID",
+      "inputSchema": {
+        "properties": {
+          "agent": {
+            "description": "Set all agent-friendly defaults (--json --compact --no-input --no-color --yes) (default: false)",
+            "type": "boolean"
+          },
+          "compact": {
+            "description": "Return only key fields (id, name, status, timestamps) for minimal token usage (default: false)",
+            "type": "boolean"
+          },
+          "config": {
+            "description": "Config file path",
+            "type": "string"
+          },
+          "csv": {
+            "description": "Output as CSV (table and array responses) (default: false)",
+            "type": "boolean"
+          },
+          "data-source": {
+            "description": "Data source for read commands: auto (live with local fallback), live (API only), local (synced data only) (default: auto)",
+            "type": "string"
+          },
+          "deliver": {
+            "description": "Route output to a sink: stdout (default), file:<path>, webhook:<url>",
+            "type": "string"
+          },
+          "dry-run": {
+            "description": "Show request without sending (default: false)",
+            "type": "boolean"
+          },
+          "human-friendly": {
+            "description": "Enable colored output and rich formatting (default: false)",
+            "type": "boolean"
+          },
+          "json": {
+            "description": "Output as JSON (default: false)",
+            "type": "boolean"
+          },
+          "no-cache": {
+            "description": "Bypass response cache (default: false)",
+            "type": "boolean"
+          },
+          "no-color": {
+            "description": "Disable colored output (default: false)",
+            "type": "boolean"
+          },
+          "no-input": {
+            "description": "Disable all interactive prompts (for CI/agents) (default: false)",
+            "type": "boolean"
+          },
+          "profile": {
+            "description": "Apply values from a saved profile (see 'ap2-pp-cli profile list')",
+            "type": "string"
+          },
+          "quiet": {
+            "description": "Bare output, one value per line (default: false)",
+            "type": "boolean"
+          },
+          "rate-limit": {
+            "description": "Max requests per second (0 to disable) (default: 0)",
+            "type": "number"
+          },
+          "select": {
+            "description": "Comma-separated fields to include in output (e.g. --select id,name,status)",
+            "type": "string"
+          },
+          "timeout": {
+            "description": "Request timeout (default: 30s)",
+            "type": "string"
+          },
+          "transaction": {
+            "description": "Transaction ID to look up (e.g. sandbox-<uuid>)",
+            "type": "string"
+          },
+          "yes": {
+            "description": "Skip confirmation prompts (for agents and scripts) (default: false)",
+            "type": "boolean"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "name": "payment_status"
+    }
+  ]
+}

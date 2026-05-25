@@ -1,0 +1,30 @@
+{
+  "manifest_version": "0.3",
+  "name": "ap2-pp-mcp",
+  "display_name": "AP2",
+  "version": "0.1.0",
+  "description": "A Go CLI for the AP2 (Agent Payments Protocol) — sign AP2 FinalizationEnvelopes from ucp-pp-cli and authorize payments with merchant MCP endpoints.",
+  "author": {
+    "name": "CLI Printing Press"
+  },
+  "license": "Apache-2.0",
+  "server": {
+    "type": "binary",
+    "entry_point": "bin/ap2-pp-mcp",
+    "mcp_config": {
+      "command": "${__dirname}/bin/ap2-pp-mcp",
+      "args": [],
+      "env": {}
+    }
+  },
+  "user_config": {},
+  "mcp_tool_count": 10,
+  "compatibility": {
+    "claude_desktop": ">=1.0.0",
+    "platforms": [
+      "darwin",
+      "linux",
+      "win32"
+    ]
+  }
+}
