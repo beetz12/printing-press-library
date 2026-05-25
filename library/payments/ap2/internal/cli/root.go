@@ -236,6 +236,7 @@ Quickstart: ap2-pp-cli keys generate && ap2-pp-cli mandate sign --envelope envel
 	rootCmd.AddCommand(newIntentCmd(flags))
 	rootCmd.AddCommand(newMandateCmd(flags))
 	rootCmd.AddCommand(newPaymentCmd(flags))
+	rootCmd.AddCommand(newPaymentMethodCmd(flags))
 
 	return rootCmd
 }

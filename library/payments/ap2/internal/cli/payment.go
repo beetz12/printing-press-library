@@ -13,6 +13,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/ap2"
 	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/keys"
+	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/paymentmethods"
 	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/transport"
 )
 
@@ -72,11 +73,6 @@ Exit codes:
 			}
 			isLive := live && !sandbox
 
-			// Live mode requires --token.
-			if isLive && googlePayToken == "" {
-				return usageErr(fmt.Errorf("live mode requires --token <google_pay_token>"))
-			}
-
 			// Read envelope from file or stdin.
 			var data []byte
 			var err error
@@ -134,6 +130,13 @@ Exit codes:
 				mcpURL = deriveMcpURLFromCheckout(envelope.CheckoutURL)
 			}
 
+			// Amount ceiling guard: verify payment.amount_cents <= intent.max_amount_cents.
+			// Runs in both sandbox and live so the pre-flight catches over-limit
+			// envelopes before they reach the merchant.
+			if err := verifyAmountCeiling(envelope); err != nil {
+				return err
+			}
+
 			// Resolve Google Pay token. Resolution order (back-compat):
 			//   1. --token <value>         checked first; visible in `ps aux` — we warn
 			//   2. --token-file <path>     reads bytes from file; not in process listing
@@ -150,6 +153,35 @@ Exit codes:
 				resolvedToken = strings.TrimSpace(string(b))
 			} else {
 				resolvedToken = os.Getenv("AP2_GPAY_TOKEN")
+			}
+
+			// If still no token and in live mode, try stored payment methods.
+			// On error (no default set / none stored) we proceed with empty token —
+			// the merchant will reject with a clear error.
+			if resolvedToken == "" && isLive {
+				if pm, pmerr := paymentmethods.GetDefault(); pmerr == nil {
+					resolvedToken = pm.Token
+					fmt.Fprintf(cmd.ErrOrStderr(), "info: using stored payment method %s (%s)\n", pm.ID, pm.Label)
+				}
+			}
+
+			// Live payment confirmation prompt: only fires in live mode when neither
+			// --yes nor --no-input is set (agent/automation paths skip it).
+			if isLive && !flags.yes && !flags.noInput {
+				var paymentBody ap2.PaymentMandateBody
+				if perr := json.Unmarshal(envelope.PaymentMandate.Body, &paymentBody); perr == nil {
+					fmt.Fprintf(cmd.OutOrStdout(), "\n⚠️  LIVE PAYMENT\n")
+					fmt.Fprintf(cmd.OutOrStdout(), "  Merchant:  %s\n", envelope.Merchant)
+					fmt.Fprintf(cmd.OutOrStdout(), "  Amount:    %.2f %s\n",
+						float64(paymentBody.AmountCents)/100, paymentBody.Currency)
+					fmt.Fprintf(cmd.OutOrStdout(), "  Endpoint:  %s\n", mcpURL)
+					fmt.Fprintf(cmd.OutOrStdout(), "\nAuthorize this payment? [y/N] ")
+
+					var answer string
+					if _, serr := fmt.Fscan(cmd.InOrStdin(), &answer); serr != nil || strings.ToLower(strings.TrimSpace(answer)) != "y" {
+						return fmt.Errorf("payment cancelled by user")
+					}
+				}
 			}
 
 			opts := transport.CompleteOpts{
