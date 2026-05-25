@@ -17,7 +17,7 @@ import (
 	"github.com/mvanhorn/printing-press-library/library/commerce/ucp/internal/config"
 )
 
-var version = "1.0.0"
+var version = "1.1.0"
 
 type rootFlags struct {
 	asJSON        bool
@@ -139,21 +139,19 @@ func newRootCmd(flags *rootFlags) *cobra.Command {
 		Short: `Go CLI for Google's Universal Commerce Protocol — probe merchant manifests, search, build carts, prep checkout drafts for an AP2 CLI to authorize.`,
 		Long: `ucp-pp-cli — A Go CLI for Google's Universal Commerce Protocol (UCP).
 
-What v0.1 ships:
+What v1.1 ships:
   • check <domain>           Fetch /.well-known/ucp, validate the manifest, return a graded report (A–F).
-  • search <q> --merchant    Catalog search against a single UCP merchant (REST transport).
+  • search <q> --merchant    Catalog search against any of 58 UCP merchants (Shopify-hosted, anonymous).
+  • search --all-pet         Fan out the query across bark.co, ruffwear.com, sitstay.com.
   • cart add/list/show/...   Local JSON-backed carts keyed per merchant.
   • checkout prep --cart     Build a CheckoutDraft JSON envelope ready for an AP2 CLI to authorize.
-  • mock serve               Pure-Go reference UCP merchant for end-to-end testing without external deps.
-  • merchants list           Local + seeded directory of known UCP merchants.
-
-Highlights (not in the official API docs):
-  • check   Fetch '/.well-known/ucp' for any domain and return a graded report covering schema validity, advertised transports, and capability coverage — works against any merchant publishing a UCP manifest, inc…
-  • mock serve   Spawn a UCP-compliant reference merchant locally (pure-Go, no external runtime) so 'ucp check', 'search', 'cart', and 'checkout prep' flows work end-to-end without a third-party UCP merchant or extra…
+  • merchants list           Browse the seeded registry of 58 Grade-A UCP merchants (filterable by --category, --rope-toys).
 
 Agent mode: add --agent to any command for JSON output + non-interactive mode.
 Health check: run 'ucp-pp-cli doctor' to verify connectivity.
-See README.md for the Quick Start, Cookbook, and the v0.1 Known Gaps (deferred to v0.2: MCP transport client, cross-merchant search/fan-out, drift watcher, cart optimizer, capability diff, AP2 preflight, conformance runner, spec migration, webhook receiver, OAuth flow).`,
+Quickstart: ucp-pp-cli search "rope toy" --merchant bark.co
+
+v1.2 will add native MCP-over-HTTP transport + hosted agent profile JSON for merchants whose products.json is theme-overridden. v0.1's bundled fixture-merchant is still available behind the hidden 'mock serve' subcommand for CI/conformance use.`,
 		SilenceUsage: true,
 		Version:      version,
 	}

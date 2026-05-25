@@ -3,23 +3,12 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
-	"os"
-	"path/filepath"
+	"sort"
+	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/mvanhorn/printing-press-library/library/commerce/ucp/internal/registry"
 )
-
-type merchantEntry struct {
-	Domain       string `json:"domain"`
-	Status       string `json:"status"`
-	LastChecked  string `json:"last_checked,omitempty"`
-	Capabilities int    `json:"capabilities,omitempty"`
-}
-
-var seededMerchants = []merchantEntry{
-	{Domain: "checkout.coffeecircle.com", Status: "live", LastChecked: "2026-05-24"},
-	{Domain: "ucp.dev", Status: "docs-only", LastChecked: "2026-05-24"},
-}
 
 func newMerchantsCmd(flags *rootFlags) *cobra.Command {
 	cmd := &cobra.Command{
@@ -32,10 +21,13 @@ func newMerchantsCmd(flags *rootFlags) *cobra.Command {
 }
 
 func newMerchantsListCmd(flags *rootFlags) *cobra.Command {
-	return &cobra.Command{
+	var categoryFilter string
+	var ropeToysOnly bool
+
+	cmd := &cobra.Command{
 		Use:     "list",
-		Short:   "List known UCP merchants (seeded directory plus any cached locally)",
-		Example: `  ucp-pp-cli merchants list --json`,
+		Short:   "List known UCP merchants (seeded registry of 58 Grade-A merchants)",
+		Example: `  ucp-pp-cli merchants list --rope-toys`,
 		Annotations: map[string]string{
 			"mcp:read-only": "true",
 		},
@@ -43,45 +35,60 @@ func newMerchantsListCmd(flags *rootFlags) *cobra.Command {
 			if dryRunOK(flags) {
 				return nil
 			}
-			merchants := append([]merchantEntry{}, seededMerchants...)
 
-			// Merge from cache file if present
-			cached := loadCachedMerchants()
-			merchants = append(merchants, cached...)
+			all := registry.Default()
+
+			// Sort: pet first, then alphabetic within category.
+			sort.SliceStable(all, func(i, j int) bool {
+				ci, cj := all[i].Category, all[j].Category
+				iPet := strings.HasPrefix(ci, "pet")
+				jPet := strings.HasPrefix(cj, "pet")
+				if iPet != jPet {
+					return iPet
+				}
+				if ci != cj {
+					return ci < cj
+				}
+				return all[i].Domain < all[j].Domain
+			})
+
+			// Apply filters.
+			var filtered []registry.Merchant
+			for _, m := range all {
+				if categoryFilter != "" && !strings.HasPrefix(m.Category, categoryFilter) {
+					continue
+				}
+				if ropeToysOnly && !m.HasRopeToys {
+					continue
+				}
+				filtered = append(filtered, m)
+			}
 
 			if flags.asJSON {
 				enc := json.NewEncoder(cmd.OutOrStdout())
 				enc.SetIndent("", "  ")
-				return enc.Encode(merchants)
+				return enc.Encode(filtered)
+			}
+
+			if len(filtered) == 0 {
+				fmt.Fprintln(cmd.OutOrStdout(), "No merchants match the given filters.")
+				return nil
 			}
 
 			tw := newTabWriter(cmd.OutOrStdout())
-			fmt.Fprintln(tw, "DOMAIN\tSTATUS\tLAST-CHECKED\tCAPABILITIES")
-			for _, m := range merchants {
-				capStr := ""
-				if m.Capabilities > 0 {
-					capStr = fmt.Sprintf("%d", m.Capabilities)
+			fmt.Fprintln(tw, "DOMAIN\tGRADE\tCATEGORY\tROPE-TOYS")
+			for _, m := range filtered {
+				ropeToys := ""
+				if m.HasRopeToys {
+					ropeToys = "yes"
 				}
-				fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n", m.Domain, m.Status, m.LastChecked, capStr)
+				fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n", m.Domain, m.Grade, m.Category, ropeToys)
 			}
 			return tw.Flush()
 		},
 	}
-}
 
-func loadCachedMerchants() []merchantEntry {
-	base, err := os.UserConfigDir()
-	if err != nil {
-		return nil
-	}
-	path := filepath.Join(base, "ucp-pp-cli", "merchants.json")
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil
-	}
-	var entries []merchantEntry
-	if json.Unmarshal(data, &entries) != nil {
-		return nil
-	}
-	return entries
+	cmd.Flags().StringVar(&categoryFilter, "category", "", "Filter by category prefix (e.g. pet, fashion, beauty)")
+	cmd.Flags().BoolVar(&ropeToysOnly, "rope-toys", false, "Show only merchants known to carry rope/tug toys")
+	return cmd
 }

@@ -14,9 +14,10 @@ import (
 
 func newMockCmd(flags *rootFlags) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "mock",
-		Short: "Mock UCP merchant server",
-		RunE:  parentNoSubcommandRunE(flags),
+		Use:    "mock",
+		Short:  "Internal UCP fixture-merchant for CI/conformance testing (hidden)",
+		Hidden: true,
+		RunE:   parentNoSubcommandRunE(flags),
 	}
 	cmd.AddCommand(newMockServeCmd(flags))
 	return cmd
@@ -27,8 +28,9 @@ func newMockServeCmd(flags *rootFlags) *cobra.Command {
 	var addr string
 
 	cmd := &cobra.Command{
-		Use:     "serve",
-		Short:   "Start the bundled pure-Go reference UCP merchant on a local port",
+		Use:    "serve",
+		Short:  "Start the bundled pure-Go reference UCP merchant on a local port",
+		Hidden: true,
 		Example: `  ucp-pp-cli mock serve --port 8080`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if dryRunOK(flags) {
