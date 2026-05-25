@@ -157,8 +157,10 @@ func newCheckoutFinalizeCmd(flags *rootFlags) *cobra.Command {
 
 			// 3. Build the three mandates.
 			maxAmt := maxAmountCents
-			if subtotal*2 > maxAmt {
-				maxAmt = subtotal * 2
+			if maxAmt == 0 {
+				maxAmt = subtotal * 2 // default — agent pre-authorizes 2x subtotal
+			} else if maxAmt < subtotal {
+				return fmt.Errorf("--max-cents %d is below cart subtotal %d (cart cannot be authorized for less than its own total)", maxAmt, subtotal)
 			}
 			intent := ucp.BuildIntentMandate(subject, ucp.IntentMandateBody{
 				Description:      intentDescription,

@@ -124,10 +124,12 @@ func newSearchCmd(flags *rootFlags) *cobra.Command {
 					if mcpErr == nil {
 						return printSearchHits(cmd, flags, mcpHits)
 					}
-					// MCP also failed — return original products.json error if we had one.
+					// MCP also failed — return original products.json error if we had one,
+					// or surface the MCP error when products.json was empty-but-clean.
 					if err != nil {
 						return fmt.Errorf("shopify catalog search: %w (MCP fallback also failed: %v)", err, mcpErr)
 					}
+					return fmt.Errorf("products.json returned no hits and MCP fallback failed: %w", mcpErr)
 				}
 			}
 			if err != nil {
