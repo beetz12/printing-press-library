@@ -3,7 +3,7 @@
   "name": "ap2-pp-mcp",
   "display_name": "AP2",
   "version": "0.1.0",
-  "description": "A Go CLI for the AP2 (Agent Payments Protocol) — sign AP2 FinalizationEnvelopes from ucp-pp-cli and authorize payments with merchant MCP endpoints.",
+  "description": "A Go CLI for the AP2 (Agent Payments Protocol) \u2014 sign AP2 FinalizationEnvelopes from ucp-pp-cli and authorize payments with merchant MCP endpoints.",
   "author": {
     "name": "CLI Printing Press"
   },
@@ -14,41 +14,52 @@
     "mcp_config": {
       "command": "${__dirname}/bin/ap2-pp-mcp",
       "args": [],
-      "env": [
-        {
-          "name": "AP2_BASE_URL",
-          "description": "Merchant PSP base URL override (default uses the resolved manifest endpoint)",
-          "required": false,
-          "sensitive": false
-        },
-        {
-          "name": "AP2_CONFIG",
-          "description": "Path to ap2-pp-cli config file (default: ~/.config/ap2-pp-cli/config.toml)",
-          "required": false,
-          "sensitive": false
-        },
-        {
-          "name": "AP2_GPAY_TOKEN",
-          "description": "Google Pay payment token for payment authorize --live",
-          "required": false,
-          "sensitive": true
-        },
-        {
-          "name": "AP2_KEYS_DIR",
-          "description": "Directory for ECDSA-P256 keypairs (default: ~/.config/ap2-pp-cli/keys/)",
-          "required": false,
-          "sensitive": false
-        },
-        {
-          "name": "AP2_TXN_DIR",
-          "description": "Directory for transaction record storage (default: ~/.config/ap2-pp-cli/transactions/)",
-          "required": false,
-          "sensitive": false
-        }
-      ]
+      "env": {
+        "AP2_BASE_URL": "${user_config.ap2_base_url}",
+        "AP2_CONFIG": "${user_config.ap2_config}",
+        "AP2_GPAY_TOKEN": "${user_config.ap2_gpay_token}",
+        "AP2_KEYS_DIR": "${user_config.ap2_keys_dir}",
+        "AP2_TXN_DIR": "${user_config.ap2_txn_dir}"
+      }
     }
   },
-  "user_config": {},
+  "user_config": {
+    "ap2_base_url": {
+      "type": "string",
+      "title": "AP2_BASE_URL",
+      "description": "Merchant PSP base URL override (default: resolved manifest endpoint)",
+      "sensitive": false,
+      "required": false
+    },
+    "ap2_config": {
+      "type": "string",
+      "title": "AP2_CONFIG",
+      "description": "Path to ap2-pp-cli config file (default: ~/.config/ap2-pp-cli/config.toml)",
+      "sensitive": false,
+      "required": false
+    },
+    "ap2_gpay_token": {
+      "type": "string",
+      "title": "AP2_GPAY_TOKEN",
+      "description": "Google Pay payment token for payment authorize --live",
+      "sensitive": true,
+      "required": false
+    },
+    "ap2_keys_dir": {
+      "type": "string",
+      "title": "AP2_KEYS_DIR",
+      "description": "Directory for ECDSA-P256 keypairs (default: ~/.config/ap2-pp-cli/keys/)",
+      "sensitive": false,
+      "required": false
+    },
+    "ap2_txn_dir": {
+      "type": "string",
+      "title": "AP2_TXN_DIR",
+      "description": "Directory for transaction record storage (default: ~/.config/ap2-pp-cli/transactions/)",
+      "sensitive": false,
+      "required": false
+    }
+  },
   "mcp_tool_count": 10,
   "compatibility": {
     "claude_desktop": ">=1.0.0",
