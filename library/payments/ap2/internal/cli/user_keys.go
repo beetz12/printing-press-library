@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/keys"
+	"ap2-pp-cli/internal/keys"
 )
 
 // newUserKeysCmd builds: ap2 user-keys {generate|list|export}

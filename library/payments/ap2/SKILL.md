@@ -28,7 +28,7 @@ No external auth service, no API key, no third-party dependency for v0.1 sandbox
 
 ## Prerequisites: Install the CLI
 
-This skill drives the `ap2-pp-cli` binary. **Verify the CLI is installed before invoking any command.** If missing, install:
+This skill drives the `ap2-pp-cli` binary. **You must verify the CLI is installed before invoking any command from this skill.** If it is missing, install it first:
 
 1. Install via the Printing Press installer:
    ```bash
@@ -37,11 +37,13 @@ This skill drives the `ap2-pp-cli` binary. **Verify the CLI is installed before 
 2. Verify: `ap2-pp-cli --version`
 3. Ensure `$GOPATH/bin` (or `$HOME/go/bin`) is on `$PATH`.
 
-Go fallback (requires Go 1.26.3 or newer):
+If the `npx` install fails (no Node, offline, etc.), fall back to a direct Go install (requires Go 1.26.3 or newer):
 
 ```bash
 go install github.com/mvanhorn/printing-press-library/library/payments/ap2/cmd/ap2-pp-cli@latest
 ```
+
+If `--version` reports "command not found" after install, the install step did not put the binary on `$PATH`. Do not proceed with skill commands until verification succeeds.
 
 ## Authentication
 

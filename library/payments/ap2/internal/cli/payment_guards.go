@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/ap2"
+	"ap2-pp-cli/internal/ap2"
 )
 
 // verifyAmountCeiling checks that the payment mandate's amount does not exceed

@@ -15,11 +15,11 @@ import (
 
 	mcplib "github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
-	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/cli"
-	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/client"
-	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/cliutil"
-	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/config"
-	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/mcp/cobratree"
+	"ap2-pp-cli/internal/cli"
+	"ap2-pp-cli/internal/client"
+	"ap2-pp-cli/internal/cliutil"
+	"ap2-pp-cli/internal/config"
+	"ap2-pp-cli/internal/mcp/cobratree"
 )
 
 // RegisterTools registers all API operations as MCP tools.

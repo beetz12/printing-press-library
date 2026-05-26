@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/ap2"
-	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/keys"
+	"ap2-pp-cli/internal/ap2"
+	"ap2-pp-cli/internal/keys"
 )
 
 // newIntentCmd returns the parent "intent" command.

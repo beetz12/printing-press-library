@@ -10,7 +10,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/ap2"
+	"ap2-pp-cli/internal/ap2"
 )
 
 // mustGenerateKey creates an ephemeral ECDSA-P256 key for tests.

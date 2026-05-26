@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/ap2"
+	"ap2-pp-cli/internal/ap2"
 )
 
 // TestProbe_RequestShapeOK_InvalidToken asserts that a 422 with "invalid_payment_token"

@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"github.com/spf13/cobra"
-	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/keys"
-	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/paymentmethods"
+	"ap2-pp-cli/internal/keys"
+	"ap2-pp-cli/internal/paymentmethods"
 )
 
 // isolateKeyDirs points all three key/payment stores at fresh per-test temp

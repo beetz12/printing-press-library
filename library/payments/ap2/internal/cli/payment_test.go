@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/ap2"
+	"ap2-pp-cli/internal/ap2"
 )
 
 // buildEnvelope constructs a minimal FinalizationEnvelope with the given

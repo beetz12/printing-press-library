@@ -25,7 +25,7 @@ func TestAddGet_Roundtrip(t *testing.T) {
 		ID:       NewID(),
 		Provider: "stripe",
 		Token:    "pm_test_4242",
-		Label:    "My Visa 4242",
+		Label:    "My Test Card",
 	}
 	if err := Add(pm); err != nil {
 		t.Fatalf("Add: %v", err)

@@ -71,7 +71,7 @@ func TestLoadUserPublic_PathTraversal(t *testing.T) {
 		"user-",
 		"",
 		"USER-12345678-1234-1234-1234-123456789012",       // uppercase
-		"user-12345678-1234-1234-1234-12345678901",        // too short
+		"user-12345678-1234-1234-1234-abcdef0000a",        // too short
 		"user-12345678-1234-1234-1234-1234567890123",      // too long
 		"user-12345678-1234-1234-1234-12345678901g",       // non-hex
 		"agent-12345678-1234-1234-1234-123456789012",      // agent prefix, not user

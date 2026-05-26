@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/keys"
-	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/paymentmethods"
+	"ap2-pp-cli/internal/keys"
+	"ap2-pp-cli/internal/paymentmethods"
 )
 
 // isFirstRun returns true if neither agent keys nor user keys exist yet.

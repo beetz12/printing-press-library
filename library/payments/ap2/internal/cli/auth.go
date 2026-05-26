@@ -7,13 +7,13 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
-	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/config"
+	"ap2-pp-cli/internal/config"
 )
 
 func newAuthCmd(flags *rootFlags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "auth",
-		Short: "Manage authentication for Ucp",
+		Short: "Manage authentication for AP2",
 		RunE:  parentNoSubcommandRunE(flags),
 	}
 

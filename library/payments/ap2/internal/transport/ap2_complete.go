@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/ap2"
+	"ap2-pp-cli/internal/ap2"
 )
 
 // DefaultProfileURL is the default UCP agent profile served at igvita.com.
@@ -80,9 +80,12 @@ func CompleteCheckout(ctx context.Context, envelope ap2.FinalizationEnvelope, op
 
 	// Build JSON-RPC envelope. NOTE: meta.ucp-agent.profile goes in the BODY,
 	// not in any HTTP header. Header-based profile is a dead end (returns 422).
-	paymentToken := "sandbox-stub"
-	if !opts.Sandbox && opts.GooglePayToken != "" {
-		paymentToken = opts.GooglePayToken
+	// In sandbox mode use a stub so no real token is ever required.
+	// In live mode use the resolved token (may be "" — the merchant will
+	// reject with a clear error rather than receiving a misleading stub value).
+	paymentToken := opts.GooglePayToken
+	if opts.Sandbox {
+		paymentToken = "sandbox-stub"
 	}
 
 	body := map[string]any{
