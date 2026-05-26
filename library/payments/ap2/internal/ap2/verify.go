@@ -136,9 +136,20 @@ func VerifyEnvelope(envelope FinalizationEnvelope, pubResolver func(subject stri
 	}
 
 	// Check expiry on intent mandate (if set).
+	// Fail closed: a malformed expires_at is treated as an error, not a bypass.
+	// Previously the compound `err == nil && After(exp)` guard silently skipped
+	// the expiry check when ExpiresAt was non-empty but unparseable — letting a
+	// manipulated envelope with `expires_at: "not-a-date"` pass verification.
 	if envelope.IntentMandate.ExpiresAt != "" {
 		exp, err := time.Parse(time.RFC3339, envelope.IntentMandate.ExpiresAt)
-		if err == nil && time.Now().UTC().After(exp) {
+		if err != nil {
+			return &VerifyError{
+				Code:      ErrExpiredMandate,
+				Message:   fmt.Sprintf("intent mandate has malformed expires_at (expected RFC3339): %s", envelope.IntentMandate.ExpiresAt),
+				MandateID: envelope.IntentMandate.MandateID,
+			}
+		}
+		if time.Now().UTC().After(exp) {
 			return &VerifyError{
 				Code:      ErrExpiredMandate,
 				Message:   fmt.Sprintf("intent mandate expired at %s", envelope.IntentMandate.ExpiresAt),

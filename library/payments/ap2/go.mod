@@ -1,4 +1,4 @@
-module ap2-pp-cli
+module github.com/mvanhorn/printing-press-library/library/payments/ap2
 
 go 1.26.3
 

@@ -13,8 +13,8 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"ap2-pp-cli/internal/client"
-	"ap2-pp-cli/internal/config"
+	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/client"
+	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/config"
 )
 
 var version = "0.1.0"

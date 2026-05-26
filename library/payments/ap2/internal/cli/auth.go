@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
-	"ap2-pp-cli/internal/config"
+	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/config"
 )
 
 func newAuthCmd(flags *rootFlags) *cobra.Command {

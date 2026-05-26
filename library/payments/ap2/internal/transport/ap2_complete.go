@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"ap2-pp-cli/internal/ap2"
+	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/ap2"
 )
 
 // DefaultProfileURL is the default UCP agent profile served at igvita.com.

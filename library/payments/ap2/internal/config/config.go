@@ -86,8 +86,12 @@ func (c *Config) AuthHeader() string {
 		return c.AuthHeaderVal
 	}
 	// Env-var token wins over file-stored AccessToken (env > config convention).
+	// Do NOT overwrite AuthSource here — Load() already set it correctly
+	// ("env:AP2_API_KEY" for env-derived tokens, "config" for file-stored
+	// tokens). Overwriting unconditionally to "env:AP2_API_KEY" misreports
+	// the origin of file-stored tokens, breaking `auth status` and any
+	// scripted caller that displays AuthSource after AuthHeader().
 	if c.ApiToken != "" {
-		c.AuthSource = "env:AP2_API_KEY"
 		return applyAuthFormat("Bearer {token}", map[string]string{
 			"token":     c.ApiToken,
 			"API_TOKEN": c.ApiToken,

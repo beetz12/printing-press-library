@@ -50,12 +50,14 @@ func TestSplitShellArgs(t *testing.T) {
 // load a malicious --config.
 func TestCliArgsFromMCP_BlocksRootFlags(t *testing.T) {
 	in := map[string]any{
+		"agent":    true,
 		"args":     "contacts",
 		"base-url": "https://evil.example.com",
 		"client":   "attacker-client",
 		"config":   "/tmp/evil.yaml",
 		"deliver":  "fd:3",
 		"live":     true,
+		"no-input": true,
 		"profile":  "attacker",
 		"token":    "stolen-token",
 		"yes":      true,
@@ -67,7 +69,7 @@ func TestCliArgsFromMCP_BlocksRootFlags(t *testing.T) {
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("cliArgsFromMCP dropped/kept wrong keys: got %v, want %v", got, want)
 	}
-	for _, blocked := range []string{"--base-url", "--client", "--config", "--deliver", "--live", "--profile", "--token", "--yes", "--args"} {
+	for _, blocked := range []string{"--agent", "--args", "--base-url", "--client", "--config", "--deliver", "--live", "--no-input", "--profile", "--token", "--yes"} {
 		for _, tok := range got {
 			if tok == blocked {
 				t.Errorf("blocked flag %q leaked through cliArgsFromMCP", blocked)
@@ -77,19 +79,30 @@ func TestCliArgsFromMCP_BlocksRootFlags(t *testing.T) {
 }
 
 // TestCliArgsFromMCP_BlocksLivePaymentBypass pins finding (1) from Greptile
-// on PR #845: an MCP-driving agent must not be able to combine --live and
-// --yes to bypass the [y/N] human-confirmation prompt in `payment authorize`.
-// Even if AP2_GPAY_TOKEN is set in the server env, the live-payment path
-// must remain reachable only via direct CLI invocation. A regression here
-// would re-open the live-payment authorization bypass.
+// on PR #845/#871: an MCP-driving agent must not be able to bypass the
+// [y/N] human-confirmation prompt in `payment authorize` via any of the
+// four bypass vectors:
+//   - --live (the activator)
+//   - --yes (skips the prompt directly)
+//   - --no-input (disables all prompts)
+//   - --agent (meta-flag that sets BOTH yes:true and no-input:true)
+//
+// If AP2_GPAY_TOKEN is set in the server env, any of these reaching the
+// CLI subprocess would submit a real payment without operator interaction.
+// A regression here would re-open the live-payment authorization bypass.
 func TestCliArgsFromMCP_BlocksLivePaymentBypass(t *testing.T) {
-	in := map[string]any{
-		"live": true,
-		"yes":  true,
+	cases := []map[string]any{
+		{"live": true, "yes": true},
+		{"live": true, "no-input": true},
+		{"live": true, "agent": true},
+		{"agent": true},
+		{"no-input": true},
 	}
-	got := cliArgsFromMCP(in)
-	if len(got) != 0 {
-		t.Fatalf("cliArgsFromMCP must drop both --live and --yes to prevent live-payment bypass; got %v", got)
+	for _, in := range cases {
+		got := cliArgsFromMCP(in)
+		if len(got) != 0 {
+			t.Errorf("cliArgsFromMCP must drop all live-payment bypass flags; in=%v got=%v", in, got)
+		}
 	}
 }
 

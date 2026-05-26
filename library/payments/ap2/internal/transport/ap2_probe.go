@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"ap2-pp-cli/internal/ap2"
+	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/ap2"
 )
 
 // DefaultProbeTokenStub is the token sent to the merchant during a probe.

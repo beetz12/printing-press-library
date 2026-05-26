@@ -21,8 +21,8 @@ import (
 	"sort"
 	"strings"
 	"time"
-	"ap2-pp-cli/internal/cliutil"
-	"ap2-pp-cli/internal/config"
+	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/cliutil"
+	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/config"
 )
 
 const BinaryResponseHeader = "X-Printing-Press-Binary-Response"

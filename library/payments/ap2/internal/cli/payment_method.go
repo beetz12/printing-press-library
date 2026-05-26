@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"ap2-pp-cli/internal/paymentmethods"
+	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/paymentmethods"
 )
 
 // newPaymentMethodCmd builds: ap2 payment-method {add|list|remove|set-default}
