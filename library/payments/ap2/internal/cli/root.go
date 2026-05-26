@@ -222,9 +222,17 @@ Quickstart: ap2-pp-cli keys generate && ap2-pp-cli mandate sign --envelope envel
 		default:
 			return fmt.Errorf("invalid --data-source value %q: must be auto, live, or local", flags.dataSource)
 		}
+		if shouldRunSetup(cmd, flags) {
+			if err := runFirstRunSetup(cmd); err != nil {
+				// Setup failure is non-fatal — warn and continue.
+				fmt.Fprintf(cmd.ErrOrStderr(), "warning: first-run setup failed: %v\n", err)
+				fmt.Fprintln(cmd.ErrOrStderr(), "Run 'ap2 setup' to try again.")
+			}
+		}
 		return nil
 	}
 	rootCmd.AddCommand(newDoctorCmd(flags))
+	rootCmd.AddCommand(newSetupCmd(flags))
 	rootCmd.AddCommand(newAuthCmd(flags))
 	rootCmd.AddCommand(newAgentContextCmd(rootCmd))
 	rootCmd.AddCommand(newProfileCmd(flags))
