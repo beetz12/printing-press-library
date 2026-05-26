@@ -49,14 +49,22 @@ func shellOutToCLI(cliPath func() (string, error), commandPath []string) server.
 // per-client filesystem, load a malicious config file, or change the delivery
 // target, all of which sit outside the per-command surface the agent is
 // supposed to be calling.
+//
+// "live" and "yes" are blocked because `payment authorize` honors them as the
+// human-confirmation bypass: an MCP-driving agent could pass {live:true,
+// yes:true} and, if AP2_GPAY_TOKEN is set in the server env, submit a real
+// payment without operator interaction. MCP callers wanting live payments
+// must invoke the CLI directly, where the [y/N] prompt is unavoidable.
 var blockedRootFlags = map[string]bool{
 	"args":     true,
 	"base-url": true,
 	"client":   true,
 	"config":   true,
 	"deliver":  true,
+	"live":     true,
 	"profile":  true,
 	"token":    true,
+	"yes":      true,
 }
 
 func cliArgsFromMCP(args map[string]any) []string {
