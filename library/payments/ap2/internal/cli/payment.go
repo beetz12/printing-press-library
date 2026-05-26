@@ -125,9 +125,29 @@ Exit codes:
 			}
 
 			// Derive MCP URL if not provided.
+			// Security: in live mode we MUST derive from a signed source so a
+			// tampered envelope.checkout_url cannot redirect the Google Pay token
+			// to an attacker-controlled origin.  CartMandateBody.checkout_url is
+			// covered by the ECDSA signature we just verified; the top-level
+			// envelope.checkout_url field is unsigned and MUST NOT be used as
+			// the routing destination for live payments.
 			mcpURL := merchantMcpURL
-			if mcpURL == "" && envelope.CheckoutURL != "" {
-				mcpURL = deriveMcpURLFromCheckout(envelope.CheckoutURL)
+			if mcpURL == "" {
+				var cartBody ap2.CartMandateBody
+				if jerr := json.Unmarshal(envelope.CartMandate.Body, &cartBody); jerr == nil && cartBody.CheckoutURL != "" {
+					// Prefer the signed cart-mandate checkout_url.
+					mcpURL = deriveMcpURLFromCheckout(cartBody.CheckoutURL)
+					// Cross-check: warn if envelope.checkout_url disagrees with the signed value.
+					if envelope.CheckoutURL != "" && envelope.CheckoutURL != cartBody.CheckoutURL {
+						fmt.Fprintf(cmd.ErrOrStderr(), "warning: envelope.checkout_url (%s) differs from signed cart_mandate.checkout_url (%s); using signed value\n",
+							envelope.CheckoutURL, cartBody.CheckoutURL)
+					}
+				} else if !isLive && envelope.CheckoutURL != "" {
+					// Sandbox only: fall back to unsigned field (no real token sent).
+					mcpURL = deriveMcpURLFromCheckout(envelope.CheckoutURL)
+				}
+				// In live mode with no cart checkout_url and no --merchant-mcp-url,
+				// mcpURL stays ""; CompleteCheckout will return a clear error.
 			}
 
 			// Amount ceiling guard: verify payment.amount_cents <= intent.max_amount_cents.
