@@ -10,8 +10,8 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"ap2-pp-cli/internal/ap2"
-	"ap2-pp-cli/internal/keys"
+	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/ap2"
+	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/keys"
 )
 
 // defaultPubResolver resolves the public key for a given subject (agent ID)

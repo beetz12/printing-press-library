@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"ap2-pp-cli/internal/config"
+	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/config"
 )
 
 // recordingRoundTripper counts how many times its RoundTrip method is

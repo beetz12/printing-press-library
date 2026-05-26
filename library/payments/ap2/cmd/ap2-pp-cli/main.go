@@ -6,7 +6,7 @@ package main
 import (
 	"os"
 
-	"ap2-pp-cli/internal/cli"
+	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/cli"
 )
 
 func main() {

@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"ap2-pp-cli/internal/ap2"
+	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/ap2"
 )
 
 // DefaultProfileURL is the default UCP agent profile served at igvita.com.
@@ -139,7 +139,7 @@ func CompleteCheckout(ctx context.Context, envelope ap2.FinalizationEnvelope, op
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("User-Agent", "ap2-pp-cli/1.0")
+	req.Header.Set("User-Agent", "github.com/mvanhorn/printing-press-library/library/payments/ap2/1.0")
 
 	resp, err := client.Do(req)
 	if err != nil {

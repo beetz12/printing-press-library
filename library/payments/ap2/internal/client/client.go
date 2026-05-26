@@ -21,8 +21,8 @@ import (
 	"sort"
 	"strings"
 	"time"
-	"ap2-pp-cli/internal/cliutil"
-	"ap2-pp-cli/internal/config"
+	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/cliutil"
+	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/config"
 )
 
 const BinaryResponseHeader = "X-Printing-Press-Binary-Response"
@@ -499,7 +499,7 @@ func (c *Client) doInternal(ctx context.Context, method, path string, params map
 			req.Header.Del(BinaryResponseHeader)
 		}
 		if req.Header.Get("User-Agent") == "" {
-			req.Header.Set("User-Agent", "ap2-pp-cli/0.1.0")
+			req.Header.Set("User-Agent", "github.com/mvanhorn/printing-press-library/library/payments/ap2/0.1.0")
 		}
 		// Go's net/http omits Accept by default; browsers, curl, and other
 		// stdlibs always send it. Fingerprint-checking WAFs (Imperva, Akamai,

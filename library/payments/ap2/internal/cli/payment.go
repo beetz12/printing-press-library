@@ -11,10 +11,10 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"ap2-pp-cli/internal/ap2"
-	"ap2-pp-cli/internal/keys"
-	"ap2-pp-cli/internal/paymentmethods"
-	"ap2-pp-cli/internal/transport"
+	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/ap2"
+	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/keys"
+	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/paymentmethods"
+	"github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/transport"
 )
 
 func newPaymentCmd(flags *rootFlags) *cobra.Command {

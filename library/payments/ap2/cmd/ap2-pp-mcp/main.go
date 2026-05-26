@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/mark3labs/mcp-go/server"
-	mcptools "ap2-pp-cli/internal/mcp"
+	mcptools "github.com/mvanhorn/printing-press-library/library/payments/ap2/internal/mcp"
 )
 
 // Transport selection order: --transport flag, then PP_MCP_TRANSPORT env,
