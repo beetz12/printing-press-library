@@ -98,7 +98,13 @@ func (c *Config) AuthHeader() string {
 		})
 	}
 	if c.AccessToken != "" {
-		c.AuthSource = "oauth2"
+		// Do NOT overwrite AuthSource — Load() already labelled it. Set-token
+		// (which actually writes AccessToken, not ApiToken) leaves AuthSource
+		// as "config" on disk; previously this branch stamped "oauth2" over
+		// it, breaking `auth status` for every file-stored token. Only the
+		// real OAuth2 flow (auth login) should set "oauth2", and that flow
+		// sets it explicitly via SaveTokens / the oauth2 client. Mirrors the
+		// ApiToken branch above.
 		return applyAuthFormat("Bearer {token}", map[string]string{"access_token": c.AccessToken, "token": c.AccessToken})
 	}
 	return ""
