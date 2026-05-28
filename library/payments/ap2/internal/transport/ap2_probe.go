@@ -87,15 +87,14 @@ func Probe(ctx context.Context, envelope ap2.FinalizationEnvelope, opts ProbeOpt
 
 	mcpURL := opts.MerchantMcpURL
 	if mcpURL == "" {
-		// Prefer the signed CartMandateBody.CheckoutURL so a tampered top-level
-		// envelope.checkout_url cannot redirect the probe payload to an attacker
-		// endpoint. Falls back to the unsigned field only when the cart body
-		// cannot be parsed (should not happen on a verified envelope).
+		// Use the signed CartMandateBody.CheckoutURL only.
+		// A tampered top-level envelope.checkout_url cannot redirect the probe
+		// payload to an attacker endpoint; the unsigned field is never used as a
+		// routing fallback. If the signed cart body has no checkout_url, the
+		// subsequent empty-URL check returns a clear error.
 		var cartBody ap2.CartMandateBody
 		if jerr := json.Unmarshal(envelope.CartMandate.Body, &cartBody); jerr == nil && cartBody.CheckoutURL != "" {
 			mcpURL = deriveMcpURL(cartBody.CheckoutURL)
-		} else {
-			mcpURL = deriveMcpURL(envelope.CheckoutURL)
 		}
 	}
 	if mcpURL == "" {

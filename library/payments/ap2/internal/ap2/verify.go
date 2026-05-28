@@ -155,10 +155,23 @@ func VerifyEnvelope(envelope FinalizationEnvelope, pubResolver func(subject stri
 		}
 	}
 
+	// Parse intent mandate body for cross-checks (AllowedMerchants, etc.).
+	var intentBody struct {
+		AllowedMerchants []string `json:"allowed_merchants"`
+	}
+	if err := json.Unmarshal(envelope.IntentMandate.Body, &intentBody); err != nil {
+		return &VerifyError{
+			Code:      ErrMandateChainBroken,
+			Message:   fmt.Sprintf("failed to parse intent mandate body: %v", err),
+			MandateID: envelope.IntentMandate.MandateID,
+		}
+	}
+
 	// Extract cross-references from cart mandate body.
 	var cartBody struct {
-		IntentRef    string `json:"intent_mandate_id"`
-		SubtotalCents int   `json:"subtotal_cents"`
+		IntentRef     string `json:"intent_mandate_id"`
+		Merchant      string `json:"merchant"`
+		SubtotalCents int    `json:"subtotal_cents"`
 	}
 	if err := json.Unmarshal(envelope.CartMandate.Body, &cartBody); err != nil {
 		return &VerifyError{
@@ -172,6 +185,25 @@ func VerifyEnvelope(envelope FinalizationEnvelope, pubResolver func(subject stri
 			Code:      ErrMandateChainBroken,
 			Message:   fmt.Sprintf("cart_mandate.body.intent_mandate_id %q != intent_mandate.mandate_id %q", cartBody.IntentRef, envelope.IntentMandate.MandateID),
 			MandateID: envelope.CartMandate.MandateID,
+		}
+	}
+
+	// Enforce AllowedMerchants: if the intent mandate restricts which merchants
+	// the user authorized, the cart's merchant must appear in that list.
+	if len(intentBody.AllowedMerchants) > 0 {
+		allowed := false
+		for _, m := range intentBody.AllowedMerchants {
+			if m == cartBody.Merchant {
+				allowed = true
+				break
+			}
+		}
+		if !allowed {
+			return &VerifyError{
+				Code:      ErrMandateChainBroken,
+				Message:   fmt.Sprintf("cart merchant %q is not in intent_mandate.allowed_merchants %v", cartBody.Merchant, intentBody.AllowedMerchants),
+				MandateID: envelope.CartMandate.MandateID,
+			}
 		}
 	}
 
