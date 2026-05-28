@@ -348,7 +348,7 @@ func ExportUserJWK(id string) (map[string]any, error) {
 // Checks agent keys first (agent-<uuid>), then user keys (user-<uuid>).
 func LoadPublicAny(subject string) (*ecdsa.PublicKey, error) {
 	if strings.HasPrefix(subject, "agent-") {
-		k, err := Load(subject)
+		k, err := LoadPublic(subject)
 		if err != nil {
 			return nil, err
 		}
