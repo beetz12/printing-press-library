@@ -72,7 +72,18 @@ func CompleteCheckout(ctx context.Context, envelope ap2.FinalizationEnvelope, op
 
 	mcpURL := opts.MerchantMcpURL
 	if mcpURL == "" {
-		mcpURL = deriveMcpURL(envelope.CheckoutURL)
+		if opts.Sandbox {
+			// Sandbox mode: no real token is sent, so the unsigned fallback is safe.
+			mcpURL = deriveMcpURL(envelope.CheckoutURL)
+		} else {
+			// Live mode: refuse to route through the unsigned envelope.checkout_url.
+			// The CLI layer must populate MerchantMcpURL from the signed
+			// CartMandateBody.checkout_url before calling CompleteCheckout.
+			// Falling back here would let a tampered unsigned field redirect a real
+			// Google Pay token to an attacker-controlled origin.
+			return nil, fmt.Errorf("live payment requires a signed merchant MCP URL: " +
+				"ensure cart_mandate.body.checkout_url is set or pass --merchant-mcp-url")
+		}
 	}
 
 	// Parse amount and currency from payment_mandate body.

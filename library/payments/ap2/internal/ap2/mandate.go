@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -71,7 +72,14 @@ type FinalizationEnvelope struct {
 func nowRFC3339() string { return time.Now().UTC().Format(time.RFC3339) }
 
 func canonicalHash(v any) string {
-	b, _ := json.Marshal(v)
+	b, err := json.Marshal(v)
+	if err != nil {
+		// AP2 mandate body types (IntentMandateBody, CartMandateBody, PaymentMandateBody)
+		// are plain serializable structs with no channels, functions, or cycles.
+		// Marshal failure is a programming error, not a runtime condition; panic
+		// loudly rather than silently returning sha256("") as the body hash.
+		panic(fmt.Sprintf("ap2: canonicalHash: json.Marshal failed (programming error): %v", err))
+	}
 	sum := sha256.Sum256(b)
 	return hex.EncodeToString(sum[:])
 }
