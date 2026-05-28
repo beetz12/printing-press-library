@@ -326,6 +326,12 @@ Exit codes:
 				return err
 			}
 
+			// Amount ceiling guard: catch over-limit envelopes pre-flight so
+			// probe gives the same authorize-ready signal as authorize itself.
+			if err := verifyAmountCeiling(envelope); err != nil {
+				return err
+			}
+
 			opts := transport.ProbeOpts{
 				MerchantMcpURL: merchantMcpURL,
 				TokenStub:      tokenStub,
