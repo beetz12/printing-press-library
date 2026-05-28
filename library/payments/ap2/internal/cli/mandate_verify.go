@@ -129,22 +129,29 @@ Exit codes:
 			}
 
 			// Trust chain check: intent MUST be signed by a user key (user-<uuid>),
-			// not an agent key. v0.1 envelopes (agent-signed intent) emit a warning
-			// rather than failing, to preserve a migration path.
+			// not an agent key. Fail hard with exit 1 so the shell-level outcome
+			// matches the JSON {ok:false} envelope; previously the JSON path
+			// said ok:false but returned exit 0, silently misleading scripted
+			// callers. --no-user-intent-check is the explicit v0.1 back-compat
+			// opt-out for envelopes whose intent was signed by the agent
+			// rather than the user.
 			if !noUserIntentCheck {
 				intentSubject := envelope.IntentMandate.Subject
 				if !strings.HasPrefix(intentSubject, "user-") {
 					msg := fmt.Sprintf("intent mandate subject %q is not a user key (user-<uuid>); pass --no-user-intent-check for v0.1 back-compat", intentSubject)
 					if flags.asJSON {
-						return flags.printJSON(cmd, map[string]any{
+						if perr := flags.printJSON(cmd, map[string]any{
 							"ok":         false,
 							"error_code": "no_user_intent",
 							"message":    msg,
 							"mandate_id": envelope.IntentMandate.MandateID,
-						})
+						}); perr != nil {
+							return perr
+						}
+						return fmt.Errorf("verify failed: no_user_intent")
 					}
-					fmt.Fprintf(cmd.ErrOrStderr(), "trust chain warning: %s\n", msg)
-					// Treat as non-fatal warning for now — fall through to success output.
+					fmt.Fprintf(cmd.ErrOrStderr(), "verify failed [no_user_intent] (mandate: %s): %s\n", envelope.IntentMandate.MandateID, msg)
+					return fmt.Errorf("verify failed: no_user_intent")
 				}
 			}
 

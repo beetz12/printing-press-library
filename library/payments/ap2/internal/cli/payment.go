@@ -93,13 +93,10 @@ Exit codes:
 				return fmt.Errorf("invalid envelope JSON: %w", err)
 			}
 
-			// Build resolver from internal/keys, matching mandate_verify.go pattern.
+			// Resolver uses LoadPublicAny so v0.2 envelopes with user-* intent
+			// subjects resolve correctly alongside agent-* cart/payment subjects.
 			resolver := func(subject string) (*ecdsa.PublicKey, error) {
-				k, err := keys.LoadPublic(subject)
-				if err != nil {
-					return nil, err
-				}
-				return k.PublicKey, nil
+				return keys.LoadPublicAny(subject)
 			}
 
 			// Verify-first: abort on any verify error.
@@ -298,12 +295,9 @@ Exit codes:
 			}
 
 			// Verify-first: abort on invalid signature.
+			// LoadPublicAny handles both agent-* and user-* subjects.
 			resolver := func(subject string) (*ecdsa.PublicKey, error) {
-				k, err := keys.LoadPublic(subject)
-				if err != nil {
-					return nil, err
-				}
-				return k.PublicKey, nil
+				return keys.LoadPublicAny(subject)
 			}
 			if err := ap2.VerifyEnvelope(envelope, resolver); err != nil {
 				var ve *ap2.VerifyError
