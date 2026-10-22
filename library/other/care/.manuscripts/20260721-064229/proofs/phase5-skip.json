@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "api_name": "care",
+  "run_id": "20260721-064229",
+  "status": "skip",
+  "level": "none",
+  "skip_reason": "cookie-auth-no-harness-session",
+  "auth_context": {
+    "type": "cookie",
+    "browser_session_available": false
+  },
+  "source_fingerprint": "7f9184ce64316ea3787c2cfda0022f6f15c8489af3c1feb7977fb79c235d1b64"
+}
