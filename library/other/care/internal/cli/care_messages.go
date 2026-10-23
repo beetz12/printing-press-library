@@ -294,12 +294,6 @@ func careFindConversation(ctx context.Context, hc *http.Client, creds *careStrea
 		offset += len(batch)
 	}
 	if len(matches) == 0 {
-		if os.Getenv("PRINTING_PRESS_DOGFOOD") == "1" && strings.EqualFold(needle, "jane") {
-			first, ferr := careStreamQueryChannelsPage(ctx, hc, creds, "", msgLimit, 1, 0)
-			if ferr == nil && len(first) > 0 {
-				return &first[0], nil
-			}
-		}
 		return nil, fmt.Errorf("no conversation matching %q (list them: care-pp-cli messages)", query)
 	}
 	if len(matches) > 1 {
@@ -557,9 +551,9 @@ func newCareMessagesReadCmd(flags *rootFlags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:         "read <caregiver name or cid>",
 		Short:       "Read the message thread with one caregiver",
-		Example:     "  care-pp-cli messages read \"Jane\"\n  care-pp-cli messages read messaging:!members-abc --limit 100 --before <message-id>",
+		Example:     "  care-pp-cli messages read example-value\n  care-pp-cli messages read messaging:!members-abc --limit 100 --before <message-id>",
 		Args:        cobra.MinimumNArgs(1),
-		Annotations: map[string]string{"mcp:read-only": "true"},
+		Annotations: map[string]string{"mcp:read-only": "true", "pp:happy-args": "example-value"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			query := strings.Join(args, " ")
 			if dryRunOK(flags) {

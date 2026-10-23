@@ -173,9 +173,6 @@ func careResolveJob(ctx context.Context, flags *rootFlags, ref string) (careJob,
 	case 1:
 		return matches[0], nil
 	case 0:
-		if os.Getenv("PRINTING_PRESS_DOGFOOD") == "1" && len(jobs) > 0 && (strings.EqualFold(ref, "Summer Sitter") || ref == "12345678") {
-			return jobs[0], nil
-		}
 		return careJob{}, fmt.Errorf("no job matching %q (see: care-pp-cli job list)", ref)
 	default:
 		return careJob{}, fmt.Errorf("%q matches %d jobs; be more specific or use the id (see: care-pp-cli job list)", ref, len(matches))

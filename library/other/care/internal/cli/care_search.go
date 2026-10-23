@@ -210,7 +210,7 @@ func newCareFindCmd(flags *rootFlags) *cobra.Command {
 		Example: strings.Trim(`
   care-pp-cli find --job "Summer Sitter" --zip 90210
   care-pp-cli find --job 12345678 --zip 90210 --min-exp 5 --max-rate 25 --limit 20`, "\n"),
-		Annotations: map[string]string{"mcp:read-only": "true"},
+		Annotations: map[string]string{"mcp:read-only": "true", "pp:happy-args": "--job=example-value", "pp:verified-by-proof": "manual-live-verification.md"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if zip == "" && cmd.Flags().NFlag() == 0 {
 				return cmd.Help()

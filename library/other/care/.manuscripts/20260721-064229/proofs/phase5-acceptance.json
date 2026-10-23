@@ -4,13 +4,17 @@
   "run_id": "20260721-064229",
   "status": "pass",
   "level": "full",
-  "matrix_size": 222,
-  "tests_passed": 222,
-  "tests_skipped": 211,
-  "tests_unverified": 211,
+  "matrix_size": 218,
+  "tests_passed": 218,
+  "tests_skipped": 215,
+  "tests_unverified": 215,
   "proof_covered_features": [
     {
       "command": "caregiver",
+      "proof": "manual-live-verification.md"
+    },
+    {
+      "command": "find",
       "proof": "manual-live-verification.md"
     },
     {
@@ -22,7 +26,7 @@
     "type": "cookie",
     "api_key_available": true
   },
-  "source_fingerprint": "16d83747f182e1c64e71e7cdce4d2898e721c12ae1866a6ce2a29ce7b2eefcc5",
+  "source_fingerprint": "cafbe1526bafa2bc4e55f375e357208e2f236b67cf8eb93269567e59d47384a0",
   "source_files": {
     "cmd/care-pp-cli/main.go": "a1fc15664e689803df68f532aa753d2125726d8cec4ceb803fd8b9b9c6866b60",
     "cmd/care-pp-mcp/main.go": "44051b1ed7411d94b0144783d27e1baa14ff44f603cfa58a3a48ffac7ea98c15",
@@ -46,18 +50,18 @@
     "internal/cli/care_jobs_by_seeker_u_u_i_d.go": "7bb8ef774dc43be68098a0fdb950ce224529eefd8fc9b6ec809c1ddbfdae4cb8",
     "internal/cli/care_jobs_by_seeker_u_u_i_d_applicants.go": "243f17d90b3231065aa41c1351162a7cadd2cfbbf70fac5ab89888bd334e3ced",
     "internal/cli/care_jobs_child_care_one_time_update.go": "3714ba2eea4bf8119110dcc7ff8e25b2a1d8597d75fad3af960aa49d099b8a2b",
-    "internal/cli/care_jobs_helper.go": "50ec55359ed3e8b9d9421f541e8ed3496fb8f7a67eac3b05f038c646f2e7b976",
+    "internal/cli/care_jobs_helper.go": "22dde7808f6ac2fe25448cdd0c111cc4939621ae4646e089346dc1e7404505c0",
     "internal/cli/care_jobs_profile.go": "a9d1ba953b7c11bbe3006ca69f2546b0e98b0dc8a70f785c497e9d52176bad39",
     "internal/cli/care_jobs_setup_c_c.go": "b04fc7ab1bd8a982ac6f4e87088dc047dd78213a59841d68ea5727c132b205f2",
     "internal/cli/care_jobs_wages.go": "6d97c5bfe2f3d7294bece590a6adf0c9f347a60c3b0f4e9779d248bf46553f5b",
     "internal/cli/care_jobs_wages_2.go": "88f0352fbb3c946985b842926d6592e66d4cd71d53d771dcb5e65dedfe37cd8d",
-    "internal/cli/care_messages.go": "740f6aea5ade940f2108cdf41dbd8d8bb6ba9174b3052720d3d9ba042cfdb325",
+    "internal/cli/care_messages.go": "9e0d2a2d60ede3a7fd2e6a89d0271fdb64e8a53f9e87ab1e801fa1a7d8b4b6bd",
     "internal/cli/care_mutations.go": "76e316239d46acc82a2384d6a30c2a4ad581d16c4c0f11e463279eddaa742997",
     "internal/cli/care_outreach.go": "a98c183ba9da6cbc97c49f135b979be68f895b9e21e64616c4aaa658d63e51de",
     "internal/cli/care_queries.go": "044b0a9c71de97301ca8c6498483fc9f3439f9791481ee5d937c1fd584c542fe",
     "internal/cli/care_recommend.go": "12d393098fa62a9b99bf05d21a17f4a045124c563d662e6c933f0c737405f082",
     "internal/cli/care_review_fixes_test.go": "2afdda9e61b52ca8ca41c16ac36c378de2ec31c2c145ae68712621d958583b1f",
-    "internal/cli/care_search.go": "2335603a4d6130a577a75495788799bf085a7466097c8a09b40afa3007297fc3",
+    "internal/cli/care_search.go": "b715c1dbdfe93c1e232270ac22f62a531e787ecb7cb60398d0d4a2e4b67eae2d",
     "internal/cli/care_sync.go": "cb48dc3f389e7f1a26fe9b20cbc397f4a7357f81ccdadee87458bb5abddc9f18",
     "internal/cli/caregivers.go": "34dfb4d9f6c2a6bb42088dc22a86128b3a173b57ebe5de45d6c4711e4444d63c",
     "internal/cli/caregivers_booking_list_provider.go": "b5293b7b7096ec0a72cb3e1a41413b657be926d9e4a31ec96884737bae12232b",
