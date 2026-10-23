@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/mvanhorn/printing-press-library/library/other/care/internal/client"
+	"github.com/mvanhorn/printing-press-library/library/other/care/internal/cliutil"
 
 	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/cdproto/storage"
@@ -22,9 +23,24 @@ import (
 // rotation makes ephemeral captures go stale. See care_cookie.go for how the
 // client consumes the cached cookie.
 
+func init() {
+	doctorAuthConfiguredHook = client.CustomSessionStatus
+}
+
 func careProfileDir() string {
-	home, _ := os.UserHomeDir()
-	return filepath.Join(home, ".care-pp-cli", "chrome-profile")
+	dir, err := cliutil.StateDir()
+	if err != nil || dir == "" {
+		return ""
+	}
+	return filepath.Join(dir, "chrome-profile")
+}
+
+func careClearBrowserProfile() error {
+	dir := careProfileDir()
+	if dir == "" {
+		return nil
+	}
+	return os.RemoveAll(dir)
 }
 
 func careChromeExecPath() string {

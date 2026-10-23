@@ -361,6 +361,9 @@ func newDoctorCmd(flags *rootFlags) *cobra.Command {
 						authHeader = cfg.CookieCredential()
 					}
 					if authHeader == "" {
+						authHeader = client.SessionCookie()
+					}
+					if authHeader == "" {
 						// No auth configured — skip credential validation
 					} else if errors.Is(reachErr, client.ErrPlaintextCredential) {
 						report["credentials"] = "not probed (plaintext HTTP); use https"

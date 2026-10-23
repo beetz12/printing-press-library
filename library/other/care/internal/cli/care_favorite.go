@@ -17,12 +17,21 @@ import (
 func careFavorite(cmd *cobra.Command, flags *rootFlags, caregiverID string, on, confirm bool) error {
 	// Every write is draft-and-confirm: dry-run unless --confirm (and --dry-run
 	// always forces a preview). Consistent with outreach send / messages reply.
+	w := cmd.OutOrStdout()
 	if !confirm || dryRunOK(flags) {
+		if !wantsHumanTable(w, flags) {
+			return printJSONFiltered(w, map[string]any{
+				"caregiver_id":    caregiverID,
+				"favorite_status": on,
+				"dry_run":         true,
+				"applied":         false,
+			}, flags)
+		}
 		verb := "favorite"
 		if !on {
 			verb = "unfavorite"
 		}
-		fmt.Fprintf(cmd.OutOrStdout(), "DRY RUN - would %s caregiver %s. Re-run with --confirm to apply.\n", verb, caregiverID)
+		fmt.Fprintf(w, "DRY RUN - would %s caregiver %s. Re-run with --confirm to apply.\n", verb, caregiverID)
 		return nil
 	}
 	to := flags.timeout
@@ -59,11 +68,21 @@ func careFavorite(cmd *cobra.Command, flags *rootFlags, caregiverID string, on, 
 	if res.Fav.Typename != "FavoriteCaregiverPayload" {
 		return fmt.Errorf("care.com rejected the favorite: %s %s", res.Fav.Typename, res.Fav.Message)
 	}
+	if !wantsHumanTable(w, flags) {
+		return printJSONFiltered(w, map[string]any{
+			"caregiver_id":    caregiverID,
+			"member_id":       legacyID,
+			"name":            name,
+			"favorite_status": res.Fav.Favorite.FavoriteStatus,
+			"dry_run":         false,
+			"applied":         true,
+		}, flags)
+	}
 	verb := "Favorited"
 	if !res.Fav.Favorite.FavoriteStatus {
 		verb = "Unfavorited"
 	}
-	fmt.Fprintf(cmd.OutOrStdout(), "%s %s.\n", verb, name)
+	fmt.Fprintf(w, "%s %s.\n", verb, name)
 	return nil
 }
 

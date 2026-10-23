@@ -10,7 +10,8 @@
     "internal/cli/care_auth.go",
     "internal/client/care_cookie.go",
     "internal/client/client.go",
-    "internal/cli/auth.go"
+    "internal/cli/auth.go",
+    "internal/cli/doctor.go"
   ],
   "validated_outcome": "auth profile-login/refresh wired under the auth parent; live job list authenticated via the cached cookie."
 }

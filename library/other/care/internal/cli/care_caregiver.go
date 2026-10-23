@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
-	"strconv"
 	"strings"
 	"time"
 
@@ -93,12 +92,7 @@ func careCaregiverCreds(g careGetCaregiver) []string {
 }
 
 func careCaregiverRate(g careGetCaregiver) float64 {
-	if len(g.Profiles.ChildCare.Rates) > 0 {
-		if v, err := strconv.ParseFloat(string(g.Profiles.ChildCare.Rates[0].HourlyRate.Amount), 64); err == nil {
-			return v
-		}
-	}
-	return 0
+	return selectCareBaseHourlyRate(g.Profiles.ChildCare.Rates)
 }
 
 func careCaregiverDetailJSON(id string, g careGetCaregiver) map[string]any {

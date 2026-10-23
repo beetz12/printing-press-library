@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"github.com/mvanhorn/printing-press-library/library/other/care/internal/client"
+	"github.com/mvanhorn/printing-press-library/library/other/care/internal/config"
 
 	"github.com/spf13/cobra"
 )
@@ -33,11 +34,17 @@ type careStreamCreds struct{ APIKey, Token, UserID string }
 
 func careHTTP() *http.Client { return &http.Client{Timeout: 30 * time.Second} }
 
-// careFetchStreamCreds pulls the Stream token + app key from the members page.
-func careFetchStreamCreds(ctx context.Context, hc *http.Client) (*careStreamCreds, error) {
-	ck := client.SessionCookie()
+// careFetchStreamCreds pulls the Stream token + app key from the members page,
+// resolving session cookies from both the custom profile-login cache and the
+// standard `auth login --chrome` / `auth login --cookies-file` stores.
+func careFetchStreamCreds(ctx context.Context, flags *rootFlags, hc *http.Client) (*careStreamCreds, error) {
+	var cfg *config.Config
+	if flags != nil {
+		cfg, _ = config.Load(flags.configPath)
+	}
+	ck := client.ResolveSessionCookie(cfg)
 	if ck == "" {
-		return nil, fmt.Errorf("no care.com session; run: care-pp-cli auth refresh")
+		return nil, fmt.Errorf("no care.com session; run: care-pp-cli auth profile-login or care-pp-cli auth login --chrome")
 	}
 	req, _ := http.NewRequestWithContext(ctx, "GET", "https://www.care.com/app/messages", nil)
 	req.Header.Set("Cookie", ck)
@@ -81,6 +88,7 @@ type streamUser struct {
 	Name string `json:"name"`
 }
 type streamMessage struct {
+	ID        string     `json:"id"`
 	Text      string     `json:"text"`
 	User      streamUser `json:"user"`
 	CreatedAt time.Time  `json:"created_at"`
@@ -96,7 +104,7 @@ type streamChannelState struct {
 	} `json:"members"`
 }
 
-func careStreamQueryChannels(ctx context.Context, hc *http.Client, creds *careStreamCreds, cidFilter string, msgLimit, limit int) ([]streamChannelState, error) {
+func careStreamQueryChannelsPage(ctx context.Context, hc *http.Client, creds *careStreamCreds, cidFilter string, msgLimit, limit, offset int) ([]streamChannelState, error) {
 	var filter map[string]any
 	if cidFilter != "" {
 		filter = map[string]any{"cid": cidFilter}
@@ -110,6 +118,7 @@ func careStreamQueryChannels(ctx context.Context, hc *http.Client, creds *careSt
 		"watch":             false,
 		"presence":          false,
 		"limit":             limit,
+		"offset":            offset,
 		"message_limit":     msgLimit,
 	}
 	body, _ := json.Marshal(payload)
@@ -134,6 +143,76 @@ func careStreamQueryChannels(ctx context.Context, hc *http.Client, creds *careSt
 		return nil, err
 	}
 	return out.Channels, nil
+}
+
+// careStreamQueryChannels pages through Stream's /channels endpoint (which caps
+// single-request limit at 30) starting at offset until limit channels are
+// collected or no more channels remain.
+func careStreamQueryChannels(ctx context.Context, hc *http.Client, creds *careStreamCreds, cidFilter string, msgLimit, limit, offset int) ([]streamChannelState, error) {
+	if limit < 1 {
+		limit = 30
+	}
+	if offset < 0 {
+		offset = 0
+	}
+	var all []streamChannelState
+	curOffset := offset
+	for len(all) < limit {
+		pageSize := limit - len(all)
+		if pageSize > 30 {
+			pageSize = 30
+		}
+		batch, err := careStreamQueryChannelsPage(ctx, hc, creds, cidFilter, msgLimit, pageSize, curOffset)
+		if err != nil {
+			return nil, err
+		}
+		all = append(all, batch...)
+		if len(batch) < pageSize {
+			break
+		}
+		curOffset += len(batch)
+	}
+	return all, nil
+}
+
+// careStreamQueryChannelMessages fetches older messages before a given message
+// ID for a specific channel cid ("messaging:<id>").
+func careStreamQueryChannelMessages(ctx context.Context, hc *http.Client, creds *careStreamCreds, cid, beforeMsgID string, msgLimit int) (*streamChannelState, error) {
+	parts := strings.SplitN(cid, ":", 2)
+	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {
+		return nil, fmt.Errorf("invalid channel cid %q", cid)
+	}
+	msgQuery := map[string]any{"limit": msgLimit}
+	if beforeMsgID != "" {
+		msgQuery["id_lt"] = beforeMsgID
+	}
+	payload := map[string]any{
+		"state":    true,
+		"watch":    false,
+		"presence": false,
+		"messages": msgQuery,
+	}
+	body, _ := json.Marshal(payload)
+	endpoint := fmt.Sprintf("https://chat.stream-io-api.com/channels/%s/%s/query?api_key=%s", parts[0], parts[1], creds.APIKey)
+	req, _ := http.NewRequestWithContext(ctx, "POST", endpoint, bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", creds.Token)
+	req.Header.Set("stream-auth-type", "jwt")
+	req.Header.Set("X-Stream-Client", "stream-chat-javascript-client")
+	resp, err := hc.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	rb, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return nil, fmt.Errorf("Stream Chat error (HTTP %d): %s", resp.StatusCode, truncate(string(rb), 160))
+	}
+	var out streamChannelState
+	if err := json.Unmarshal(rb, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
 }
 
 // otherName returns the display name of the participant who is not me.
@@ -161,6 +240,7 @@ func newCareMessagesCmd(flags *rootFlags) *cobra.Command {
 		},
 	}
 	cmd.Flags().Int("limit", 20, "max conversations to list")
+	cmd.Flags().Int("offset", 0, "number of conversations to skip for pagination")
 	cmd.AddCommand(newCareMessagesReadCmd(flags))
 	cmd.AddCommand(newCareMessagesReplyCmd(flags))
 	return cmd
@@ -177,10 +257,11 @@ func (s streamChannelState) otherUID(myUID string) string {
 	return ""
 }
 
-// careFindConversation locates a conversation by cid or by caregiver-name substring.
+// careFindConversation locates a unique conversation by cid or by caregiver-name
+// substring, paging across the user's channels and rejecting ambiguous matches.
 func careFindConversation(ctx context.Context, hc *http.Client, creds *careStreamCreds, query string, msgLimit int) (*streamChannelState, error) {
 	if strings.HasPrefix(query, "messaging:") {
-		chans, err := careStreamQueryChannels(ctx, hc, creds, query, msgLimit, 1)
+		chans, err := careStreamQueryChannels(ctx, hc, creds, query, msgLimit, 1, 0)
 		if err != nil {
 			return nil, err
 		}
@@ -189,16 +270,48 @@ func careFindConversation(ctx context.Context, hc *http.Client, creds *careStrea
 		}
 		return &chans[0], nil
 	}
-	chans, err := careStreamQueryChannels(ctx, hc, creds, "", msgLimit, 30)
-	if err != nil {
-		return nil, err
+	needle := strings.ToLower(strings.TrimSpace(query))
+	var matches []streamChannelState
+	offset := 0
+	const pageSize = 30
+	for {
+		// Use message_limit=1 while scanning channels by name, then load msgLimit
+		// for the uniquely matched channel if msgLimit > 1.
+		batch, err := careStreamQueryChannelsPage(ctx, hc, creds, "", 1, pageSize, offset)
+		if err != nil {
+			return nil, err
+		}
+		for _, ch := range batch {
+			if strings.Contains(strings.ToLower(ch.otherName(creds.UserID)), needle) {
+				matches = append(matches, ch)
+			}
+		}
+		if len(batch) < pageSize {
+			break
+		}
+		offset += len(batch)
 	}
-	for i := range chans {
-		if strings.Contains(strings.ToLower(chans[i].otherName(creds.UserID)), strings.ToLower(query)) {
-			return &chans[i], nil
+	if len(matches) == 0 {
+		return nil, fmt.Errorf("no conversation matching %q (list them: care-pp-cli messages)", query)
+	}
+	if len(matches) > 1 {
+		descs := make([]string, 0, len(matches))
+		for _, m := range matches {
+			descs = append(descs, fmt.Sprintf("%s (%s)", m.otherName(creds.UserID), m.Channel.CID))
+		}
+		return nil, fmt.Errorf("%q matches %d conversations: %s; specify a unique name or cid", query, len(matches), strings.Join(descs, ", "))
+	}
+	chosen := matches[0]
+	if msgLimit > 1 {
+		full, err := careStreamQueryChannels(ctx, hc, creds, chosen.Channel.CID, msgLimit, 1, 0)
+		if err != nil {
+			return nil, err
+		}
+		if len(full) > 0 {
+			return &full[0], nil
 		}
 	}
-	return nil, fmt.Errorf("no conversation matching %q (list them: care-pp-cli messages)", query)
+	return &chosen, nil
 }
 
 // careResolveJobForConversation returns the care.com job id most relevant to a
@@ -263,7 +376,7 @@ func newCareMessagesReplyCmd(flags *rootFlags) *cobra.Command {
 			ctx, cancel := context.WithTimeout(cmd.Context(), to)
 			defer cancel()
 			hc := careHTTP()
-			creds, err := careFetchStreamCreds(ctx, hc)
+			creds, err := careFetchStreamCreds(ctx, flags, hc)
 			if err != nil {
 				return err
 			}
@@ -294,33 +407,29 @@ func newCareMessagesReplyCmd(flags *rootFlags) *cobra.Command {
 			markContacted := func() {
 				// Surface (don't swallow) a failed local write so the inbox/dedupe
 				// state is known to be stale after a successful moderated reply.
-				if merr := careMarkContacted(nannyUID); merr != nil {
+				if merr := careMarkContacted(nannyUID, name); merr != nil {
 					fmt.Fprintf(cmd.ErrOrStderr(), "warning: reply sent, but recording the contact locally failed: %v\n", merr)
 				}
 			}
-			if flags.asJSON {
+			dryRun := !confirm || dryRunOK(flags)
+			if !wantsHumanTable(w, flags) {
 				out := map[string]any{
-					"to": name, "member": legacyID, "job": jobID,
-					"message": message, "dry_run": !confirm, "sent": false,
+					"to": name, "caregiver_id": nannyUID, "member": legacyID, "cid": ch.Channel.CID,
+					"job": jobID, "message": message, "dry_run": dryRun, "sent": false,
 				}
-				if confirm {
+				if !dryRun {
 					if err := careSendMessage(ctx, flags, jobID, legacyID, message); err != nil {
 						return err
 					}
 					out["sent"] = true
 					markContacted()
 				}
-				b, err := json.MarshalIndent(out, "", "  ")
-				if err != nil {
-					return err
-				}
-				fmt.Fprintln(w, string(b))
-				return nil
+				return printJSONFiltered(w, out, flags)
 			}
 			fmt.Fprintf(w, "To:      %s (member %s)\n", name, legacyID)
 			fmt.Fprintf(w, "Job:     %s\n", jobID)
 			fmt.Fprintf(w, "Message:\n%s\n\n", message)
-			if !confirm {
+			if dryRun {
 				fmt.Fprintln(w, "DRY RUN - nothing sent. Re-run with --confirm to send (via care.com's moderated path).")
 				return nil
 			}
@@ -347,6 +456,10 @@ func runCareMessagesList(cmd *cobra.Command, flags *rootFlags) error {
 	if limit < 1 {
 		limit = 20
 	}
+	offset, _ := cmd.Flags().GetInt("offset")
+	if offset < 0 {
+		offset = 0
+	}
 	to := flags.timeout
 	if to <= 0 {
 		to = 30 * time.Second
@@ -354,11 +467,11 @@ func runCareMessagesList(cmd *cobra.Command, flags *rootFlags) error {
 	ctx, cancel := context.WithTimeout(cmd.Context(), to)
 	defer cancel()
 	hc := careHTTP()
-	creds, err := careFetchStreamCreds(ctx, hc)
+	creds, err := careFetchStreamCreds(ctx, flags, hc)
 	if err != nil {
 		return err
 	}
-	chans, err := careStreamQueryChannels(ctx, hc, creds, "", 1, limit)
+	chans, err := careStreamQueryChannels(ctx, hc, creds, "", 1, limit, offset)
 	if err != nil {
 		return err
 	}
@@ -404,18 +517,26 @@ func runCareMessagesList(cmd *cobra.Command, flags *rootFlags) error {
 			truncate(c.Nanny, 20), truncate(c.LastFrom, 8), when, truncate(strings.ReplaceAll(c.LastText, "\n", " "), 50))
 	}
 	fmt.Fprintf(w, "\n%d conversations. Read one: care-pp-cli messages read \"<caregiver name>\"\n", len(out))
+	if len(out) >= limit {
+		fmt.Fprintf(w, "More conversations may exist; pass --offset %d (or a larger --limit) to continue.\n", offset+len(out))
+	}
 	return nil
 }
 
 func newCareMessagesReadCmd(flags *rootFlags) *cobra.Command {
-	return &cobra.Command{
+	var msgLimit int
+	var beforeID string
+	cmd := &cobra.Command{
 		Use:         "read <caregiver name or cid>",
-		Short:       "Read the full message thread with one caregiver",
-		Example:     "  care-pp-cli messages read \"Jane\"",
+		Short:       "Read the message thread with one caregiver",
+		Example:     "  care-pp-cli messages read \"Jane\"\n  care-pp-cli messages read messaging:!members-abc --limit 100 --before <message-id>",
 		Args:        cobra.MinimumNArgs(1),
 		Annotations: map[string]string{"mcp:read-only": "true"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			query := strings.Join(args, " ")
+			if msgLimit < 1 {
+				msgLimit = 100
+			}
 			to := flags.timeout
 			if to <= 0 {
 				to = 30 * time.Second
@@ -423,37 +544,30 @@ func newCareMessagesReadCmd(flags *rootFlags) *cobra.Command {
 			ctx, cancel := context.WithTimeout(cmd.Context(), to)
 			defer cancel()
 			hc := careHTTP()
-			creds, err := careFetchStreamCreds(ctx, hc)
+			creds, err := careFetchStreamCreds(ctx, flags, hc)
 			if err != nil {
 				return err
 			}
-			var ch *streamChannelState
-			if strings.HasPrefix(query, "messaging:") {
-				chans, err := careStreamQueryChannels(ctx, hc, creds, query, 100, 1)
-				if err != nil {
-					return err
-				}
-				if len(chans) > 0 {
-					ch = &chans[0]
-				}
-			} else {
-				chans, err := careStreamQueryChannels(ctx, hc, creds, "", 100, 30)
-				if err != nil {
-					return err
-				}
-				for i := range chans {
-					if strings.Contains(strings.ToLower(chans[i].otherName(creds.UserID)), strings.ToLower(query)) {
-						ch = &chans[i]
-						break
-					}
-				}
+			ch, err := careFindConversation(ctx, hc, creds, query, msgLimit)
+			if err != nil {
+				return err
 			}
-			if ch == nil {
-				return fmt.Errorf("no conversation matching %q (list them: care-pp-cli messages)", query)
+			if strings.TrimSpace(beforeID) != "" {
+				older, err := careStreamQueryChannelMessages(ctx, hc, creds, ch.Channel.CID, strings.TrimSpace(beforeID), msgLimit)
+				if err != nil {
+					return err
+				}
+				ch.Messages = older.Messages
 			}
 			nanny := ch.otherName(creds.UserID)
+			hasMore := len(ch.Messages) >= msgLimit
+			nextBefore := ""
+			if hasMore && len(ch.Messages) > 0 {
+				nextBefore = ch.Messages[0].ID
+			}
 			if !wantsHumanTable(cmd.OutOrStdout(), flags) {
 				type msg struct {
+					ID   string    `json:"id,omitempty"`
 					From string    `json:"from"`
 					At   time.Time `json:"at"`
 					Text string    `json:"text"`
@@ -466,12 +580,29 @@ func newCareMessagesReadCmd(flags *rootFlags) *cobra.Command {
 					} else if m.User.ID == "care" {
 						from = "care.com"
 					}
-					msgs = append(msgs, msg{From: from, At: m.CreatedAt, Text: m.Text})
+					msgs = append(msgs, msg{ID: m.ID, From: from, At: m.CreatedAt, Text: m.Text})
 				}
-				return printJSONFiltered(cmd.OutOrStdout(), map[string]any{"caregiver": nanny, "cid": ch.Channel.CID, "messages": msgs}, flags)
+				payload := map[string]any{
+					"caregiver": nanny,
+					"cid":       ch.Channel.CID,
+					"limit":     msgLimit,
+					"has_more":  hasMore,
+					"messages":  msgs,
+				}
+				if nextBefore != "" {
+					payload["next_before"] = nextBefore
+				}
+				return printJSONFiltered(cmd.OutOrStdout(), payload, flags)
 			}
 			w := cmd.OutOrStdout()
-			fmt.Fprintf(w, "Conversation with %s\n\n", nanny)
+			fmt.Fprintf(w, "Conversation with %s (%s)\n\n", nanny, ch.Channel.CID)
+			if hasMore {
+				if nextBefore != "" {
+					fmt.Fprintf(w, "(Showing %d messages; pass --before %s to read older messages in this thread.)\n\n", len(ch.Messages), nextBefore)
+				} else {
+					fmt.Fprintf(w, "(Showing the %d most recent messages; pass a larger --limit to read older messages.)\n\n", len(ch.Messages))
+				}
+			}
 			for _, m := range ch.Messages {
 				from := nanny
 				if m.User.ID == creds.UserID {
@@ -485,4 +616,7 @@ func newCareMessagesReadCmd(flags *rootFlags) *cobra.Command {
 			return nil
 		},
 	}
+	cmd.Flags().IntVar(&msgLimit, "limit", 100, "max messages to fetch from the thread")
+	cmd.Flags().StringVar(&beforeID, "before", "", "fetch messages older than this message ID (pagination)")
+	return cmd
 }

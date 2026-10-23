@@ -14,18 +14,26 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/mvanhorn/printing-press-library/library/other/care/internal/cliutil"
+
 	_ "modernc.org/sqlite"
 
 	"github.com/spf13/cobra"
 )
 
 func careDBPath() string {
-	home, _ := os.UserHomeDir()
-	return filepath.Join(home, ".care-pp-cli", "care.db")
+	dir, err := cliutil.DataDir()
+	if err != nil || dir == "" {
+		return ""
+	}
+	return filepath.Join(dir, "care.db")
 }
 
 func openCareDB() (*sql.DB, error) {
 	p := careDBPath()
+	if p == "" {
+		return nil, fmt.Errorf("cannot resolve care database path")
+	}
 	if err := os.MkdirAll(filepath.Dir(p), 0o700); err != nil {
 		return nil, err
 	}
@@ -54,19 +62,31 @@ CREATE TABLE IF NOT EXISTS caregiver_zips (
 }
 
 // careMarkContacted records (by caregiver UUID) that a caregiver was contacted,
-// so outreach dedupe (`sync list --uncontacted`) reflects completed sends. It
-// returns the error instead of swallowing it, so a caller can surface a stale
-// local state after a successful remote send.
-func careMarkContacted(caregiverUUID string) error {
+// so outreach dedupe (`sync list --uncontacted`) reflects completed sends even
+// when the caregiver has not been synced yet (e.g. `find` -> `outreach send` or
+// `messages reply`). A later `sync run` updates the caregiver's profile fields
+// via ON CONFLICT(id) DO UPDATE while preserving `contacted_at`.
+func careMarkContacted(caregiverUUID string, caregiverName ...string) error {
 	if caregiverUUID == "" {
 		return fmt.Errorf("no caregiver id to record")
+	}
+	name := ""
+	if len(caregiverName) > 0 {
+		name = caregiverName[0]
 	}
 	db, err := openCareDB()
 	if err != nil {
 		return err
 	}
 	defer db.Close()
-	_, err = db.Exec(`UPDATE caregivers SET contacted_at=? WHERE id=?`, time.Now().UTC().Format(time.RFC3339), caregiverUUID)
+	now := time.Now().UTC().Format(time.RFC3339)
+	_, err = db.Exec(`INSERT INTO caregivers
+  (id,name,city,state,years_experience,hourly_rate,total_reviews,avg_rating,has_care_check,bio,zip,contacted_at,first_seen,last_synced)
+  VALUES (?,?, '', '', 0, 0, 0, 0, 0, '', '', ?, ?, '')
+  ON CONFLICT(id) DO UPDATE SET
+    contacted_at = excluded.contacted_at,
+    name = CASE WHEN caregivers.name IS NULL OR caregivers.name = '' THEN excluded.name ELSE caregivers.name END`,
+		caregiverUUID, name, now, now)
 	return err
 }
 
@@ -119,7 +139,7 @@ func newCareSyncCmd(flags *rootFlags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sync",
 		Short: "Persist caregiver searches locally (offline list, dedupe, contacted-tracking)",
-		Long:  "Sync search results into a local SQLite db (~/.care-pp-cli/care.db) so you can list caregivers offline, dedupe across searches, and track who you've contacted.",
+		Long:  "Sync search results into a local SQLite db (care.db in the CLI data directory) so you can list caregivers offline, dedupe across searches, and track who you've contacted.",
 		RunE:  parentNoSubcommandRunE(flags),
 	}
 	cmd.AddCommand(newCareSyncRunCmd(flags))
@@ -219,7 +239,7 @@ func newCareSyncListCmd(flags *rootFlags) *cobra.Command {
 				return err
 			}
 			defer db.Close()
-			q := `SELECT id,name,city,state,years_experience,hourly_rate,total_reviews,avg_rating,has_care_check,zip,contacted_at FROM caregivers WHERE 1=1`
+			q := `SELECT id,COALESCE(name,''),COALESCE(city,''),COALESCE(state,''),COALESCE(years_experience,0),COALESCE(hourly_rate,0),COALESCE(total_reviews,0),COALESCE(avg_rating,0),COALESCE(has_care_check,0),COALESCE(zip,''),contacted_at FROM caregivers WHERE 1=1`
 			var qargs []any
 			if zip != "" {
 				q += " AND (zip=? OR id IN (SELECT caregiver_id FROM caregiver_zips WHERE zip=?))"
@@ -301,22 +321,18 @@ func newCareSyncListCmd(flags *rootFlags) *cobra.Command {
 func newCareSyncMarkContactedCmd(flags *rootFlags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "mark-contacted <caregiverId>",
-		Short:   "Mark a synced caregiver as contacted (outreach tracking / dedupe)",
+		Short:   "Mark a caregiver as contacted (outreach tracking / dedupe)",
 		Example: "  care-pp-cli sync mark-contacted 44444444-4444-4444-4444-444444444444",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			db, err := openCareDB()
-			if err != nil {
+			if err := careMarkContacted(args[0]); err != nil {
 				return err
 			}
-			defer db.Close()
-			now := time.Now().UTC().Format(time.RFC3339)
-			res, err := db.Exec(`UPDATE caregivers SET contacted_at=? WHERE id=?`, now, args[0])
-			if err != nil {
-				return err
-			}
-			if n, _ := res.RowsAffected(); n == 0 {
-				return fmt.Errorf("caregiver %s not in local db (sync it first: care-pp-cli sync run --zip <zip>)", args[0])
+			if !wantsHumanTable(cmd.OutOrStdout(), flags) {
+				return printJSONFiltered(cmd.OutOrStdout(), map[string]any{
+					"id":        args[0],
+					"contacted": true,
+				}, flags)
 			}
 			fmt.Fprintf(cmd.OutOrStdout(), "Marked %s as contacted.\n", args[0])
 			return nil

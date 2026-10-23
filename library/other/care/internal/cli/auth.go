@@ -325,6 +325,10 @@ func newAuthStatusCmd(flags *rootFlags) *cobra.Command {
 
 			w := cmd.OutOrStdout()
 			credentialConfigured := cfg.CredentialConfigured()
+			authSource := cfg.AuthSource
+			if !credentialConfigured && doctorAuthConfiguredHook != nil {
+				credentialConfigured, authSource = doctorAuthConfiguredHook()
+			}
 			refusals := cfg.CredentialRefusalSummaries()
 			credentialRefused := len(refusals) > 0
 			if !credentialConfigured {
@@ -338,12 +342,13 @@ func newAuthStatusCmd(flags *rootFlags) *cobra.Command {
 				fmt.Fprintln(w, red("Not authenticated"))
 				fmt.Fprintln(w, "")
 				fmt.Fprintln(w, "Log in from your browser session:")
+				fmt.Fprintf(w, "  care-pp-cli auth profile-login\n")
 				fmt.Fprintf(w, "  care-pp-cli auth login --chrome\n")
 				return authErr(fmt.Errorf("no credentials configured"))
 			}
 
 			fmt.Fprintln(w, green("Authenticated"))
-			fmt.Fprintf(w, "  Source: %s\n", cfg.AuthSource)
+			fmt.Fprintf(w, "  Source: %s\n", authSource)
 			fmt.Fprintf(w, "  Domain: .care.com\n")
 			fmt.Fprintf(w, "  Config: %s\n", cfg.Path)
 			return nil
@@ -445,7 +450,8 @@ func credentialSavePath(cfg *config.Config) string {
 func newAuthLogoutCmd(flags *rootFlags) *cobra.Command {
 	return &cobra.Command{
 		Use:     "logout",
-		Short:   "Clear stored credentials",
+		Short:   "Clear stored credentials, cached session cookie, and persistent browser session",
+		Long:    "Clears stored config tokens, the HTTP cookie jar, the custom cached session-cookie file created by `auth profile-login` / `auth refresh`, and the dedicated persistent Chrome profile directory so subsequent commands cannot reuse the logged-out care.com session.",
 		Example: "  care-pp-cli auth logout",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg, err := config.Load(flags.configPath)
@@ -459,7 +465,13 @@ func newAuthLogoutCmd(flags *rootFlags) *cobra.Command {
 			if err := client.ClearCookieJar(); err != nil {
 				return configErr(fmt.Errorf("clearing cookie jar: %w", err))
 			}
-			fmt.Fprintln(cmd.OutOrStdout(), "Logged out. Credentials cleared.")
+			if err := client.ClearSessionCookie(); err != nil {
+				return configErr(fmt.Errorf("clearing cached session cookie: %w", err))
+			}
+			if err := careClearBrowserProfile(); err != nil {
+				return configErr(fmt.Errorf("clearing persistent browser profile: %w", err))
+			}
+			fmt.Fprintln(cmd.OutOrStdout(), "Logged out. Credentials, cached session cookie, and persistent browser profile cleared.")
 			return nil
 		},
 	}

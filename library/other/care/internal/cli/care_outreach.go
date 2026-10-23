@@ -41,12 +41,8 @@ type careGetCaregiver struct {
 			AgeGroups        []string       `json:"ageGroups"`
 			NumberOfChildren int            `json:"numberOfChildren"`
 			Qualities        map[string]any `json:"qualities"`
-			Rates            []struct {
-				HourlyRate struct {
-					Amount flexStr `json:"amount"`
-				} `json:"hourlyRate"`
-			} `json:"rates"`
-			Bio flexStr `json:"bio"`
+			Rates            []careRate     `json:"rates"`
+			Bio              flexStr        `json:"bio"`
 		} `json:"childCareCaregiverProfile"`
 		Common struct {
 			Bio struct {
@@ -301,12 +297,44 @@ func newCareOutreachSendCmd(flags *rootFlags) *cobra.Command {
 			}
 
 			w := cmd.OutOrStdout()
+			dryRun := !confirm || dryRunOK(flags)
+			recordContact := func() {
+				// Record the outreach locally for dedupe. Surface (don't swallow)
+				// failures so the user knows the local state is stale after a send.
+				if caregiverID == "" {
+					fmt.Fprintln(cmd.ErrOrStderr(), "note: contact not recorded locally (sent via --to-member-id; no caregiver id to key on)")
+				} else if merr := careMarkContacted(caregiverID, name); merr != nil {
+					fmt.Fprintf(cmd.ErrOrStderr(), "warning: message sent, but recording the contact locally failed: %v\n", merr)
+				}
+			}
+
+			if !wantsHumanTable(w, flags) {
+				out := map[string]any{
+					"to":           name,
+					"caregiver_id": caregiverID,
+					"member_id":    memberID,
+					"job_id":       job.ID,
+					"job_title":    job.Title,
+					"message":      message,
+					"dry_run":      dryRun,
+					"sent":         false,
+				}
+				if !dryRun {
+					if err := careSendMessage(ctx, flags, jobID, memberID, message); err != nil {
+						return err
+					}
+					out["sent"] = true
+					recordContact()
+				}
+				return printJSONFiltered(w, out, flags)
+			}
+
 			// Always show exactly what would be sent.
 			fmt.Fprintf(w, "To:      %s (member %s)\n", name, memberID)
 			fmt.Fprintf(w, "Job:     %s (%s)\n", job.Title, job.ID)
 			fmt.Fprintf(w, "Message:\n%s\n\n", message)
 
-			if !confirm {
+			if dryRun {
 				fmt.Fprintln(w, "DRY RUN - nothing sent. Re-run with --confirm to send.")
 				return nil
 			}
@@ -315,13 +343,7 @@ func newCareOutreachSendCmd(flags *rootFlags) *cobra.Command {
 				return err
 			}
 			fmt.Fprintf(w, "Sent to %s.\n", name)
-			// Record the outreach locally for dedupe. Surface (don't swallow)
-			// failures so the user knows the local state is stale after a send.
-			if caregiverID == "" {
-				fmt.Fprintln(cmd.ErrOrStderr(), "note: contact not recorded locally (sent via --to-member-id; no caregiver id to key on)")
-			} else if merr := careMarkContacted(caregiverID); merr != nil {
-				fmt.Fprintf(cmd.ErrOrStderr(), "warning: message sent, but recording the contact locally failed: %v\n", merr)
-			}
+			recordContact()
 			return nil
 		},
 	}

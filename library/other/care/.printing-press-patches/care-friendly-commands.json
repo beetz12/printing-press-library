@@ -16,7 +16,10 @@
     "internal/cli/care_jobs_helper.go",
     "internal/cli/care_queries.go",
     "internal/cli/care_mutations.go",
-    "internal/cli/root.go"
+    "internal/cli/care_review_fixes_test.go",
+    "internal/cli/root.go",
+    "internal/mcp/tools.go",
+    "internal/mcp/tools_defaults_test.go"
   ],
   "validated_outcome": "go build/vet/test green; command surface verified; job list returned real jobs live."
 }

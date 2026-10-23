@@ -16,6 +16,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mvanhorn/printing-press-library/library/other/care/internal/cliutil"
+
 	"github.com/spf13/cobra"
 )
 
@@ -97,12 +99,19 @@ func careListJobs(ctx context.Context, flags *rootFlags) ([]careJob, error) {
 // --- active job persistence ---
 
 func careActiveJobPath() string {
-	home, _ := os.UserHomeDir()
-	return filepath.Join(home, ".care-pp-cli", "active-job.json")
+	dir, err := cliutil.StateDir()
+	if err != nil || dir == "" {
+		return ""
+	}
+	return filepath.Join(dir, "active-job.json")
 }
 
 func careReadActiveJob() (careJob, bool) {
-	b, err := os.ReadFile(careActiveJobPath())
+	p := careActiveJobPath()
+	if p == "" {
+		return careJob{}, false
+	}
+	b, err := os.ReadFile(p)
 	if err != nil {
 		return careJob{}, false
 	}
@@ -115,6 +124,9 @@ func careReadActiveJob() (careJob, bool) {
 
 func careWriteActiveJob(j careJob) error {
 	p := careActiveJobPath()
+	if p == "" {
+		return fmt.Errorf("cannot resolve active job state path")
+	}
 	if err := os.MkdirAll(filepath.Dir(p), 0o700); err != nil {
 		return err
 	}
@@ -229,6 +241,14 @@ func newCareJobUseCmd(flags *rootFlags) *cobra.Command {
 			}
 			if err := careWriteActiveJob(j); err != nil {
 				return err
+			}
+			if !wantsHumanTable(cmd.OutOrStdout(), flags) {
+				return printJSONFiltered(cmd.OutOrStdout(), map[string]any{
+					"id":     j.ID,
+					"title":  j.Title,
+					"status": j.Status,
+					"active": true,
+				}, flags)
 			}
 			fmt.Fprintf(cmd.OutOrStdout(), "Active job set: %s (%s)\n", j.Title, j.ID)
 			return nil

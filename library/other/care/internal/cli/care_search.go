@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/spf13/cobra"
 )
@@ -136,6 +137,29 @@ type careCaregiverSummary struct {
 	ProfileURL      string   `json:"profile_url"`
 }
 
+func selectCareBaseHourlyRate(rates []careRate) float64 {
+	if len(rates) == 0 {
+		return 0
+	}
+	// Prefer the single-child base tier (NumberOfChildren == 1, or the
+	// smallest positive child count) rather than relying on slice order.
+	chosen := rates[0]
+	bestChildren := chosen.NumberOfChildren
+	for _, rt := range rates[1:] {
+		if chosen.NumberOfChildren == 1 {
+			break
+		}
+		if rt.NumberOfChildren == 1 || (rt.NumberOfChildren > 0 && (bestChildren <= 0 || rt.NumberOfChildren < bestChildren)) {
+			chosen = rt
+			bestChildren = rt.NumberOfChildren
+		}
+	}
+	if v, err := strconv.ParseFloat(string(chosen.HourlyRate.Amount), 64); err == nil {
+		return v
+	}
+	return 0
+}
+
 func (n careCaregiverNode) summary() careCaregiverSummary {
 	s := careCaregiverSummary{
 		ID:              n.Member.ID,
@@ -150,24 +174,7 @@ func (n careCaregiverNode) summary() careCaregiverSummary {
 		Badges:          n.Badges,
 		Bio:             strings.TrimSpace(n.Profiles.CommonCaregiverProfile.Bio.ExperienceSummary),
 	}
-	if rates := n.Profiles.ChildCareCaregiverProfile.Rates; len(rates) > 0 {
-		// Prefer the single-child base tier (NumberOfChildren == 1, or the
-		// smallest positive child count) rather than relying on slice order.
-		chosen := rates[0]
-		bestChildren := chosen.NumberOfChildren
-		for _, rt := range rates[1:] {
-			if chosen.NumberOfChildren == 1 {
-				break
-			}
-			if rt.NumberOfChildren == 1 || (rt.NumberOfChildren > 0 && (bestChildren <= 0 || rt.NumberOfChildren < bestChildren)) {
-				chosen = rt
-				bestChildren = rt.NumberOfChildren
-			}
-		}
-		if v, err := strconv.ParseFloat(string(chosen.HourlyRate.Amount), 64); err == nil {
-			s.HourlyRate = v
-		}
-	}
+	s.HourlyRate = selectCareBaseHourlyRate(n.Profiles.ChildCareCaregiverProfile.Rates)
 	for _, r := range n.RevieweeMetrics.Metrics.AverageRatings {
 		if strings.EqualFold(r.Type, "OVERALL") || s.AvgRating == 0 {
 			s.AvgRating = r.Value
@@ -184,7 +191,11 @@ func firstInitial(s string) string {
 	if s == "" {
 		return ""
 	}
-	return strings.ToUpper(s[:1]) + "."
+	r, _ := utf8.DecodeRuneInString(s)
+	if r == utf8.RuneError {
+		return ""
+	}
+	return strings.ToUpper(string(r)) + "."
 }
 
 func newCareFindCmd(flags *rootFlags) *cobra.Command {
@@ -280,7 +291,7 @@ func newCareFindCmd(flags *rootFlags) *cobra.Command {
 				return fmt.Errorf("care.com search error: %s", wrap.Search.Message)
 			}
 
-			results := make([]careCaregiverSummary, 0, pageSize)
+			results := make([]careCaregiverSummary, 0, len(wrap.Search.Conn.Edges))
 			for _, e := range wrap.Search.Conn.Edges {
 				if e.Node.Typename != "Caregiver" {
 					continue
@@ -299,9 +310,6 @@ func newCareFindCmd(flags *rootFlags) *cobra.Command {
 					continue
 				}
 				results = append(results, s)
-				if len(results) >= pageSize {
-					break
-				}
 			}
 			// Stable ranking: more reviews, then higher rating, then more experience.
 			sort.SliceStable(results, func(i, j int) bool {
@@ -313,6 +321,9 @@ func newCareFindCmd(flags *rootFlags) *cobra.Command {
 				}
 				return results[i].YearsExperience > results[j].YearsExperience
 			})
+			if len(results) > pageSize {
+				results = results[:pageSize]
+			}
 
 			if wantsHumanTable(cmd.OutOrStdout(), flags) {
 				return renderCareFindTable(cmd, results, wrap.Search.Conn.TotalHits, zip)
