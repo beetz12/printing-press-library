@@ -22,8 +22,9 @@ func newCareJobsApplicationInterestCmd(flags *rootFlags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:         "application-interest",
 		Short:       "Fetch jobs application interest",
+		Example:     "  care-pp-cli care-jobs application-interest --operation-name JobApplicationInterest",
 		Args:        cobra.NoArgs,
-		Annotations: map[string]string{"pp:endpoint": "care_jobs.application_interest", "pp:method": "POST", "pp:path": "/api/graphql", "pp:requires-input": "true"},
+		Annotations: map[string]string{"pp:endpoint": "care_jobs.application_interest", "pp:method": "POST", "pp:path": "/api/graphql", "pp:happy-args": "--operation-name=JobApplicationInterest", "pp:requires-input": "true"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Bare invocation of a command with required input prints help
 			// instead of pflag's terse "required flag not set" error. Optional-
@@ -240,7 +241,7 @@ func newCareJobsApplicationInterestCmd(flags *rootFlags) *cobra.Command {
 			return printErr
 		},
 	}
-	cmd.Flags().StringVar(&bodyOperationName, "operation-name", "", "GraphQL operation name")
+	cmd.Flags().StringVar(&bodyOperationName, "operation-name", "JobApplicationInterest", "GraphQL operation name")
 	cmd.Flags().StringVar(&bodyQuery, "query", "mutation JobApplicationInterest($jobApplicationId: String!, $seekerInterest: JobApplicationSeekerInterest!, $isInterested: Boolean, $channelId: String) {\n  jobApplicationInterest(\n    jobApplicationId: $jobApplicationId\n    seekerInterest: $seekerInterest\n    isInterested: $isInterested\n    channelId: $channelId\n  ) {\n    ... on JobApplicationInterestSuccess {\n      dummy\n      __typename\n    }\n    ... on JobApplicationInterestError {\n      error\n      __typename\n    }\n    __typename\n  }\n}", "GraphQL query document")
 	cmd.Flags().StringVar(&bodyVariables, "variables", "{\"channelId\":\"!members-example\",\"jobApplicationId\":\"12345678\",\"seekerInterest\":\"NOT_INTERESTED\"}", "GraphQL variables as JSON")
 	cmd.Flags().BoolVar(&stdinBody, "stdin", false, "Read request body as JSON from stdin")

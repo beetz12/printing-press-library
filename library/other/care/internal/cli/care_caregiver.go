@@ -23,10 +23,18 @@ func newCareCaregiverCmd(flags *rootFlags) *cobra.Command {
 		Long:        "Fetches one caregiver's full profile: experience, ages served, qualities/certifications, education, rate, and background-check status. Use the id from `find`.",
 		Example:     "  care-pp-cli caregiver 44444444-4444-4444-4444-444444444444",
 		Args:        cobra.ExactArgs(1),
-		Annotations: map[string]string{"mcp:read-only": "true"},
+		Annotations: map[string]string{"mcp:read-only": "true", "pp:verified-by-proof": "manual-live-verification.md"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			id := args[0]
 			if dryRunOK(flags) {
+				if !wantsHumanTable(cmd.OutOrStdout(), flags) {
+					return printJSONFiltered(cmd.OutOrStdout(), map[string]any{
+						"dry_run":      true,
+						"action":       "would fetch caregiver " + id,
+						"caregiver_id": id,
+						"service":      service,
+					}, flags)
+				}
 				fmt.Fprintf(cmd.OutOrStdout(), "would fetch caregiver %s\n", id)
 				return nil
 			}

@@ -216,6 +216,15 @@ func newCareFindCmd(flags *rootFlags) *cobra.Command {
 				return cmd.Help()
 			}
 			if dryRunOK(flags) {
+				if !wantsHumanTable(cmd.OutOrStdout(), flags) {
+					return printJSONFiltered(cmd.OutOrStdout(), map[string]any{
+						"dry_run":   true,
+						"action":    fmt.Sprintf("would search caregivers near %s (careType=%s)", zip, careType),
+						"zip":       zip,
+						"care_type": careType,
+						"job":       jobRef,
+					}, flags)
+				}
 				fmt.Fprintf(cmd.OutOrStdout(), "would search caregivers near %s (careType=%s)\n", zip, careType)
 				return nil
 			}

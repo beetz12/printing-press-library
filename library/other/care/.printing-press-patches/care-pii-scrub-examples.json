@@ -15,7 +15,21 @@
     "internal/cli/care_jobs_helper.go",
     "internal/cli/caregivers_get.go",
     "internal/cli/providers_get.go",
-    "internal/cli/seekers_get.go"
+    "internal/cli/seekers_get.go",
+    "internal/cli/bookings_request_list_jobs_basic.go",
+    "internal/cli/bookings_request_list_jobs_extended.go",
+    "internal/cli/care_jobs_application_interest.go",
+    "internal/cli/care_jobs_application_seeker_interest_counts.go",
+    "internal/cli/care_jobs_by_seeker_u_u_i_d_applicants.go",
+    "internal/cli/care_jobs_child_care_one_time_update.go",
+    "internal/cli/caregivers_booking_list_provider.go",
+    "internal/cli/promoted_conversations.go",
+    "internal/cli/members_entitlements.go",
+    "internal/cli/promoted_memberships.go",
+    "internal/cli/providers_child_care.go",
+    "internal/cli/providers_child_care_2.go",
+    "internal/cli/seekers_job_application.go",
+    "internal/cli/seekers_membership_information.go"
   ],
   "validated_outcome": "Broad PII grep clean across internal/*.go; govulncheck + build/test green after scrub."
 }

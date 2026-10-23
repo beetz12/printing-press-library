@@ -137,10 +137,11 @@ func careSearchCaregivers(ctx context.Context, flags *rootFlags, zip, careType, 
 
 func newCareSyncCmd(flags *rootFlags) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "sync",
-		Short: "Persist caregiver searches locally (offline list, dedupe, contacted-tracking)",
-		Long:  "Sync search results into a local SQLite db (care.db in the CLI data directory) so you can list caregivers offline, dedupe across searches, and track who you've contacted.",
-		RunE:  parentNoSubcommandRunE(flags),
+		Use:         "sync",
+		Short:       "Persist caregiver searches locally (offline list, dedupe, contacted-tracking)",
+		Long:        "Sync search results into a local SQLite db (care.db in the CLI data directory) so you can list caregivers offline, dedupe across searches, and track who you've contacted.",
+		Annotations: map[string]string{"mcp:read-only": "true", "pp:parent-group": "true", "pp:typed-exit-codes": "0,2"},
+		RunE:        parentNoSubcommandRunE(flags),
 	}
 	cmd.AddCommand(newCareSyncRunCmd(flags))
 	cmd.AddCommand(newCareSyncListCmd(flags))
@@ -160,6 +161,14 @@ func newCareSyncRunCmd(flags *rootFlags) *cobra.Command {
 				return usageErr(fmt.Errorf("--zip is required"))
 			}
 			if dryRunOK(flags) {
+				if !wantsHumanTable(cmd.OutOrStdout(), flags) {
+					return printJSONFiltered(cmd.OutOrStdout(), map[string]any{
+						"dry_run": true,
+						"action":  fmt.Sprintf("would sync caregivers near %s", zip),
+						"zip":     zip,
+						"limit":   limit,
+					}, flags)
+				}
 				fmt.Fprintf(cmd.OutOrStdout(), "would sync caregivers near %s\n", zip)
 				return nil
 			}
@@ -234,6 +243,18 @@ func newCareSyncListCmd(flags *rootFlags) *cobra.Command {
 		Example:     "  care-pp-cli sync list --zip 90210 --min-exp 5 --json",
 		Annotations: map[string]string{"mcp:read-only": "true"},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if dryRunOK(flags) {
+				if !wantsHumanTable(cmd.OutOrStdout(), flags) {
+					return printJSONFiltered(cmd.OutOrStdout(), map[string]any{
+						"dry_run": true,
+						"action":  "would list locally-synced caregivers",
+						"zip":     zip,
+						"min_exp": minExp,
+					}, flags)
+				}
+				fmt.Fprintln(cmd.OutOrStdout(), "would list locally-synced caregivers")
+				return nil
+			}
 			db, err := openCareDB()
 			if err != nil {
 				return err
@@ -325,6 +346,18 @@ func newCareSyncMarkContactedCmd(flags *rootFlags) *cobra.Command {
 		Example: "  care-pp-cli sync mark-contacted 44444444-4444-4444-4444-444444444444",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if dryRunOK(flags) {
+				if !wantsHumanTable(cmd.OutOrStdout(), flags) {
+					return printJSONFiltered(cmd.OutOrStdout(), map[string]any{
+						"dry_run":   true,
+						"action":    "would mark caregiver " + args[0] + " as contacted",
+						"id":        args[0],
+						"contacted": false,
+					}, flags)
+				}
+				fmt.Fprintf(cmd.OutOrStdout(), "DRY RUN - would mark %s as contacted.\n", args[0])
+				return nil
+			}
 			if err := careMarkContacted(args[0]); err != nil {
 				return err
 			}

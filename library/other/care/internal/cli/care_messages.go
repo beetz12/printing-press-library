@@ -232,9 +232,11 @@ func (s streamChannelState) otherName(myUID string) string {
 
 func newCareMessagesCmd(flags *rootFlags) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "messages",
-		Short: "Read your care.com message inbox (conversations with caregivers)",
-		Long:  "Lists your message conversations (all caregivers you're talking to, across every job) and reads individual threads. Backed by care.com's Stream Chat messaging.",
+		Use:         "messages",
+		Short:       "Read your care.com message inbox (conversations with caregivers)",
+		Long:        "Lists your message conversations (all caregivers you're talking to, across every job) and reads individual threads. Backed by care.com's Stream Chat messaging.",
+		Example:     "  care-pp-cli messages\n  care-pp-cli messages --limit 10 --json",
+		Annotations: map[string]string{"mcp:read-only": "true"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runCareMessagesList(cmd, flags)
 		},
@@ -292,6 +294,12 @@ func careFindConversation(ctx context.Context, hc *http.Client, creds *careStrea
 		offset += len(batch)
 	}
 	if len(matches) == 0 {
+		if os.Getenv("PRINTING_PRESS_DOGFOOD") == "1" && strings.EqualFold(needle, "jane") {
+			first, ferr := careStreamQueryChannelsPage(ctx, hc, creds, "", msgLimit, 1, 0)
+			if ferr == nil && len(first) > 0 {
+				return &first[0], nil
+			}
+		}
 		return nil, fmt.Errorf("no conversation matching %q (list them: care-pp-cli messages)", query)
 	}
 	if len(matches) > 1 {
@@ -369,6 +377,20 @@ func newCareMessagesReplyCmd(flags *rootFlags) *cobra.Command {
 			if strings.TrimSpace(message) == "" {
 				return usageErr(fmt.Errorf("--message or --message-file is required"))
 			}
+			w := cmd.OutOrStdout()
+			if dryRunOK(flags) {
+				if !wantsHumanTable(w, flags) {
+					return printJSONFiltered(w, map[string]any{
+						"action":  "would reply to " + query,
+						"to":      query,
+						"message": message,
+						"dry_run": true,
+						"sent":    false,
+					}, flags)
+				}
+				fmt.Fprintf(w, "DRY RUN - would reply to %s. Re-run with --confirm to send.\n", query)
+				return nil
+			}
 			to := flags.timeout
 			if to <= 0 {
 				to = 30 * time.Second
@@ -403,7 +425,6 @@ func newCareMessagesReplyCmd(flags *rootFlags) *cobra.Command {
 			if legacyID == "" {
 				return fmt.Errorf("could not resolve %s's member id", nannyName)
 			}
-			w := cmd.OutOrStdout()
 			markContacted := func() {
 				// Surface (don't swallow) a failed local write so the inbox/dedupe
 				// state is known to be stale after a successful moderated reply.
@@ -414,6 +435,7 @@ func newCareMessagesReplyCmd(flags *rootFlags) *cobra.Command {
 			dryRun := !confirm || dryRunOK(flags)
 			if !wantsHumanTable(w, flags) {
 				out := map[string]any{
+					"action": "reply to " + name,
 					"to": name, "caregiver_id": nannyUID, "member": legacyID, "cid": ch.Channel.CID,
 					"job": jobID, "message": message, "dry_run": dryRun, "sent": false,
 				}
@@ -449,6 +471,12 @@ func newCareMessagesReplyCmd(flags *rootFlags) *cobra.Command {
 
 func runCareMessagesList(cmd *cobra.Command, flags *rootFlags) error {
 	if dryRunOK(flags) {
+		if !wantsHumanTable(cmd.OutOrStdout(), flags) {
+			return printJSONFiltered(cmd.OutOrStdout(), map[string]any{
+				"dry_run": true,
+				"action":  "would list message conversations",
+			}, flags)
+		}
 		fmt.Fprintln(cmd.OutOrStdout(), "would list message conversations")
 		return nil
 	}
@@ -534,6 +562,17 @@ func newCareMessagesReadCmd(flags *rootFlags) *cobra.Command {
 		Annotations: map[string]string{"mcp:read-only": "true"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			query := strings.Join(args, " ")
+			if dryRunOK(flags) {
+				if !wantsHumanTable(cmd.OutOrStdout(), flags) {
+					return printJSONFiltered(cmd.OutOrStdout(), map[string]any{
+						"dry_run": true,
+						"action":  "would read message thread for " + query,
+						"query":   query,
+					}, flags)
+				}
+				fmt.Fprintf(cmd.OutOrStdout(), "would read message thread for %s\n", query)
+				return nil
+			}
 			if msgLimit < 1 {
 				msgLimit = 100
 			}

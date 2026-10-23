@@ -102,6 +102,14 @@ func newCareRecommendCmd(flags *rootFlags) *cobra.Command {
 				return usageErr(fmt.Errorf("--zip is required"))
 			}
 			if dryRunOK(flags) {
+				if !wantsHumanTable(cmd.OutOrStdout(), flags) {
+					return printJSONFiltered(cmd.OutOrStdout(), map[string]any{
+						"dry_run":     true,
+						"action":      fmt.Sprintf("would score caregivers near %s (target $%.0f/hr)", zip, targetRate),
+						"zip":         zip,
+						"target_rate": targetRate,
+					}, flags)
+				}
 				fmt.Fprintf(cmd.OutOrStdout(), "would score caregivers near %s (target $%.0f/hr)\n", zip, targetRate)
 				return nil
 			}

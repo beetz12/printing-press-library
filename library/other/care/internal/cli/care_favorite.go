@@ -19,17 +19,18 @@ func careFavorite(cmd *cobra.Command, flags *rootFlags, caregiverID string, on, 
 	// always forces a preview). Consistent with outreach send / messages reply.
 	w := cmd.OutOrStdout()
 	if !confirm || dryRunOK(flags) {
+		verb := "favorite"
+		if !on {
+			verb = "unfavorite"
+		}
 		if !wantsHumanTable(w, flags) {
 			return printJSONFiltered(w, map[string]any{
 				"caregiver_id":    caregiverID,
 				"favorite_status": on,
 				"dry_run":         true,
+				"action":          fmt.Sprintf("would %s caregiver %s", verb, caregiverID),
 				"applied":         false,
 			}, flags)
-		}
-		verb := "favorite"
-		if !on {
-			verb = "unfavorite"
 		}
 		fmt.Fprintf(w, "DRY RUN - would %s caregiver %s. Re-run with --confirm to apply.\n", verb, caregiverID)
 		return nil

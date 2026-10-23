@@ -22,8 +22,9 @@ func newBookingsRequestListJobsBasicCmd(flags *rootFlags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:         "request-list-jobs-basic",
 		Short:       "Fetch bookings request list jobs basic",
+		Example:     "  care-pp-cli bookings request-list-jobs-basic --operation-name bookingRequestListJobsPageBasic",
 		Args:        cobra.NoArgs,
-		Annotations: map[string]string{"pp:endpoint": "bookings.request_list_jobs_basic", "pp:method": "POST", "pp:path": "/api/graphql", "pp:requires-input": "true"},
+		Annotations: map[string]string{"pp:endpoint": "bookings.request_list_jobs_basic", "pp:method": "POST", "pp:path": "/api/graphql", "pp:happy-args": "--operation-name=bookingRequestListJobsPageBasic", "pp:requires-input": "true"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Bare invocation of a command with required input prints help
 			// instead of pflag's terse "required flag not set" error. Optional-
@@ -240,7 +241,7 @@ func newBookingsRequestListJobsBasicCmd(flags *rootFlags) *cobra.Command {
 			return printErr
 		},
 	}
-	cmd.Flags().StringVar(&bodyOperationName, "operation-name", "", "GraphQL operation name")
+	cmd.Flags().StringVar(&bodyOperationName, "operation-name", "bookingRequestListJobsPageBasic", "GraphQL operation name")
 	cmd.Flags().StringVar(&bodyQuery, "query", "query bookingRequestListJobsPageBasic($input: BookingRequestListInput!) {\n  bookingRequestList(input: $input) {\n    ... on BookingRequestListSuccess {\n      bookingRequests {\n        id\n        status\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}", "GraphQL query document")
 	cmd.Flags().StringVar(&bodyVariables, "variables", "{\"input\":{\"bookingRequestListFilters\":[{\"caregiverTiers\":[\"PREFERRED\"],\"childCareBookingRequestStatus\":\"IN_PROGRESS\"},{\"caregiverTiers\":[\"PREFERRED\"],\"childCareBookingRequestStatus\":\"DEFERRED\"},{\"childCareBookingRequestStatus\":\"SEEKER_NOTIFIED\",\"jobTypes\":[\"JOB_TYPE_IB_RECURRING_CARE\",\"JOB_TYPE_OTC\"]}],\"pageSize\":1,\"seekerId\":\"11111111-1111-1111-1111-111111111111\"}}", "GraphQL variables as JSON")
 	cmd.Flags().BoolVar(&stdinBody, "stdin", false, "Read request body as JSON from stdin")

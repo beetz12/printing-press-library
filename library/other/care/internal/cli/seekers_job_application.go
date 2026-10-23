@@ -22,8 +22,9 @@ func newSeekersJobApplicationCmd(flags *rootFlags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:         "job-application",
 		Short:       "Fetch seekers job application",
+		Example:     "  care-pp-cli seekers job-application --operation-name SeekerJobApplication",
 		Args:        cobra.NoArgs,
-		Annotations: map[string]string{"pp:endpoint": "seekers.job_application", "pp:method": "POST", "pp:path": "/api/graphql", "pp:requires-input": "true"},
+		Annotations: map[string]string{"pp:endpoint": "seekers.job_application", "pp:method": "POST", "pp:path": "/api/graphql", "pp:happy-args": "--operation-name=SeekerJobApplication", "pp:requires-input": "true"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Bare invocation of a command with required input prints help
 			// instead of pflag's terse "required flag not set" error. Optional-
@@ -240,7 +241,7 @@ func newSeekersJobApplicationCmd(flags *rootFlags) *cobra.Command {
 			return printErr
 		},
 	}
-	cmd.Flags().StringVar(&bodyOperationName, "operation-name", "", "GraphQL operation name")
+	cmd.Flags().StringVar(&bodyOperationName, "operation-name", "SeekerJobApplication", "GraphQL operation name")
 	cmd.Flags().StringVar(&bodyQuery, "query", "query SeekerJobApplication($jobApplicationId: Int!) {\n  seekerJobApplication(jobApplicationId: $jobApplicationId) {\n    ... on SeekerJobApplicationSuccess {\n      jobId\n      application {\n        seekerInterest\n        __typename\n      }\n      __typename\n    }\n    ... on SeekerJobApplicationError {\n      dummy\n      __typename\n    }\n    __typename\n  }\n}", "GraphQL query document")
 	cmd.Flags().StringVar(&bodyVariables, "variables", "{\"jobApplicationId\":12345678}", "GraphQL variables as JSON")
 	cmd.Flags().BoolVar(&stdinBody, "stdin", false, "Read request body as JSON from stdin")

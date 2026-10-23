@@ -22,8 +22,9 @@ func newMembersEntitlementsCmd(flags *rootFlags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:         "entitlements",
 		Short:       "Fetch members entitlements",
+		Example:     "  care-pp-cli members entitlements --operation-name GetMemberEntitlements",
 		Args:        cobra.NoArgs,
-		Annotations: map[string]string{"pp:endpoint": "members.entitlements", "pp:method": "POST", "pp:path": "/api/graphql", "pp:requires-input": "true"},
+		Annotations: map[string]string{"pp:endpoint": "members.entitlements", "pp:method": "POST", "pp:path": "/api/graphql", "pp:happy-args": "--operation-name=GetMemberEntitlements", "pp:requires-input": "true"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Bare invocation of a command with required input prints help
 			// instead of pflag's terse "required flag not set" error. Optional-
@@ -240,7 +241,7 @@ func newMembersEntitlementsCmd(flags *rootFlags) *cobra.Command {
 			return printErr
 		},
 	}
-	cmd.Flags().StringVar(&bodyOperationName, "operation-name", "", "GraphQL operation name")
+	cmd.Flags().StringVar(&bodyOperationName, "operation-name", "GetMemberEntitlements", "GraphQL operation name")
 	cmd.Flags().StringVar(&bodyQuery, "query", "query GetMemberEntitlements($input: MemberEntitlementsInput!) {\n  getMemberEntitlements(input: $input) {\n    ... on GetMemberEntitlementsSuccess {\n      entitlements {\n        entitlement\n        permission\n        condition {\n          lastMinuteBooking {\n            timeUntilBookingStartIsGreaterThanDuration {\n              nanos\n              seconds\n              __typename\n            }\n            __typename\n          }\n          conversationCredits {\n            remaining\n            total\n            used\n            __typename\n          }\n          __typename\n        }\n        __typename\n      }\n      __typename\n    }\n    ... on GetMemberEntitlementsError {\n      errors {\n        message\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}", "GraphQL query document")
 	cmd.Flags().StringVar(&bodyVariables, "variables", "{\"input\":{\"entitlements\":[\"ENTITLEMENT_ACCESS_LIFEMART\",\"ENTITLEMENT_BOOK_LAST_MINUTE_IB_PET_CARE\",\"ENTITLEMENT_SEEKER_INITIATED_CONVERSATIONS\"]}}", "GraphQL variables as JSON")
 	cmd.Flags().BoolVar(&stdinBody, "stdin", false, "Read request body as JSON from stdin")

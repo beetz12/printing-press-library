@@ -22,8 +22,9 @@ func newBookingsRequestListJobsExtendedCmd(flags *rootFlags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:         "request-list-jobs-extended",
 		Short:       "Fetch bookings request list jobs extended",
+		Example:     "  care-pp-cli bookings request-list-jobs-extended --operation-name bookingRequestListJobsPageExtended",
 		Args:        cobra.NoArgs,
-		Annotations: map[string]string{"pp:endpoint": "bookings.request_list_jobs_extended", "pp:method": "POST", "pp:path": "/api/graphql", "pp:requires-input": "true"},
+		Annotations: map[string]string{"pp:endpoint": "bookings.request_list_jobs_extended", "pp:method": "POST", "pp:path": "/api/graphql", "pp:happy-args": "--operation-name=bookingRequestListJobsPageExtended", "pp:requires-input": "true"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Bare invocation of a command with required input prints help
 			// instead of pflag's terse "required flag not set" error. Optional-
@@ -240,7 +241,7 @@ func newBookingsRequestListJobsExtendedCmd(flags *rootFlags) *cobra.Command {
 			return printErr
 		},
 	}
-	cmd.Flags().StringVar(&bodyOperationName, "operation-name", "", "GraphQL operation name")
+	cmd.Flags().StringVar(&bodyOperationName, "operation-name", "bookingRequestListJobsPageExtended", "GraphQL operation name")
 	cmd.Flags().StringVar(&bodyQuery, "query", "query bookingRequestListJobsPageExtended($input: BookingRequestListInput!) {\n  bookingRequestList(input: $input) {\n    ... on BookingRequestListSuccess {\n      bookingRequests {\n        id\n        status\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}", "GraphQL query document")
 	cmd.Flags().StringVar(&bodyVariables, "variables", "{\"input\":{\"bookingRequestListFilters\":[{\"bookingInvitationStatuses\":[\"ACCEPTED\"],\"caregiverTiers\":[\"ALTERNATIVE\"],\"childCareBookingRequestStatus\":\"SEEKER_NOTIFIED\"},{\"bookingInvitationStatuses\":[\"INVITE_SENT\"],\"caregiverTiers\":[\"PREFERRED\"],\"childCareBookingRequestStatus\":\"SEEKER_NOTIFIED\"},{\"bookingInvitationStatuses\":[\"DECLINED\"],\"caregiverTiers\":[\"PREFERRED\"],\"childCareBookingRequestStatus\":\"SEEKER_NOTIFIED\"},{\"childCareBookingRequestStatus\":\"SEEKER_NOTIFIED\",\"jobTypes\":[\"JOB_TYPE_IB_RECURRING_CARE\",\"JOB_TYPE_OTC\"]}],\"pageSize\":1,\"seekerId\":\"11111111-1111-1111-1111-111111111111\"}}", "GraphQL variables as JSON")
 	cmd.Flags().BoolVar(&stdinBody, "stdin", false, "Read request body as JSON from stdin")

@@ -22,8 +22,9 @@ func newCareJobsApplicationSeekerInterestCountsCmd(flags *rootFlags) *cobra.Comm
 	cmd := &cobra.Command{
 		Use:         "application-seeker-interest-counts",
 		Short:       "Fetch jobs application seeker interest counts",
+		Example:     "  care-pp-cli care-jobs application-seeker-interest-counts --operation-name JobApplicationSeekerInterestCounts",
 		Args:        cobra.NoArgs,
-		Annotations: map[string]string{"pp:endpoint": "care_jobs.application_seeker_interest_counts", "pp:method": "POST", "pp:path": "/api/graphql", "pp:requires-input": "true"},
+		Annotations: map[string]string{"pp:endpoint": "care_jobs.application_seeker_interest_counts", "pp:method": "POST", "pp:path": "/api/graphql", "pp:happy-args": "--operation-name=JobApplicationSeekerInterestCounts", "pp:requires-input": "true"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Bare invocation of a command with required input prints help
 			// instead of pflag's terse "required flag not set" error. Optional-
@@ -240,7 +241,7 @@ func newCareJobsApplicationSeekerInterestCountsCmd(flags *rootFlags) *cobra.Comm
 			return printErr
 		},
 	}
-	cmd.Flags().StringVar(&bodyOperationName, "operation-name", "", "GraphQL operation name")
+	cmd.Flags().StringVar(&bodyOperationName, "operation-name", "JobApplicationSeekerInterestCounts", "GraphQL operation name")
 	cmd.Flags().StringVar(&bodyQuery, "query", "query JobApplicationSeekerInterestCounts($jobId: ID!) {\n  jobApplicationSeekerInterestCounts(jobId: $jobId) {\n    ... on JobApplicationSeekerInterestCountsSuccess {\n      unread {\n        interested\n        notInterested\n        unspecified\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}", "GraphQL query document")
 	cmd.Flags().StringVar(&bodyVariables, "variables", "{\"jobId\":\"12345678\"}", "GraphQL variables as JSON")
 	cmd.Flags().BoolVar(&stdinBody, "stdin", false, "Read request body as JSON from stdin")

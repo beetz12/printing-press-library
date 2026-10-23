@@ -22,8 +22,9 @@ func newCareJobsChildCareOneTimeUpdateCmd(flags *rootFlags) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:         "child-care-one-time-update",
 		Short:       "Fetch jobs child care one time update",
+		Example:     "  care-pp-cli care-jobs child-care-one-time-update --operation-name JobChildCareOneTimeUpdate",
 		Args:        cobra.NoArgs,
-		Annotations: map[string]string{"pp:endpoint": "care_jobs.child_care_one_time_update", "pp:method": "POST", "pp:path": "/api/graphql", "pp:requires-input": "true"},
+		Annotations: map[string]string{"pp:endpoint": "care_jobs.child_care_one_time_update", "pp:method": "POST", "pp:path": "/api/graphql", "pp:happy-args": "--operation-name=JobChildCareOneTimeUpdate", "pp:requires-input": "true"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Bare invocation of a command with required input prints help
 			// instead of pflag's terse "required flag not set" error. Optional-
@@ -240,7 +241,7 @@ func newCareJobsChildCareOneTimeUpdateCmd(flags *rootFlags) *cobra.Command {
 			return printErr
 		},
 	}
-	cmd.Flags().StringVar(&bodyOperationName, "operation-name", "", "GraphQL operation name")
+	cmd.Flags().StringVar(&bodyOperationName, "operation-name", "JobChildCareOneTimeUpdate", "GraphQL operation name")
 	cmd.Flags().StringVar(&bodyQuery, "query", "mutation JobChildCareOneTimeUpdate($input: JobChildCareOneTimeUpdateInput!) {\n  jobChildCareOneTimeUpdate(input: $input) {\n    job {\n      id\n      serviceType\n      status\n      title\n      __typename\n    }\n    __typename\n  }\n}", "GraphQL query document")
 	cmd.Flags().StringVar(&bodyVariables, "variables", "{\"input\":{\"jobId\":\"12345678\",\"jobInput\":{\"careRecipients\":[{\"ageRange\":\"NEWBORN\",\"approximateDoB\":null,\"gender\":null}],\"characteristics\":[],\"description\":\"Example one-time babysitting job.\",\"otherJobAttributes\":[],\"privateJob\":false,\"qualities\":[\"COLLEGE_DEGREE\",\"CPR_TRAINED\",\"OWN_TRANSPORTATION\",\"DOES_NOT_SMOKE\"],\"rate\":{\"maximum\":{\"amount\":25,\"currencyCode\":\"USD\"},\"minimum\":{\"amount\":15,\"currencyCode\":\"USD\"}},\"schedule\":{\"end\":{\"date\":\"2030-06-05\",\"time\":\"18:00\"},\"start\":{\"date\":\"2030-06-01\",\"time\":\"08:00\"}},\"scheduleMayVary\":false,\"servicesNeeded\":[],\"source\":\"OTHER\",\"title\":\"Babysitter Needed\",\"zipcode\":\"90210\"}}}", "GraphQL variables as JSON")
 	cmd.Flags().BoolVar(&stdinBody, "stdin", false, "Read request body as JSON from stdin")

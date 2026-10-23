@@ -21,8 +21,9 @@ func newMembershipsPromotedCmd(flags *rootFlags) *cobra.Command {
 		Use:         "memberships",
 		Short:       "Fetch memberships information",
 		Long:        "Fetch memberships information",
+		Example:     "  care-pp-cli memberships --operation-name getMembershipInformation",
 		Args:        cobra.NoArgs,
-		Annotations: map[string]string{"pp:endpoint": "memberships.information", "pp:method": "POST", "pp:path": "/api/graphql", "pp:requires-input": "true"},
+		Annotations: map[string]string{"pp:endpoint": "memberships.information", "pp:method": "POST", "pp:path": "/api/graphql", "pp:happy-args": "--operation-name=getMembershipInformation", "pp:requires-input": "true"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Bare invocation of a command with a required flag/body prints help
 			// instead of pflag's terse "required flag not set" error. Optional-
@@ -108,7 +109,7 @@ func newMembershipsPromotedCmd(flags *rootFlags) *cobra.Command {
 			return printOutputWithFlagsMeta(cmd.OutOrStdout(), formatData, flags, map[string]any{"source": "live"}, nil)
 		},
 	}
-	cmd.Flags().StringVar(&bodyOperationName, "operation-name", "", "GraphQL operation name")
+	cmd.Flags().StringVar(&bodyOperationName, "operation-name", "getMembershipInformation", "GraphQL operation name")
 	cmd.Flags().StringVar(&bodyQuery, "query", "query getMembershipInformation($id: ID!) {\n  getSeeker(id: $id) {\n    member {\n      id\n      __typename\n    }\n    membershipInformation {\n      nextBillingDate\n      premiumInfo {\n        signupDate\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}", "GraphQL query document")
 	cmd.Flags().StringVar(&bodyVariables, "variables", "{\"id\":\"11111111-1111-1111-1111-111111111111\"}", "GraphQL variables as JSON")
 

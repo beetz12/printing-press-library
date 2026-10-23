@@ -159,10 +159,11 @@ func composeCareOutreach(g careGetCaregiver, about, from string) string {
 
 func newCareOutreachCmd(flags *rootFlags) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "outreach",
-		Short: "Compose outreach to caregivers (draft-only)",
-		Long:  "Draft personalized outreach messages to caregivers from their real care.com profile. Sending is intentionally not implemented (draft-and-confirm safety model).",
-		RunE:  parentNoSubcommandRunE(flags),
+		Use:         "outreach",
+		Short:       "Compose outreach to caregivers (draft-only)",
+		Long:        "Draft personalized outreach messages to caregivers from their real care.com profile. Sending is intentionally not implemented (draft-and-confirm safety model).",
+		Annotations: map[string]string{"mcp:read-only": "true", "pp:parent-group": "true", "pp:typed-exit-codes": "0,2"},
+		RunE:        parentNoSubcommandRunE(flags),
 	}
 	cmd.AddCommand(newCareOutreachDraftCmd(flags))
 	cmd.AddCommand(newCareOutreachSendCmd(flags))
@@ -254,8 +255,8 @@ func newCareOutreachSendCmd(flags *rootFlags) *cobra.Command {
 		// is documented in the Long text above; the default is always a preview.
 		Example: strings.Trim(`
   # preview only (nothing sent):
-  care-pp-cli outreach send --to <caregiverId> --job 12345678 --message "Hi! ..."
-  care-pp-cli outreach send --to <caregiverId> --job 12345678 --message-file draft.txt`, "\n"),
+  care-pp-cli outreach send --to 44444444-4444-4444-4444-444444444444 --job 12345678 --message "Hi! ..."
+  care-pp-cli outreach send --to 44444444-4444-4444-4444-444444444444 --job 12345678 --message-file draft.txt`, "\n"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if message == "" && messageFile != "" {
 				b, err := os.ReadFile(messageFile)
@@ -277,10 +278,15 @@ func newCareOutreachSendCmd(flags *rootFlags) *cobra.Command {
 			ctx, cancel := context.WithTimeout(cmd.Context(), to)
 			defer cancel()
 
+			dryRun := !confirm || dryRunOK(flags)
+
 			// Resolve the job (by name or id); defaults to the active job set by `find`.
 			job, err := careResolveJob(ctx, flags, jobID)
 			if err != nil {
-				return err
+				if !dryRunOK(flags) {
+					return err
+				}
+				job = careJob{ID: jobID, Title: jobID}
 			}
 			jobID = job.ID
 
@@ -288,16 +294,21 @@ func newCareOutreachSendCmd(flags *rootFlags) *cobra.Command {
 			if caregiverID != "" {
 				n, lid, rerr := careResolveCaregiver(ctx, flags, caregiverID)
 				if rerr != nil {
-					return rerr
+					if !dryRunOK(flags) {
+						return rerr
+					}
+					name, memberID = caregiverID, caregiverID
+				} else if lid == "" {
+					if !dryRunOK(flags) {
+						return fmt.Errorf("could not resolve a member id for caregiver %s; pass --to-member-id <legacyId>", caregiverID)
+					}
+					name, memberID = caregiverID, caregiverID
+				} else {
+					name, memberID = n, lid
 				}
-				if lid == "" {
-					return fmt.Errorf("could not resolve a member id for caregiver %s; pass --to-member-id <legacyId>", caregiverID)
-				}
-				name, memberID = n, lid
 			}
 
 			w := cmd.OutOrStdout()
-			dryRun := !confirm || dryRunOK(flags)
 			recordContact := func() {
 				// Record the outreach locally for dedupe. Surface (don't swallow)
 				// failures so the user knows the local state is stale after a send.
@@ -310,6 +321,7 @@ func newCareOutreachSendCmd(flags *rootFlags) *cobra.Command {
 
 			if !wantsHumanTable(w, flags) {
 				out := map[string]any{
+					"action":       fmt.Sprintf("send outreach message to %s", name),
 					"to":           name,
 					"caregiver_id": caregiverID,
 					"member_id":    memberID,
@@ -366,10 +378,18 @@ func newCareOutreachDraftCmd(flags *rootFlags) *cobra.Command {
   care-pp-cli outreach draft 44444444-4444-4444-4444-444444444444 --from "The Fixture family"
   care-pp-cli outreach draft <id> --about "We need part-time care for our kids for a few days this summer." --from "Alex"`, "\n"),
 		Args:        cobra.ExactArgs(1),
-		Annotations: map[string]string{"mcp:read-only": "true"},
+		Annotations: map[string]string{"mcp:read-only": "true", "pp:verified-by-proof": "manual-live-verification.md"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			caregiverID := args[0]
 			if dryRunOK(flags) {
+				if !wantsHumanTable(cmd.OutOrStdout(), flags) {
+					return printJSONFiltered(cmd.OutOrStdout(), map[string]any{
+						"dry_run":      true,
+						"action":       fmt.Sprintf("would draft outreach for caregiver %s (no send)", caregiverID),
+						"caregiver_id": caregiverID,
+						"sent":         false,
+					}, flags)
+				}
 				fmt.Fprintf(cmd.OutOrStdout(), "would draft outreach for caregiver %s (no send)\n", caregiverID)
 				return nil
 			}
